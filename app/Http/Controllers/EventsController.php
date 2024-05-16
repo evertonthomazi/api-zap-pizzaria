@@ -182,7 +182,7 @@ class EventsController extends Controller
 
         // Use dd() para depuração
         if (!$exists) {
-            dd('Slot disponível encontrado' . $currentTime);
+            dd('Fora de Data de Agendamento' . $currentTime);
         }
 
         foreach ($devices as $device) {
