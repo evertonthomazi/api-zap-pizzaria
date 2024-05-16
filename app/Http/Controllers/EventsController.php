@@ -182,7 +182,8 @@ class EventsController extends Controller
 
         // Use dd() para depuração
         if (!$exists) {
-            dd('Fora de Data de Agendamento' . $currentTime);
+            print_r('Fora de Data de Agendamento' . $currentTime);
+            exit;
         }
 
         foreach ($devices as $device) {
