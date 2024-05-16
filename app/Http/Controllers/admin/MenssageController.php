@@ -114,7 +114,5 @@ class MenssageController extends Controller
 
         return response()->json(['totalLinhas' => 0]);
     }
-
-   
     
 }

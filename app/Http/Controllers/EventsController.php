@@ -15,6 +15,7 @@ use App\Models\Route;
 use Carbon\Carbon;
 use Dflydev\DotAccessData\Util;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EventsController extends Controller
 {
@@ -154,14 +155,42 @@ class EventsController extends Controller
     public function mensagemEmMassa()
     {
         $devices = Device::get(); // IDs dos dispositivos
+        // Configurar o Carbon para usar o fuso horário de São Paulo
+        $now = Carbon::now('America/Sao_Paulo');
 
+
+        $daysOfWeek = [
+            0 => 'domingo',
+            1 => 'segunda',
+            2 => 'terça',
+            3 => 'quarta',
+            4 => 'quinta',
+            5 => 'sexta',
+            6 => 'sábado',
+        ];
+
+        $dayOfWeek =  $daysOfWeek[$now->dayOfWeek];
+        // Obter a hora e minutos atuais
+        $currentTime = $now->format('H:i:s');
+
+        // Verifique se existe um slot disponível com os parâmetros fornecidos
+        $exists = DB::table('available_slots')
+            ->where('day_of_week', $dayOfWeek)
+            ->where('start_time', '<=', $currentTime)
+            ->where('end_time', '>=', $currentTime)
+            ->exists();
+
+        // Use dd() para depuração
+        if (!$exists) {
+            dd('Slot disponível encontrado' . $currentTime);
+        }
 
         foreach ($devices as $device) {
             $mensagen = Messagen::where('device_id', null)->whereNot('number', "")->where('number', 'like', '55119%')->limit(1)->get();
             // Obtém o número de mensagens enviadas nas últimas horas
             $messageCount = $device->message_count_last_hour;
 
-            
+
             // Verifica se o número de mensagens enviadas nas últimas horas é menor ou igual a 39
             if ($messageCount <= 39 && isset($mensagen)) {
 
