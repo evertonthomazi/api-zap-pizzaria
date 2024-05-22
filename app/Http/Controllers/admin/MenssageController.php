@@ -60,7 +60,6 @@ class MenssageController extends Controller
             $handle = new SplFileObject($file->getPathname(), 'r');
 
             foreach ($handle as $linha) {
-
                 $mensagen = new Messagen();
                 $mensagen->messagem =  $request->texto;
                 $mensagen->image_id =  $request->imagem_id;

@@ -128,7 +128,7 @@ class EventsController extends Controller
 
         // verifica se o serviço está em andamento
 
-        $active = 0;
+        $active = 1;
         if ($active) {
 
             $this->verifyService($reponseArray, $session);
@@ -212,7 +212,7 @@ class EventsController extends Controller
     public function verifyService($reponseArray, $session)
     {
         if ($reponseArray['data']['message']['fromMe']) {
-            exit;
+            // exit;
         }
         if (!$reponseArray['data']['message']['fromMe'] || !$reponseArray['data']['message']['fromGroup']) {
 

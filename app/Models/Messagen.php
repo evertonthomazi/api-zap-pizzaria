@@ -13,7 +13,8 @@ class Messagen extends Model
     protected $table = 'messagens';
     protected $appends = [
         'display_status',
-        'display_created_at'
+        'display_created_at',
+        'image_id'
     ];
    
 
