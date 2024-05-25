@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\admin\MenssageController;
+use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\ScheduleController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChatBotController;
@@ -13,7 +14,6 @@ use App\Http\Controllers\FormController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentMethodController;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RouteController;
 use App\Models\ChatBot;
 use Carbon\Carbon;
@@ -51,6 +51,7 @@ Route::prefix('/admin')->controller(AdminController::class)->group(function () {
 
 Route::prefix('/')->controller(HomeController::class)->group(function () {
     Route::get('/', 'index');
+    Route::get('/1', 'index2');
 });
 
 
@@ -165,6 +166,16 @@ Route::middleware(['auth.user'])->group(function () {
             Route::get('/getMessage', 'getMessage');
             Route::post('/bulk', 'bulkMessage')->name('admin.message.bulk');;
             Route::get('/relatorio-de-envio', 'index')->name('admin.message.index');;
+        });
+
+        Route::prefix('/produtos')->controller(ProductController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.product.index');
+            Route::post('/store', 'store')->name('admin.product.store');
+            Route::post('/storeSistem', 'storeSistem')->name('admin.product.storeSistem');
+            Route::get('/novo', 'create')->name('admin.product.create');
+            Route::delete('/destroy/{product}', 'destroy')->name('admin.product.destroy');
+            Route::put('/destroy/{product}', 'update')->name('admin.product.update');
+            Route::get('/edita', 'edit')->name('admin.product.edit');
         });
     });
 });

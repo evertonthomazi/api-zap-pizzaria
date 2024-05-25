@@ -61,7 +61,7 @@
             <div class="sidebar-heading">
                 Conexões
             </div>
-            @if (session('userData')->role == 'admin')
+           
                 <!-- Dispositivos -->
                 <li class="nav-item">
                     <a href="{{ route('admin.device.index') }}" class="nav-link">
@@ -69,14 +69,20 @@
                         <span>Dispositivos</span>
                     </a>
                 </li>
-            @endif
-            @if (session('userData')->role == 'admin')
+        
+         
                 <!-- Divider -->
                 <hr class="sidebar-divider my-0">
                 <!-- Heading -->
                 <div class="sidebar-heading">
                     Mensagens
                 </div>
+                <li class="nav-item">
+                    <a href="{{ route('admin.customer.index') }}" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        <span>Clientes</span>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#message"
                         aria-expanded="true" aria-controls="message">
@@ -93,7 +99,15 @@
                     </div>
 
                 </li>
-            @endif
+
+                <li class="nav-item">
+                    <a href="{{ route('admin.product.index') }}" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        <span>Produtos</span>
+                    </a>
+                </li>
+
+               
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -139,6 +153,7 @@
                                     pedidos</a>
                             </div>
                         </li>
+                      
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
