@@ -1,92 +1,199 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+/>
+<link rel="stylesheet" href="../style.css">
     <title>Meu Site em Breve</title>
     <!-- Adicione links para bibliotecas externas via CDN aqui, se necessário -->
     <!-- Exemplo: <link rel="stylesheet" href="https://example.com/style.css"> -->
     <!-- Exemplo: <script src="https://example.com/script.js"></script> -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            width: 100%;
-        }
-
-        h1 {
-            color: #333;
-        }
-
-        p {
-            color: #666;
-        }
-
-        .countdown {
-            font-size: 24px;
-            margin: 20px 0;
-            color: #ff4500;
-        }
-
-        /* Adicione mais estilos conforme necessário */
-    </style>
+    
 </head>
 <body>
+    <header>
+        <a href="#" class="logo">Pizza!  <i class="fa-solid fa-pizza-slice"></i> </a>
+        <nav class="navbar">
+            <a href="#">HOME</a>
+            <a href="#dishes">PIZZA</a>
+            <a href="#">HOME</a>
+            <a href="#">HOME</a>
+            <a href="#">HOME</a>
+        </nav>
 
-    <div class="container">
-        <h1>Em Breve!</h1>
-        {{-- <p>Estamos trabalhando em algo incrível. Fique ligado para mais atualizações.</p> --}}
-        
-        {{-- <div class="countdown" id="countdown"></div> --}}
-        
-        {{-- <form>
-            <label for="email">Inscreva-se para receber atualizações:</label>
-            <input type="email" id="email" name="email" required>
-            <button type="submit">Inscrever-se</button>
-        </form> --}}
+        <div class="icons">
+            <i class="fas fa-bars" id="menu-bars"></i>
+            <i class="fas fa-search" id="search-icon"></i>
+            <a href="#" class="fas fa-heart"></a>
+            <a href="#" class="fas fa-shopping-cart"></a>
+        </div>
+    </header>
 
-        <!-- Adicione mais elementos interativos, formulários, etc., conforme necessário -->
-    </div>
+    <form action="" id="search-form">
+        <input type="search" placeholder="Procurar..." name="" id="search-box">
+        <label for="search-box" class="fas fa-search"></label>
+        <i class="fas fa-times" id="close"></i>
+    </form>
 
-    <script>
-        // // Exemplo de um contador regressivo simples
-        // const countdownElement = document.getElementById('countdown');
-        // const endDate = new Date('2023-12-31T00:00:00');
+    <section class="home" id="home">
 
-        // function updateCountdown() {
-        //     const currentDate = new Date();
-        //     const timeDifference = endDate - currentDate;
+        <div class="swiper mySwiper home-slider">
 
-        //     const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-        //     const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        //     const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
-        //     const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+            <div class="swiper-wrapper wrapper">
+                <div class="swiper-slide slide">
+                    <div class="content">
+                        <span>Pizzaria Bologne</span>
+                        <h3>Monte do seu jeito!</h3>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                        <a href="#" class="btn">Proximo</a>
+                    </div>
+                    <div class="image">
+                        <img src="https://img.freepik.com/fotos-premium/pizza-isolada-em-fundo-branco-ia-generativa_74760-6895.jpg" alt="">
+                    </div>
+                </div>
 
-        //     countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
 
-        //     if (timeDifference <= 0) {
-        //         countdownElement.innerHTML = 'O grande dia chegou!';
-        //     }
-        // }
+                <div class="swiper-slide slide">
+                    <div class="content">
+                        <span>Pizzaria Bologne</span>
+                        <h3>Monte do seu jeito!</h3>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                        <a href="#" class="btn">Proximo</a>
+                    </div>
+                    <div class="image">
+                        <img src="https://i.pinimg.com/736x/30/74/75/3074756e1c21d6a7e8e14ee339df13e7.jpg" alt="">
+                    </div>
+                </div>
 
-        // setInterval(updateCountdown, 1000);
-        // updateCountdown(); // Chamar imediatamente para evitar atrasos visuais
-    </script>
+                <div class="swiper-slide slide">
+                    <div class="content">
+                        <span>Pizzaria Bologne</span>
+                        <h3>Monte do seu jeito!</h3>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                        <a href="#" class="btn">Proximo</a>
+                    </div>
+                    <div class="image">
+                        <img src="https://img.freepik.com/fotos-premium/uma-pizza-com-calabresa-em-um-fundo-branco_900101-25781.jpg" alt="">
+                    </div>
+                </div>
 
+
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </section>
+
+    <section class="dishes" id="dishes">
+        <h3 class="sub-heading">Pizzas</h3>
+        <h1 class="heading">Bejamim Pizzas</h1>
+
+        <div class="box-container">
+            <div class="box">
+                <a href="#" class="fas fa-heart"></a>
+                <a href="#" class="fas fa-eye"></a>
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaK09xx0uhqzD_twr3sIWov8d-CRqyu8bAzKVeJczCyQ&s" alt="">
+                <h3>Delyveri</h3>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <span>Valor $$$</span>
+                <a href="#" class="btn"> add ao carrinho</a>
+            </div>
+
+            <div class="box">
+                <a href="#" class="fas fa-heart"></a>
+                <a href="#" class="fas fa-eye"></a>
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaK09xx0uhqzD_twr3sIWov8d-CRqyu8bAzKVeJczCyQ&s" alt="">
+                <h3>Delyveri</h3>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <span>Valor $$$</span>
+                <a href="#" class="btn"> add ao carrinho</a>
+            </div>
+
+            <div class="box">
+                <a href="#" class="fas fa-heart"></a>
+                <a href="#" class="fas fa-eye"></a>
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaK09xx0uhqzD_twr3sIWov8d-CRqyu8bAzKVeJczCyQ&s" alt="">
+                <h3>Delyveri</h3>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <span>Valor $$$</span>
+                <a href="#" class="btn"> add ao carrinho</a>
+            </div>
+
+            <div class="box">
+                <a href="#" class="fas fa-heart"></a>
+                <a href="#" class="fas fa-eye"></a>
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaK09xx0uhqzD_twr3sIWov8d-CRqyu8bAzKVeJczCyQ&s" alt="">
+                <h3>Delyveri</h3>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <span>Valor $$$</span>
+                <a href="#" class="btn"> add ao carrinho</a>
+            </div>
+
+            <div class="box">
+                <a href="#" class="fas fa-heart"></a>
+                <a href="#" class="fas fa-eye"></a>
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaK09xx0uhqzD_twr3sIWov8d-CRqyu8bAzKVeJczCyQ&s" alt="">
+                <h3>Delyveri</h3>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <span>Valor $$$</span>
+                <a href="#" class="btn"> add ao carrinho</a>
+            </div>
+
+            <div class="box">
+                <a href="#" class="fas fa-heart"></a>
+                <a href="#" class="fas fa-eye"></a>
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaK09xx0uhqzD_twr3sIWov8d-CRqyu8bAzKVeJczCyQ&s" alt="">
+                <h3>Delyveri</h3>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <span>Valor $$$</span>
+                <a href="#" class="btn"> add ao carrinho</a>
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>
