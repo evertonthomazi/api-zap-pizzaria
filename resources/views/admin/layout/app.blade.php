@@ -99,7 +99,15 @@
                     </div>
 
                 </li>
-           
+
+                <li class="nav-item">
+                    <a href="{{ route('admin.product.index') }}" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        <span>Produtos</span>
+                    </a>
+                </li>
+
+               
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
