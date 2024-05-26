@@ -19,6 +19,7 @@ class ChekoutController extends Controller
         $product = Product::findOrFail($id);
         return view('front.checkout.addProduct', compact('product'));
     }
+<<<<<<< Updated upstream
     public function addToCart(Request $request)
     {
         $cart = session()->get('cart', []);
@@ -63,5 +64,9 @@ class ChekoutController extends Controller
         session()->put('cart', array_values($cart));
 
         return redirect()->route('cart.show');
+=======
+    public function carrinho(){
+        return view('front.checkout.carrinho');
+>>>>>>> Stashed changes
     }
 }
