@@ -56,12 +56,7 @@ Route::prefix('/')->controller(HomeController::class)->group(function () {
 });
 
 Route::prefix('/checkout')->controller(ChekoutController::class)->group(function () {
-<<<<<<< Updated upstream
     Route::get('/', 'index')->name('checkout.home');
-=======
-    Route::get('/', 'index');
-    Route::get('/carrinho', 'carrinho');
->>>>>>> Stashed changes
     Route::get('/adicionar-produto/{id}', 'addProduto');
     Route::get('/cart', 'showCart')->name('cart.show');
     Route::post('/addToCart','addToCart')->name('cart.add');

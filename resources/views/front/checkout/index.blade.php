@@ -28,13 +28,11 @@
             cursor: pointer;
             font-size: 18px;
             font-weight: bold;
-            transition: width 2s;
-            border-radius: 5px;
-            
+            transition: background-color 0.3s;
         }
 
         .category-header div.active {
-            background-color: #27ae60;;
+            background-color: #ff4500;
             color: #fff;
         }
 
@@ -88,8 +86,8 @@
         }
 
         .product-price {
-            font-size: 18px;
-            color: #192a56;
+            font-size: 16px;
+            color: #ff4500;
             text-align: right;
         }
 
