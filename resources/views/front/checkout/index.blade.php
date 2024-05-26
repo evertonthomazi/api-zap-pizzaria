@@ -92,6 +92,58 @@
             color: #192a56;
             text-align: right;
         }
+
+        .cart-footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            z-index: 1000;
+        }
+
+        .cart-icon {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .cart-icon i {
+            font-size: 24px;
+        }
+
+        .cart-count {
+            background-color: red;
+            color: #fff;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 14px;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+        }
+
+        .view-cart a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .animate {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
     </style>
 @endsection
 
@@ -119,6 +171,18 @@
             </div>
         @endforeach
     </div>
+
+    @if(count($cart) > 0)
+    <footer class="cart-footer">
+        <div class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-count">{{ count($cart) }}</span>
+        </div>
+        <div class="view-cart">
+            <a href="{{ route('cart.show') }}">Ver Carrinho</a>
+        </div>
+    </footer>
+    @endif
 @endsection
 
 @section('scripts')
@@ -166,6 +230,16 @@
         const activeCategory = categories[lastCategoryIndex];
         activeCategory.classList.add('active');
         categoryHeader.scrollLeft = activeCategory.offsetLeft - categoryHeader.offsetWidth / 2 + activeCategory.offsetWidth / 2;
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const cartIcon = document.querySelector('.cart-icon');
+        setInterval(() => {
+            cartIcon.classList.add('animate');
+            setTimeout(() => {
+                cartIcon.classList.remove('animate');
+            }, 1000);
+        }, 3000);
     });
 </script>
 @endsection

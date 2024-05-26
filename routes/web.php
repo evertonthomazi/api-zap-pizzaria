@@ -63,6 +63,7 @@ Route::prefix('/checkout')->controller(ChekoutController::class)->group(function
     Route::get('/carrinho', 'carrinho');
 >>>>>>> Stashed changes
     Route::get('/adicionar-produto/{id}', 'addProduto');
+    Route::get('/cart', 'showCart')->name('cart.show');
     Route::post('/addToCart','addToCart')->name('cart.add');
 });
 
