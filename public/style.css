@@ -238,6 +238,150 @@ header .icons #menu-bars{
     align-items: center;
 }
 
+.carrinho .cart {
+    align-items: center;
+    background-color:#fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    padding: 20px;
+}
+
+.carrinho .cart h1 {
+    margin-top: 0;
+}
+
+.carrinho .cart-item {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eaeaea;
+    padding: 10px 0;
+    flex-direction: row-reverse;
+}
+
+.carrinho .cart-item img {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    margin-right: 10px;
+}
+
+.carrinho .item-details {
+    flex-grow: 1;
+}
+
+.carrinho .item-details h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.carrinho .item-details p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.carrinho .price {
+    font-weight: bold;
+    color: #333;
+}
+
+.carrinho .quantity {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.carrinho .quantity button {
+    background-color: #ddd;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.carrinho .quantity-number {
+    margin: 0 10px;
+    font-weight: bold;
+}
+
+.carrinho .total {
+    text-align: right;
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.carrinho .checkout {
+    width: 100%;
+    padding: 10px;
+    background-color:var(--green);
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.carousel {
+    margin-top: 10px;
+    position: relative;
+   
+    max-width: 600px;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    align-items: center;
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+}
+
+.carousel-item {
+    min-width: 100%;
+    box-sizing: border-box;
+    padding: 20px;
+    background-color: white;
+    text-align: center;
+}
+
+.carousel-item img {
+   
+    height: auto;
+    border-radius: 8px;
+}
+
+.carousel-item h2 {
+    margin: 10px 0;
+}
+
+.carousel-item p {
+    color: #666;
+}
+
+.carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    font-size: 18px;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.carousel-button.prev {
+    left: 10px;
+}
+
+.carousel-button.next {
+    right: 10px;
+}
+
 
 
 
