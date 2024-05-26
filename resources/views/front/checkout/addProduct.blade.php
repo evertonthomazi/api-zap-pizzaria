@@ -126,7 +126,7 @@
     <div class="pizza-details">{{ $product->description }}</div>
     <div class="pizza-price">R$ {{ number_format($product->price, 2, ',', '.') }}</div>
 
-    @if(in_array($product->category->name, ['Pizzas']))
+    @if(in_array($product->category->name, ['Pizzas Clássicas', 'Pizzas Especiais', 'Pizzas Doces']))
     <div class="crust-options">
         <div class="crust-option">
             <input type="radio" name="crust" value="Tradicional" checked>
@@ -151,15 +151,21 @@
 </div>
 
 <div class="footer">
-    <div class="quantity">
-        <button onclick="changeQuantity(-1)">-</button>
-        <input type="number" id="quantity" value="1" min="1">
-        <button onclick="changeQuantity(1)">+</button>
-    </div>
-    <div>
-        <span class="pizza-price" id="total-price">R$ {{ number_format($product->price, 2, ',', '.') }}</span>
-        <button class="btn-add">Adicionar ao Carrinho</button>
-    </div>
+    <form action="{{ route('cart.add') }}" method="POST">
+        @csrf
+        <input type="hidden" name="product_id" value="{{ $product->id }}">
+        <input type="hidden" name="crust" id="selected-crust" value="Tradicional">
+        <input type="hidden" name="observation" id="observation-input">
+        <div class="quantity">
+            <button type="button" onclick="changeQuantity(-1)">-</button>
+            <input type="number" id="quantity" name="quantity" value="1" min="1">
+            <button type="button" onclick="changeQuantity(1)">+</button>
+        </div>
+        <div>
+            <span class="pizza-price" id="total-price">R$ {{ number_format($product->price, 2, ',', '.') }}</span>
+            <button type="submit" class="btn-add">Adicionar ao Carrinho</button>
+        </div>
+    </form>
 </div>
 
 @endsection
@@ -169,6 +175,7 @@
     document.getElementById('observation').addEventListener('input', function() {
         const charCount = this.value.length;
         document.getElementById('char-count').innerText = charCount + '/140';
+        document.getElementById('observation-input').value = this.value;
     });
 
     function changeQuantity(amount) {
@@ -181,24 +188,27 @@
 
     const productPrice = {{ $product->price }};
     const crustPrices = {
-        'Tradicional': 0,
-        'Cheddar': 5,
-        'Catupiry': 5
-    };
+    'Tradicional': 0,
+    'Cheddar': 5,
+    'Catupiry': 5
+};
 
-    document.querySelectorAll('input[name="crust"]').forEach(crustInput => {
-        crustInput.addEventListener('change', updateTotalPrice);
+document.querySelectorAll('input[name="crust"]').forEach(crustInput => {
+    crustInput.addEventListener('change', function() {
+        document.getElementById('selected-crust').value = this.value;
+        updateTotalPrice();
     });
+});
 
-    document.getElementById('quantity').addEventListener('input', updateTotalPrice);
+document.getElementById('quantity').addEventListener('input', updateTotalPrice);
 
-    function updateTotalPrice() {
-        const selectedCrust = document.querySelector('input[name="crust"]:checked')?.value || 'Tradicional';
-        const quantity = parseInt(document.getElementById('quantity').value);
-        const totalPrice = (productPrice + crustPrices[selectedCrust]) * quantity;
-        document.getElementById('total-price').innerText = 'R$ ' + totalPrice.toFixed(2).replace('.', ',');
-    }
+function updateTotalPrice() {
+    const selectedCrust = document.querySelector('input[name="crust"]:checked')?.value || 'Tradicional';
+    const quantity = parseInt(document.getElementById('quantity').value);
+    const totalPrice = (productPrice + crustPrices[selectedCrust]) * quantity;
+    document.getElementById('total-price').innerText = 'R$ ' + totalPrice.toFixed(2).replace('.', ',');
+}
 
-    updateTotalPrice();
+updateTotalPrice();
 </script>
 @endsection
