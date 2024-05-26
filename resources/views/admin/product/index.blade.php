@@ -41,7 +41,7 @@
                         <th>Nome</th>
                         <th>Descrição</th>
                         <th>Preço</th>
-                   
+                        <th>Categoria</th>
                         <th class="element-center">Ações</th>
                     </tr>
                 </thead>
@@ -56,6 +56,7 @@
                             <td>{{ $product->name }}</td>
                             <td>{!! $product->description !!}</td>
                             <td>{{ $product->price }}</td>
+                            <td>{{ $product->category->name }}</td>
                             <td style="text-align: center;">
                                 <a href="{{ route('admin.product.edit', ['id' => $product->id]) }}"
                                     class="btn btn-primary">Editar</a>

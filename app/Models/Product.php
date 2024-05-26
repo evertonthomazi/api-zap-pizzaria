@@ -15,4 +15,9 @@ class Product extends Model
     {
         return $this->belongsToMany(Form::class, 'form_product')->withPivot('value');
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Categories::class, 'category_id');
+    }
 }
