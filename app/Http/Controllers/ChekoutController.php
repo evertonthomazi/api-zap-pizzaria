@@ -9,10 +9,13 @@ use Illuminate\Http\Request;
 class ChekoutController extends Controller
 {
     public function index()
-    {
-        $categories = Categories::with('products')->get();
-        return view('front.checkout.index', compact('categories'));
-    }
+{
+    $categories = Categories::with('products')->get();
+    $cart = session()->get('cart', []);
+    unset($cart[0]);
+    session()->put('cart', array_values($cart));
+    return view('front.checkout.index', compact('categories', 'cart'));
+}
 
     public function addProduto($id)
     {
@@ -31,8 +34,9 @@ class ChekoutController extends Controller
         $product = Product::findOrFail($productId);
 
         $cartItem = [
-            'id' => $product->id,
+            'product_id' => $product->id,
             'name' => $product->name,
+            'image' => $product->image,
             'description' => $product->description,
             'price' => $product->price,
             'quantity' => $quantity,
@@ -53,7 +57,7 @@ class ChekoutController extends Controller
     public function showCart()
     {
         $cart = session()->get('cart', []);
-        return view('front.home.cart', compact('cart'));
+        return view('front.checkout.cart', compact('cart'));
     }
 
     public function removeCartItem($index)

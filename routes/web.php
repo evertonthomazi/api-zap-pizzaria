@@ -58,6 +58,7 @@ Route::prefix('/')->controller(HomeController::class)->group(function () {
 Route::prefix('/checkout')->controller(ChekoutController::class)->group(function () {
     Route::get('/', 'index')->name('checkout.home');
     Route::get('/adicionar-produto/{id}', 'addProduto');
+    Route::get('/cart', 'showCart')->name('cart.show');
     Route::post('/addToCart','addToCart')->name('cart.add');
 });
 
