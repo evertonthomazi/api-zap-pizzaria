@@ -12,8 +12,6 @@ class ChekoutController extends Controller
 {
     $categories = Categories::with('products')->get();
     $cart = session()->get('cart', []);
-    unset($cart[0]);
-    session()->put('cart', array_values($cart));
     return view('front.checkout.index', compact('categories', 'cart'));
 }
 
