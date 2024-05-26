@@ -21,13 +21,15 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Inserir dados iniciais
+        // Inserir dados iniciais para uma pizzaria
         DB::table('categories')->insert([
+            ['name' => 'Pizzas Clássicas'],
+            ['name' => 'Pizzas Especiais'],
+            ['name' => 'Pizzas Doces'],
+            ['name' => 'Calzones'],
             ['name' => 'Bebidas'],
-            ['name' => 'Pizzas'],
-            ['name' => 'Broto'],
-            ['name' => 'Aperitivos'],
-            ['name' => 'Salgados']
+            ['name' => 'Entradas'],
+            ['name' => 'Sobremesas']
         ]);
     }
 

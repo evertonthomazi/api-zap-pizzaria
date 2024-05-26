@@ -5,6 +5,7 @@ use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\ScheduleController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChatBotController;
+use App\Http\Controllers\ChekoutController;
 use App\Http\Controllers\ColaboradorController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DeliverymenController;
@@ -52,6 +53,11 @@ Route::prefix('/admin')->controller(AdminController::class)->group(function () {
 Route::prefix('/')->controller(HomeController::class)->group(function () {
     Route::get('/', 'index');
     Route::get('/1', 'index2');
+});
+
+Route::prefix('/checkout')->controller(ChekoutController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::get('/adicionar-produto/{id}', 'addProduto');
 });
 
 
@@ -182,12 +188,7 @@ Route::middleware(['auth.user'])->group(function () {
 
 
 Route::get('/teste', function () {
-
-
-    
 });
 
 Route::get('/send', function () {
-    
-
 });

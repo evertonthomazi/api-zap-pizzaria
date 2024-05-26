@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categories;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         return view('front.home.index');
     }
-
-    public function index2(){
-        return view('front.home.home');
-    }
+   
 }
