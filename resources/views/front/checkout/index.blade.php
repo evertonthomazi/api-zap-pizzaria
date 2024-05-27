@@ -8,6 +8,7 @@
             padding: 0;
             background-color: #f4f4f4;
         }
+        
 
         .category-header {
             position: fixed;
@@ -102,6 +103,7 @@
             align-items: center;
             padding: 10px 20px;
             z-index: 1000;
+            box-sizing: border-box;
         }
 
         .cart-icon {
@@ -136,23 +138,50 @@
         }
 
         @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
         }
     </style>
 @endsection
 
 @section('content')
     <div class="category-header" id="category-header">
+        <!-- Adicionando o item "Home" -->
+        <div data-category-id="home">Home</div>
+      
         @foreach ($categories as $category)
             <div data-category-id="{{ $category->id }}">{{ $category->name }}</div>
         @endforeach
     </div>
-
     <div class="container" id="product-container">
+        <div class="category" id="category-home">
+            <h2>Monte Sua Pizza Meio a Meio</h2>
+            <div class="product" data-product-id="perso">
+                <img src="https://maissaborgranjalisboa.onezap.link/wp-content/uploads/2022/03/meio-a-meio-scaled.jpg" alt="">
+                <div class="product-details">
+                    <div class="product-title">Escolha até 2 Sabores</div>
+                    <div class="product-description">Prevalece o valor da Maior</div>
+                </div>
+                <div class="product-price"></div>
+            </div>
+        </div>
         @foreach ($categories as $category)
             <div class="category" id="category-{{ $category->id }}">
                 <h2>{{ $category->name }}</h2>
@@ -170,74 +199,90 @@
         @endforeach
     </div>
 
-    @if(count($cart) > 0)
-    <footer class="cart-footer">
+    @if (count($cart) > 0)
+    <footer class="cart-footer" onclick="redirectToCart()">
         <div class="cart-icon">
             <i class="fas fa-shopping-cart"></i>
             <span class="cart-count">{{ count($cart) }}</span>
+            
         </div>
-        <div class="view-cart">
-            <a href="{{ route('cart.show') }}">Ver Carrinho</a>
+        <button class="btn">Finalizar Pedido</button>
+        <div class="view-cart" >
+            Total: R$ {{ number_format(array_sum(array_column($cart, 'total')), 2, ',', '.') }}
         </div>
     </footer>
-    @endif
+@endif
+
 @endsection
 
 @section('scripts')
-<script>
-    const categoryHeader = document.getElementById('category-header');
-    const categories = document.querySelectorAll('.category-header div');
-    const categoryElements = document.querySelectorAll('.category');
-    const products = document.querySelectorAll('.product');
+    <script>
+        function redirectToCart() {
+    window.location.href = "{{ route('cart.show') }}";
+}
 
-    products.forEach(product => {
-        product.addEventListener('click', () => {
-            const productId = product.getAttribute('data-product-id');
-            const url = '/checkout/adicionar-produto/' + productId;
-            window.location.href = url;
+        const categoryHeader = document.getElementById('category-header');
+        const categories = document.querySelectorAll('.category-header div');
+        const categoryElements = document.querySelectorAll('.category');
+        const products = document.querySelectorAll('.product');
+
+        products.forEach(product => {
+            product.addEventListener('click', () => {
+                const productId = product.getAttribute('data-product-id');
+               
+                if(productId === 'perso'){
+                    const url = '/checkout/adicionar-2-sabores/';
+                window.location.href = url;
+                }else{
+                    const url = '/checkout/adicionar-produto/' + productId;
+                window.location.href = url;
+                }
+              
+            });
         });
-    });
 
-    categories.forEach(category => {
-        category.addEventListener('click', () => {
-            const categoryId = category.getAttribute('data-category-id');
-            const categoryElement = document.getElementById('category-' + categoryId);
+        categories.forEach(category => {
+            category.addEventListener('click', () => {
+                const categoryId = category.getAttribute('data-category-id');
+                const categoryElement = document.getElementById('category-' + categoryId);
 
-            window.scrollTo({
-                top: categoryElement.offsetTop - categoryHeader.offsetHeight,
-                behavior: 'smooth'
+                window.scrollTo({
+                    top: categoryElement.offsetTop - categoryHeader.offsetHeight,
+                    behavior: 'smooth'
+                });
+
+                categories.forEach(cat => cat.classList.remove('active'));
+                category.classList.add('active');
+                categoryHeader.scrollLeft = category.offsetLeft - categoryHeader.offsetWidth / 2 + category
+                    .offsetWidth / 2;
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            let lastCategoryIndex = 0;
+
+            categoryElements.forEach((category, index) => {
+                const rect = category.getBoundingClientRect();
+                if (rect.top <= categoryHeader.offsetHeight) {
+                    lastCategoryIndex = index;
+                }
             });
 
             categories.forEach(cat => cat.classList.remove('active'));
-            category.classList.add('active');
-            categoryHeader.scrollLeft = category.offsetLeft - categoryHeader.offsetWidth / 2 + category.offsetWidth / 2;
-        });
-    });
-
-    window.addEventListener('scroll', () => {
-        let lastCategoryIndex = 0;
-
-        categoryElements.forEach((category, index) => {
-            const rect = category.getBoundingClientRect();
-            if (rect.top <= categoryHeader.offsetHeight) {
-                lastCategoryIndex = index;
-            }
+            const activeCategory = categories[lastCategoryIndex];
+            activeCategory.classList.add('active');
+            categoryHeader.scrollLeft = activeCategory.offsetLeft - categoryHeader.offsetWidth / 2 + activeCategory
+                .offsetWidth / 2;
         });
 
-        categories.forEach(cat => cat.classList.remove('active'));
-        const activeCategory = categories[lastCategoryIndex];
-        activeCategory.classList.add('active');
-        categoryHeader.scrollLeft = activeCategory.offsetLeft - categoryHeader.offsetWidth / 2 + activeCategory.offsetWidth / 2;
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const cartIcon = document.querySelector('.cart-icon');
-        setInterval(() => {
-            cartIcon.classList.add('animate');
-            setTimeout(() => {
-                cartIcon.classList.remove('animate');
-            }, 1000);
-        }, 3000);
-    });
-</script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cartIcon = document.querySelector('.cart-icon');
+            setInterval(() => {
+                cartIcon.classList.add('animate');
+                setTimeout(() => {
+                    cartIcon.classList.remove('animate');
+                }, 1000);
+            }, 3000);
+        });
+    </script>
 @endsection

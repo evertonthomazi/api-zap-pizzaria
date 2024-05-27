@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('name');
             $table->text('description');
             $table->text('image');
-            $table->decimal('price', 8, 2);
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->decimal('price',10, 2);
+            $table->foreignId('category_id')->nullable()->constrained()->onDelete('cascade');
             $table->timestamps();
         });
 
@@ -30,7 +30,7 @@ return new class extends Migration
                 DB::table('products')->insert([
                     'name' => 'Produto ' . $i . ' da Categoria ' . $category_id,
                     'description' => 'Descrição do Produto ' . $i . ' da Categoria ' . $category_id,
-                    'image' => 'https://via.placeholder.com/60',
+                    'image' => 'https://media.istockphoto.com/id/1412974054/pt/vetorial/spicy-pepperoni-pizza-icon.jpg?s=612x612&w=0&k=20&c=zpyXdIWeCzWZBvPc5hg34oo3Q5u1TNaQLS2PeM6NhWQ=',
                     'price' => rand(10, 100),
                     'category_id' => $category_id,
                     'created_at' => now(),
