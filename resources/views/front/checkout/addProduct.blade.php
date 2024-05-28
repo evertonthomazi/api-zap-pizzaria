@@ -2,11 +2,13 @@
 
 @section('css')
     <style>
+         @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Nunito', Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
+            
         }
 
         .header {
@@ -102,7 +104,8 @@
         .quantity input {
             width: 50px;
             text-align: center;
-            margin: 0 10px;
+            margin-left: 5px;
+            margin-right: 5px;
         }
 
 
@@ -114,6 +117,7 @@
             cursor: pointer;
             border-radius: 5px;
             margin-right: 5px;
+            margin-left;: 5px
         }
 
         .btn-add {

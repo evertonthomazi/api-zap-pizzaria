@@ -16,20 +16,20 @@
 </head>
 <body>
     <header>
-        <a href="#" class="logo">Pizza!  <i class="fa-solid fa-pizza-slice"></i> </a>
+        <a href="#" class="logo">Benjamin  <i class="fa-solid fa-pizza-slice"></i> </a>
         <nav class="navbar">
-            <a href="#">HOME</a>
+            <a href="#home">HOME</a>
             <a href="#dishes">PIZZA</a>
-            <a href="#">HOME</a>
-            <a href="#">HOME</a>
-            <a href="#">HOME</a>
+            <a href="#">BEBIDAS</a>
+            <a href="#">PORÇÕES</a>
+            <a href="#">CONTATO</a>
         </nav>
 
         <div class="icons">
             <i class="fas fa-bars" id="menu-bars"></i>
             <i class="fas fa-search" id="search-icon"></i>
             <a href="#" class="fas fa-heart"></a>
-            <a href="carrinho.balde.php" class="fas fa-shopping-cart"></a>
+            <a href="checkout" class="fas fa-shopping-cart"></a>
         </div>
     </header>
 
@@ -95,7 +95,7 @@
             <div class="box">
                 <a href="#" class="fas fa-heart"></a>
                 <a href="#" class="fas fa-eye"></a>
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaK09xx0uhqzD_twr3sIWov8d-CRqyu8bAzKVeJczCyQ&s" alt="">
+                <img src="#" alt="">
                 <h3>Delyveri</h3>
                 <div class="stars">
                     <i class="fas fa-star"></i>
@@ -111,7 +111,7 @@
             <div class="box">
                 <a href="#" class="fas fa-heart"></a>
                 <a href="#" class="fas fa-eye"></a>
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaK09xx0uhqzD_twr3sIWov8d-CRqyu8bAzKVeJczCyQ&s" alt="">
+                <img src="#" alt="">
                 <h3>Delyveri</h3>
                 <div class="stars">
                     <i class="fas fa-star"></i>
@@ -127,7 +127,7 @@
             <div class="box">
                 <a href="#" class="fas fa-heart"></a>
                 <a href="#" class="fas fa-eye"></a>
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaK09xx0uhqzD_twr3sIWov8d-CRqyu8bAzKVeJczCyQ&s" alt="">
+                <img src="#" alt="">
                 <h3>Delyveri</h3>
                 <div class="stars">
                     <i class="fas fa-star"></i>
@@ -143,7 +143,7 @@
             <div class="box">
                 <a href="#" class="fas fa-heart"></a>
                 <a href="#" class="fas fa-eye"></a>
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaK09xx0uhqzD_twr3sIWov8d-CRqyu8bAzKVeJczCyQ&s" alt="">
+                <img src="#" alt="">
                 <h3>Delyveri</h3>
                 <div class="stars">
                     <i class="fas fa-star"></i>
@@ -159,7 +159,7 @@
             <div class="box">
                 <a href="#" class="fas fa-heart"></a>
                 <a href="#" class="fas fa-eye"></a>
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaK09xx0uhqzD_twr3sIWov8d-CRqyu8bAzKVeJczCyQ&s" alt="">
+                <img src="#" alt="">
                 <h3>Delyveri</h3>
                 <div class="stars">
                     <i class="fas fa-star"></i>
@@ -175,7 +175,55 @@
             <div class="box">
                 <a href="#" class="fas fa-heart"></a>
                 <a href="#" class="fas fa-eye"></a>
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaK09xx0uhqzD_twr3sIWov8d-CRqyu8bAzKVeJczCyQ&s" alt="">
+                <img src="#" alt="">
+                <h3>Delyveri</h3>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <span>Valor $$$</span>
+                <a href="#" class="btn"> add ao carrinho</a>
+            </div>
+
+            <div class="box">
+                <a href="#" class="fas fa-heart"></a>
+                <a href="#" class="fas fa-eye"></a>
+                <img src="#" alt="">
+                <h3>Delyveri</h3>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <span>Valor $$$</span>
+                <a href="#" class="btn"> add ao carrinho</a>
+            </div>
+
+            <div class="box">
+                <a href="#" class="fas fa-heart"></a>
+                <a href="#" class="fas fa-eye"></a>
+                <img src="#" alt="">
+                <h3>Delyveri</h3>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <span>Valor $$$</span>
+                <a href="#" class="btn"> add ao carrinho</a>
+            </div>
+
+            <div class="box">
+                <a href="#" class="fas fa-heart"></a>
+                <a href="#" class="fas fa-eye"></a>
+                <img src="#" alt="">
                 <h3>Delyveri</h3>
                 <div class="stars">
                     <i class="fas fa-star"></i>

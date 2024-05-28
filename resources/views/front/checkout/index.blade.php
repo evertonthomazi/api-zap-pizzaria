@@ -2,11 +2,12 @@
 
 @section('css')
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Nunito', Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+           
         }
         
 
@@ -30,11 +31,14 @@
             font-size: 18px;
             font-weight: bold;
             transition: background-color 0.3s;
+            
         }
 
         .category-header div.active {
-            background-color: #ff4500;
+            background-color: #27ae60;
             color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.3);;
         }
 
         .container {
@@ -43,7 +47,8 @@
         }
 
         .category {
-            margin-bottom: 30px;
+           margin-top: 10px;
+           
         }
 
         .product {
@@ -136,7 +141,8 @@
         .animate {
             animation: shake 0.5s;
         }
-
+         
+       
         @keyframes shake {
             0% {
                 transform: translateX(0);
@@ -171,7 +177,7 @@
         @endforeach
     </div>
     <div class="container" id="product-container">
-        <div class="category" id="category-home">
+       <div class="category" id="category-home">
             <h2>Monte Sua Pizza Meio a Meio</h2>
             <div class="product" data-product-id="perso">
                 <img src="https://maissaborgranjalisboa.onezap.link/wp-content/uploads/2022/03/meio-a-meio-scaled.jpg" alt="">
