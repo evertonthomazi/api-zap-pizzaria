@@ -187,7 +187,7 @@
                 <h2>{{ $category->name }}</h2>
                 @foreach ($category->products as $product)
                     <div class="product" data-product-id="{{ $product->id }}">
-                        <img src="{{ $product->image }}" alt="{{ $product->name }}">
+                        <img src="https://media.istockphoto.com/id/1412974054/pt/vetorial/spicy-pepperoni-pizza-icon.jpg?s=612x612&w=0&k=20&c=zpyXdIWeCzWZBvPc5hg34oo3Q5u1TNaQLS2PeM6NhWQ=" alt="{{ $product->name }}">
                         <div class="product-details">
                             <div class="product-title">{{ $product->name }}</div>
                             <div class="product-description">{{ $product->description }}</div>

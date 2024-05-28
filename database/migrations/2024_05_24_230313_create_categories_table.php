@@ -23,13 +23,14 @@ return new class extends Migration
 
         // Inserir dados iniciais para uma pizzaria
         DB::table('categories')->insert([
-            ['name' => 'Pizzas Clássicas'],
-            ['name' => 'Pizzas Especiais'],
+            ['name' => 'Pizzas Clássica'],
+            ['name' => 'Pizzas Tradicionais'],
+            ['name' => 'Pizzas Premium'],
             ['name' => 'Pizzas Doces'],
-            ['name' => 'Calzones'],
-            ['name' => 'Bebidas'],
-            ['name' => 'Entradas'],
-            ['name' => 'Sobremesas']
+            ['name' => 'Calzone'],
+            ['name' => 'Calzone Doce'],
+            ['name' => 'Porções'],
+            ['name' => 'Bebidas']
         ]);
     }
 
