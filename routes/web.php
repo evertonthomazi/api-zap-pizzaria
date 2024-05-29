@@ -62,6 +62,7 @@ Route::prefix('/checkout')->controller(ChekoutController::class)->group(function
     Route::get('/adicionar-2-sabores', 'add2Sabores');
     Route::get('/cart/remove/{id}', 'removeCartItem');
     Route::get('/cart', 'showCart')->name('cart.show');
+    Route::post('/enviaImagen', 'enviaImagen')->name('checkout.enviaImagen');
     Route::get('/finalizar', 'finish');
     Route::post('/addToCart','addToCart')->name('cart.add');
     Route::post('/addToCart2','addToCart2')->name('cart.add2');
