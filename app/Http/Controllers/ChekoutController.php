@@ -29,7 +29,6 @@ class ChekoutController extends Controller
             } else {
                 dd('inicie um atendimento no zap');
             }
-            dd($chat);
         } else {
             // Recuperar o customer da sessão
             $customer = session()->get('customer');
