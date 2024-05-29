@@ -173,7 +173,11 @@
             <div class="cart-items">
                 @foreach ($cart as $index => $item)
                     <div class="cart-item">
-                        <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}">
+                        @php
+                            $isHalfHalf = strpos($item['product_id'], ',') !== false;
+                            $imageSrc = $isHalfHalf ? 'https://maissaborgranjalisboa.onezap.link/wp-content/uploads/2022/03/meio-a-meio-scaled.jpg' : 'https://media.istockphoto.com/id/1412974054/pt/vetorial/spicy-pepperoni-pizza-icon.jpg?s=612x612&w=0&k=20&c=zpyXdIWeCzWZBvPc5hg34oo3Q5u1TNaQLS2PeM6NhWQ=';
+                        @endphp
+                        <img src="{{ $imageSrc }}" alt="{{ $item['name'] }}">
                         <div class="cart-item-details">
                             <h3>{{ $item['name'] }}</h3>
                             <p>Borda: {{ $item['crust'] }}</p>
@@ -195,7 +199,7 @@
     </div>
     <div class="checkout-footer">
         @if (count($cart) > 0)
-            <a href="#" class="checkout-button">Finalizar Compra</a>
+            <a href="/checkout/finalizar" class="checkout-button">Finalizar Compra</a>
             <div class="total-price">
                 Total: R$ {{ number_format(array_sum(array_column($cart, 'total')), 2, ',', '.') }}
             </div>
