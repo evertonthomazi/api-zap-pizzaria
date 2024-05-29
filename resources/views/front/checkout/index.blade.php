@@ -61,6 +61,9 @@
             align-items: center;
             cursor: pointer;
         }
+        .product:hover{
+            background: #27ae60;
+        }
 
         .product .image-blur {
             background-color: #ccc;
