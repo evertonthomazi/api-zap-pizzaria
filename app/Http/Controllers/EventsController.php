@@ -402,7 +402,7 @@ class EventsController extends Controller
                     case  "1";
                      
                         // Construir a URL com o telefone criptografado
-                        $url = 'http://localhost:8000/checkout/'.$customer->id;
+                        $url = 'https://benjamin.enviazap.shop/checkout/pedido/'.$customer->id;
                         $service->await_answer = "init_chat_1";
                         $service->update();
                         $this->sendMessagem($session->session, $customer->phone, "Por Favor Clique no Link abaixo para fazer seu pedido");

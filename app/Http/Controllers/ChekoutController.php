@@ -18,6 +18,7 @@ class ChekoutController extends Controller
     public function index($id = null)
     {
 
+      
         if ($id) {
             $customer = Customer::where('id', $id)->first();
             $chat = Chat::where(['jid' => $customer->jid, 'await_answer' => 'init_order1'])->first();
