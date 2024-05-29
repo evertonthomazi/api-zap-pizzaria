@@ -2,7 +2,7 @@
 
 @section('css')
     <style>
-         @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
         body {
             font-family: 'Nunito', Arial, sans-serif;
             margin: 0;
@@ -139,17 +139,14 @@
         <div class="pizza-details">{{ $product->description }}</div>
         <div class="pizza-price">R$ {{ number_format($product->price, 2, ',', '.') }}</div>
 
-        @if (in_array($product->category->name, ['Pizzas Clássicas', 'Pizzas Especiais', 'Pizzas Doces']))
-
+        @if (str_contains(strtolower($product->category->name), 'pizza'))
 
             @if (count($crusts) > 0)
                 <div class="crust-options">
                     @foreach ($crusts as $crust)
                         <div class="crust-option">
-                            <input type="radio" name="crust" value="{{ $crust }}"
-                                {{ $loop->first ? 'checked' : '' }}>
-                            {{ $crust->name }} <span class="pizza-price">+ R$
-                                {{ number_format($crust->price, 2, ',', '.') }}</span>
+                            <input type="radio" name="crust" value="{{ json_encode($crust) }}" {{ $loop->first ? 'checked' : '' }}>
+                            {{ $crust->name }} <span class="pizza-price">+ R$ {{ number_format($crust->price, 2, ',', '.') }}</span>
                         </div>
                     @endforeach
                 </div>
@@ -175,19 +172,17 @@
                 <input type="number" id="quantity" name="quantity" value="1" min="1">
                 <button type="button" class="increment" onclick="changeQuantity(1)">+</button>
 
-
                 <button type="submit" class="btn-add">Adicionar ao Carrinho</button>
             </div>
             <span class="pizza-price" id="total-price">R$ {{ number_format($product->price, 2, ',', '.') }}</span>
-
         </form>
-
     </div>
 @endsection
 
 @section('scripts')
     <script>
         var globalCrustPrice = parseFloat('{{ $crusts->first()->price }}');
+        
         document.getElementById('observation').addEventListener('input', function() {
             const charCount = this.value.length;
             document.getElementById('char-count').innerText = charCount + '/140';
@@ -221,22 +216,17 @@
 
         // Função para atualizar o preço total com base na quantidade e na borda selecionada
         function updateTotalPrice(crustPrice) {
-            console.log(crustPrice);
-            const productPrice = parseFloat('{{ $product->price }}');
-            const selectedCrust = document.querySelector('input[name="crust"]:checked')?.value || 'Tradicional';
             const quantity = parseInt(document.getElementById('quantity').value);
             const totalPrice = (productPrice + crustPrice) * quantity;
             document.getElementById('total-price').innerText = 'R$ ' + totalPrice.toFixed(2).replace('.', ',');
         }
 
         document.getElementById('quantity').addEventListener('input', function() {
-            // Recupera o preço da borda selecionada do banco de dados
-            const crustPrice = parseFloat('{{ $crust->price }}');
-           
-            updateTotalPrice(crustPrice);
+            // Atualiza o preço total com base na quantidade e na borda selecionada
+            updateTotalPrice(globalCrustPrice);
         });
 
         // Chama a função inicialmente para configurar o preço total com base na borda padrão e na quantidade inicial
-        updateTotalPrice(parseFloat('{{ $crusts->first()->price }}'));
+        updateTotalPrice(globalCrustPrice);
     </script>
 @endsection

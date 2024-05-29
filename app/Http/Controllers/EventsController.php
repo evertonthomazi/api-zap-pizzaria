@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Base62Helper;
 use App\Models\Avaliacao;
 use App\Models\Chat;
 use App\Models\Colaborador;
@@ -15,6 +16,7 @@ use App\Models\Route;
 use Carbon\Carbon;
 use Dflydev\DotAccessData\Util;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 
 class EventsController extends Controller
@@ -128,7 +130,7 @@ class EventsController extends Controller
 
         // verifica se o serviço está em andamento
 
-        $active = 1;
+        $active = 0;
         if ($active) {
 
             $this->verifyService($reponseArray, $session);
@@ -398,14 +400,13 @@ class EventsController extends Controller
 
                 switch ($response) {
                     case  "1";
-                        $service->await_answer = "init_order";
+                     
+                        // Construir a URL com o telefone criptografado
+                        $url = 'http://localhost:8000/checkout/'.$customer->id;
+                        $service->await_answer = "init_chat_1";
                         $service->update();
-                        $text = "Por favor Selecione uma das Opções .";
-                        $options = [
-                            "13kg R$ 99,99",
-                            "20kg R$ 140,00"
-                        ];
-                        $this->sendMessagewithOption($session->session, $customer->phone, $text, $options);
+                        $this->sendMessagem($session->session, $customer->phone, "Por Favor Clique no Link abaixo para fazer seu pedido");
+                        $this->sendMessagem($session->session, $customer->phone, $url);
                         exit;
                         break;
 

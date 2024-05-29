@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained('customers', 'id');
-            $table->string('status', 255)->nullable();
+            $table->foreignId('customer_id')->constrained()->onDelete('cascade');
+            $table->decimal('total_price', 10, 2);
+            $table->string('status')->default('pending'); // Status do pedido (e.g., pending, completed, cancelled)
             $table->timestamps();
         });
     }

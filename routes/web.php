@@ -56,17 +56,17 @@ Route::prefix('/')->controller(HomeController::class)->group(function () {
 });
 
 Route::prefix('/checkout')->controller(ChekoutController::class)->group(function () {
+    Route::get('/pedido/{phone}', 'index');
     Route::get('/', 'index')->name('checkout.home');
     Route::get('/adicionar-produto/{id}', 'addProduto');
     Route::get('/adicionar-2-sabores', 'add2Sabores');
     Route::get('/cart/remove/{id}', 'removeCartItem');
     Route::get('/cart', 'showCart')->name('cart.show');
+    Route::get('/finalizar', 'finish');
     Route::post('/addToCart','addToCart')->name('cart.add');
     Route::post('/addToCart2','addToCart2')->name('cart.add2');
     Route::get('/cart/update-quantity/{index}/{quantity}', 'updateCartItemQuantity')->name('cart.update-quantity');
-
 });
-
 
 
 Route::prefix('/events')->controller(EventsController::class)->group(function () {

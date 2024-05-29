@@ -41,7 +41,7 @@ class Customer extends Model
     public function getLocationAttribute($number)
     {
         return 'CEP: ' . $this->zipcode . " \n " .
-            'Logradouro: ' . $this->public_place . " \n " .
+            '' . $this->public_place . " \n " .
             'N° : ' . $this->number . " \n " .
             'Bairro: ' . $this->neighborhood . " \n " .
             'Cidade: ' . $this->city . " \n " .
