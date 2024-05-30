@@ -74,7 +74,7 @@
     <h1>Benjamin Pizza!</h1>
     <P>Vamos iniciar nossa atendemento</P>
     <div class="icons">
-        <a href="https://api.whatsapp.com/send?phone=5511"><i class="fa-brands fa-whatsapp"></i></a>
+        <a href="https://api.whatsapp.com/send?phone=5511933361625"><i class="fa-brands fa-whatsapp"></i></a>
 
     </div>
     <h3>Click Aqui!</h3>
