@@ -7,11 +7,14 @@ use App\Models\Categories;
 use App\Models\Chat;
 use App\Models\Crust;
 use App\Models\Customer;
+use App\Models\Device;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Storage;
 
 class ChekoutController extends Controller
 {
@@ -20,7 +23,7 @@ class ChekoutController extends Controller
 
         if ($id) {
             $customer = Customer::where('id', $id)->first();
-            $chat = Chat::where(['jid' => $customer->jid, 'await_answer' => 'init_order1'])->first();
+            $chat = Chat::where(['jid' => $customer->jid, 'await_answer' => 'init_order'])->first();
             if ($chat) {
                 session()->put('customer', $customer);
                 $categories = Categories::with('products')->get();
@@ -254,11 +257,123 @@ class ChekoutController extends Controller
             ]);
         }
 
-        // Limpar o carrinho da sessão
-        session()->forget('cart');
+        return view('front.checkout.resumo', compact('cart'));
+    }
 
-        // Redirecionar para a página de confirmação com uma mensagem de sucesso
-        return redirect()->route('order.confirmation')->with('success', 'Pedido realizado com sucesso.');
+
+    public function enviaImagen(Request $request)
+    {
+
+
+        // Recuperar o customer da sessão
+        $customer = session()->get('customer');
+        $service = Chat::where('jid', $customer->jid)
+        ->where('active', 1)
+        ->first();
+        // Obtém a imagem enviada no corpo da requisição
+        $imagemBase64 = $request->input('imagem');
+        // Verifica se o diretório existe, se não, cria-o
+        if (!Storage::disk('public')->exists('imagens')) {
+            Storage::disk('public')->makeDirectory('imagens');
+        }
+        // Decodifica a imagem base64 e gera um nome único para o arquivo
+        $imagem = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $imagemBase64));
+        $nomeArquivo = uniqid() . '.png';
+
+        // Salva a imagem na pasta de armazenamento (por exemplo, a pasta "public")
+        $caminhoArquivo = 'imagens/' . $nomeArquivo;
+        Storage::disk('public')->put($caminhoArquivo, $imagem);
+        $session = Device::first();
+        $this->sendImage($session->session, $customer->phone,asset('storage/' . $caminhoArquivo), '');
+
+        date_default_timezone_set('America/Sao_Paulo');
+        $horaAtual = Carbon::now();
+        $horaMais45Minutos = $horaAtual->addMinutes(45);
+        $text = " Pedido feito com Sucesso .";
+        $this->sendMessagem($session->session, $customer->phone, $text);
+
+        $text = "Previsão da entrega " . $horaMais45Minutos->format('H:i');
+        $this->sendMessagem($session->session, $customer->phone, $text);
+
+        $text = "Muito Obrigado! ";
+        $this->sendMessagem($session->session, $customer->phone, $text);
+        $service->active = 0;
+        $service->update();
+       
+        session()->forget('cart');
+    }
+
+    public function sendImage($session, $phone, $nomeImagen, $detalhes)
+    {
+        $curl = curl_init();
+
+        $send = array(
+            "number" => $phone,
+            "message" => array(
+                "image" => array(
+                    "url" => $nomeImagen // public_path('uploads/' . $nomeImagen)
+                ),
+                "caption" => $detalhes
+            ),
+            "delay" => 3
+        );
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => env('APP_URL_ZAP') . '/' . $session . '/messages/send',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($send),
+            CURLOPT_HTTPHEADER => array(
+                'secret: $2a$12$VruN7Mf0FsXW2mR8WV0gTO134CQ54AmeCR.ml3wgc9guPSyKtHMgC',
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        //  file_put_contents(Utils::createCode() . ".txt", $response);
+
+        curl_close($curl);
+    }
+
+    public function sendMessagem($session, $phone, $texto)
+    {
+
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => env('APP_URL_ZAP') . '/' . $session . '/messages/send',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => '{
+                                        "number": "' . $phone . '",
+                                        "message": {
+                                            "text": "' . $texto . '"
+                                        },
+                                        "delay": 3
+                                    }',
+            CURLOPT_HTTPHEADER => array(
+                'secret: $2a$12$VruN7Mf0FsXW2mR8WV0gTO134CQ54AmeCR.ml3wgc9guPSyKtHMgC',
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        echo $response;
     }
     public function iniciar(){
         return view('front.checkout.iniciar');

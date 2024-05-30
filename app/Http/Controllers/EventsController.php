@@ -130,7 +130,7 @@ class EventsController extends Controller
 
         // verifica se o serviço está em andamento
 
-        $active = 0;
+        $active = 1;
         if ($active) {
 
             $this->verifyService($reponseArray, $session);
@@ -328,6 +328,7 @@ class EventsController extends Controller
 
                 $service->await_answer = "cep_confirmation";
                 $service->update();
+                exit;
             }
 
 
@@ -402,8 +403,8 @@ class EventsController extends Controller
                     case  "1";
                      
                         // Construir a URL com o telefone criptografado
-                        $url = 'http://localhost:8000/checkout/'.$customer->id;
-                        $service->await_answer = "init_chat_1";
+                        $url = 'https://benjamin.enviazap.shop/checkout/pedido/'.$customer->id;
+                        $service->await_answer = "init_order";
                         $service->update();
                         $this->sendMessagem($session->session, $customer->phone, "Por Favor Clique no Link abaixo para fazer seu pedido");
                         $this->sendMessagem($session->session, $customer->phone, $url);
@@ -520,21 +521,21 @@ class EventsController extends Controller
                 }
             }
 
-            if ($service->await_answer == "finish") {
-                date_default_timezone_set('America/Sao_Paulo');
-                $horaAtual = Carbon::now();
-                $horaMais45Minutos = $horaAtual->addMinutes(45);
-                $text = " Pedido feito com Sucesso .";
-                $this->sendMessagem($session->session, $customer->phone, $text);
+            // if ($service->await_answer == "finish") {
+            //     date_default_timezone_set('America/Sao_Paulo');
+            //     $horaAtual = Carbon::now();
+            //     $horaMais45Minutos = $horaAtual->addMinutes(45);
+            //     $text = " Pedido feito com Sucesso .";
+            //     $this->sendMessagem($session->session, $customer->phone, $text);
 
-                $text = "Previsão da entrega " . $horaMais45Minutos->format('H:i');
-                $this->sendMessagem($session->session, $customer->phone, $text);
+            //     $text = "Previsão da entrega " . $horaMais45Minutos->format('H:i');
+            //     $this->sendMessagem($session->session, $customer->phone, $text);
 
-                $text = "Muito Obrigado! ";
-                $this->sendMessagem($session->session, $customer->phone, $text);
-                $service->active = 0;
-                $service->update();
-            }
+            //     $text = "Muito Obrigado! ";
+            //     $this->sendMessagem($session->session, $customer->phone, $text);
+            //     $service->active = 0;
+            //     $service->update();
+            // }
         }
     }
 
