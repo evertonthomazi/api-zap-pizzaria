@@ -63,6 +63,7 @@ Route::prefix('/checkout')->controller(ChekoutController::class)->group(function
     Route::get('/cart/remove/{id}', 'removeCartItem');
     Route::get('/cart', 'showCart')->name('cart.show');
     Route::get('/finalizar', 'finish');
+    Route::get('/iniciaratendimento', 'iniciar');
     Route::post('/addToCart','addToCart')->name('cart.add');
     Route::post('/addToCart2','addToCart2')->name('cart.add2');
     Route::get('/cart/update-quantity/{index}/{quantity}', 'updateCartItemQuantity')->name('cart.update-quantity');

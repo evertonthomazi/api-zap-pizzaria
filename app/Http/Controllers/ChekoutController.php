@@ -260,4 +260,9 @@ class ChekoutController extends Controller
         // Redirecionar para a página de confirmação com uma mensagem de sucesso
         return redirect()->route('order.confirmation')->with('success', 'Pedido realizado com sucesso.');
     }
+    public function iniciar(){
+        return view('front.checkout.iniciar');
+    }
+
+    
 }
