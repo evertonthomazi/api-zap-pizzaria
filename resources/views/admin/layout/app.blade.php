@@ -50,63 +50,72 @@
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/dispositivo">
-                <div class="sidebar-brand-icon ">Ruan Gás</div>
+                <div class="sidebar-brand-icon ">Benjamin</div>
             </a>
 
-          
+
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
             <!-- Heading -->
             <div class="sidebar-heading">
                 Conexões
             </div>
-           
-                <!-- Dispositivos -->
-                <li class="nav-item">
-                    <a href="{{ route('admin.device.index') }}" class="nav-link">
-                        <i class="far fa-images"></i>
-                        <span>Dispositivos</span>
-                    </a>
-                </li>
-        
-         
-                <!-- Divider -->
-                <hr class="sidebar-divider my-0">
-                <!-- Heading -->
-                <div class="sidebar-heading">
-                    Mensagens
-                </div>
-                <li class="nav-item">
-                    <a href="{{ route('admin.customer.index') }}" class="nav-link">
-                        <i class="fas fa-users"></i>
-                        <span>Clientes</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#message"
-                        aria-expanded="true" aria-controls="message">
-                        <i class="fas fa-mail-bulk"></i>
-                        <span>Mensagem</span>
-                    </a>
 
-                    <div id="message" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                        <div class="bg-white py-2 collapse-inner rounded">
-                            <a class="collapse-item" href="{{ route('admin.message.create') }}">Envio em Massa</a>
-                            <a class="collapse-item" href="{{ route('admin.message.index') }}">Rolatório de Envio</a>
-                            <a class="collapse-item" href="{{ route('admin.schedule.index') }}">Agendamentos</a>
-                        </div>
+            <!-- Dispositivos -->
+            <li class="nav-item">
+                <a href="{{ route('admin.device.index') }}" class="nav-link">
+                    <i class="far fa-images"></i>
+                    <span>Dispositivos</span>
+                </a>
+            </li>
+
+             <!-- Divider -->
+             <hr class="sidebar-divider my-0">
+             <!-- Heading -->
+             <div class="sidebar-heading">
+                 produtos
+             </div>
+
+             <li class="nav-item">
+                <a href="{{ route('admin.product.index') }}" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span>Produtos</span>
+                </a>
+            </li>
+
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Mensagens
+            </div>
+            <li class="nav-item">
+                <a href="{{ route('admin.customer.index') }}" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#message"
+                    aria-expanded="true" aria-controls="message">
+                    <i class="fas fa-mail-bulk"></i>
+                    <span>Mensagem</span>
+                </a>
+
+                <div id="message" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="{{ route('admin.message.create') }}">Envio em Massa</a>
+                        <a class="collapse-item" href="{{ route('admin.message.index') }}">Rolatório de Envio</a>
+                        <a class="collapse-item" href="{{ route('admin.schedule.index') }}">Agendamentos</a>
                     </div>
+                </div>
 
-                </li>
+            </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('admin.product.index') }}" class="nav-link">
-                        <i class="fas fa-users"></i>
-                        <span>Produtos</span>
-                    </a>
-                </li>
+           
 
-               
+
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -152,7 +161,7 @@
                                     pedidos</a>
                             </div>
                         </li>
-                      
+
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">

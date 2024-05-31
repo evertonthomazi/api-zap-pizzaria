@@ -181,11 +181,11 @@
     </div>
     <div class="container" id="product-container">
        <div class="category" id="category-home">
-            <h2>Monte Sua Pizza Meio a Meio</h2>
+            <h2>Monte Sua Pizza 2 ou 3 Sabores</h2>
             <div class="product" data-product-id="perso">
                 <img src="https://maissaborgranjalisboa.onezap.link/wp-content/uploads/2022/03/meio-a-meio-scaled.jpg" alt="">
                 <div class="product-details">
-                    <div class="product-title">Escolha até 2 Sabores</div>
+                    <div class="product-title">Escolha até 3 Sabores</div>
                     <div class="product-description">Prevalece o valor da Maior</div>
                 </div>
                 <div class="product-price"></div>
@@ -196,7 +196,7 @@
                 <h2>{{ $category->name }}</h2>
                 @foreach ($category->products as $product)
                     <div class="product" data-product-id="{{ $product->id }}">
-                        <img src="https://media.istockphoto.com/id/1412974054/pt/vetorial/spicy-pepperoni-pizza-icon.jpg?s=612x612&w=0&k=20&c=zpyXdIWeCzWZBvPc5hg34oo3Q5u1TNaQLS2PeM6NhWQ=" alt="{{ $product->name }}">
+                        <img src="{{ asset($product->image) }}" alt="{{ $product->name }}">
                         <div class="product-details">
                             <div class="product-title">{{ $product->name }}</div>
                             <div class="product-description">{{ $product->description }}</div>

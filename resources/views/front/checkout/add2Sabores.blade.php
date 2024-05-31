@@ -2,7 +2,8 @@
 
 @section('css')
     <style>
-         @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
         body {
             font-family: 'Nunito', Arial, sans-serif;
             margin: 0;
@@ -10,11 +11,60 @@
             background-color: #f4f4f4;
         }
 
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loading-animation {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #fff;
+            animation: bounce 1s infinite, colorChange 3s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes colorChange {
+            0% {
+                background-color: #fff;
+            }
+
+            33% {
+                background-color: #aaa;
+            }
+
+            66% {
+                background-color: #555;
+            }
+
+            100% {
+                background-color: #000;
+            }
+        }
+
         .container {
             padding: 20px;
         }
-
-
 
         .product-card {
             background-color: #fff;
@@ -26,7 +76,6 @@
             align-items: center;
             cursor: pointer;
             position: relative;
-            /* Adicionado */
         }
 
         .product-card h3 {
@@ -87,8 +136,6 @@
             color: #888;
         }
 
-        /* Estilos para o checkbox */
-        /* Estilos para o checkbox */
         .custom-checkbox {
             position: relative;
             display: inline-block;
@@ -111,7 +158,6 @@
             height: 20px;
             border: 2px solid #ccc;
             border-radius: 50%;
-            /* Deixa o checkbox redondo */
             transition: background-color 0.3s, border-color 0.3s;
         }
 
@@ -126,19 +172,14 @@
 
         .custom-checkbox input:checked+.checkbox-control {
             background-color: #00ff00;
-            /* Altera a cor de fundo para verde */
             border-color: #00ff00;
-            /* Altera a cor da borda para verde */
             box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-            /* Adiciona um efeito de brilho */
         }
 
         .custom-checkbox input:checked+.checkbox-control::before {
             content: '';
-            /* Remove o marcador padrão */
         }
 
-        /* Efeitos para o card selecionado */
         .product-card {
             background-color: #fff;
             margin-bottom: 20px;
@@ -150,19 +191,15 @@
             cursor: pointer;
             position: relative;
             transition: transform 0.3s ease;
-            /* Adiciona uma transição suave */
         }
 
         .product-card.selected {
             transform: scale(1.1);
-            /* Faz o card aumentar de tamanho */
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            /* Aumenta a sombra para criar a ilusão de elevação */
         }
 
         .product-card.selected:focus {
             outline: none;
-            /* Remove a borda de foco */
         }
 
         .product-price {
@@ -231,7 +268,6 @@
             margin-right: 10px;
         }
 
-
         .observation {
             display: flex;
             margin-top: 20px;
@@ -256,10 +292,18 @@
             bottom: -20px;
             right: 2px;
         }
+
+        .observation {
+            display: none;
+        }
     </style>
 @endsection
 
 @section('content')
+    <div class="loading-overlay">
+        <div class="loading-animation"></div>
+    </div>
+
     <div class="header">
         <a href="{{ route('checkout.home') }}" class="header">
             <i class="fas fa-arrow-left"></i>
@@ -267,12 +311,13 @@
         </a>
     </div>
     <div class="container">
-        <h2>Escolha até dois sabores</h2>
+        <h2>Escolha 2 ou 3 Sabores</h2>
         <div class="product-list">
             @foreach ($products as $product)
                 <div class="product-card" data-product-id="{{ $product->id }}">
                     <div class="product-image">
-                        <img src="https://media.istockphoto.com/id/1412974054/pt/vetorial/spicy-pepperoni-pizza-icon.jpg?s=612x612&w=0&k=20&c=zpyXdIWeCzWZBvPc5hg34oo3Q5u1TNaQLS2PeM6NhWQ=" alt="{{ $product->name }}">
+                        <img src="https://media.istockphoto.com/id/1412974054/pt/vetorial/spicy-pepperoni-pizza-icon.jpg?s=612x612&w=0&k=20&c=zpyXdIWeCzWZBvPc5hg34oo3Q5u1TNaQLS2PeM6NhWQ="
+                            alt="{{ $product->name }}">
                     </div>
                     <div class="product-details">
                         <div class="product-title">{{ $product->name }}</div>
@@ -306,13 +351,11 @@
                 </div>
             </div>
 
-
             <div class="observation">
                 <i class="fa fa-pencil"></i><small>Pizza 1</small>
                 <textarea id="observation1" rows="2" maxlength="140" placeholder="Alguma Observação?"></textarea>
                 <div class="char-count" id="char-count1">0/140</div>
             </div>
-
 
             <div class="observation">
                 <i class="fa fa-pencil"></i><small>Pizza 2</small>
@@ -320,8 +363,13 @@
                 <div class="char-count" id="char-count2">0/140</div>
             </div>
 
+            <div class="observation">
+                <i class="fa fa-pencil"></i><small>Pizza 2</small>
+                <textarea id="observation3" rows="2" maxlength="140" placeholder="Alguma Observação?"></textarea>
+                <div class="char-count" id="char-count3">0/140</div>
+            </div>
+        @endif
     </div>
-    @endif
     <div class="sobe" style="margin-top: 116px;"></div>
     <div class="footer">
         <div class="total-price">Total: R$ <span id="totalPrice">0.00</span></div>
@@ -331,6 +379,12 @@
 
 @section('scripts')
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                document.querySelector('.loading-overlay').style.display = 'none';
+            }, 1000); // Ajuste o tempo conforme necessário
+        });
+
         const productCards = document.querySelectorAll('.product-card');
         const swipperContainer = document.getElementById('swipper-container');
         const swipperClose = document.getElementById('swipper-close');
@@ -338,7 +392,7 @@
         const addToCartButton = document.getElementById('addToCartButton');
 
         let selectedProducts = [];
-        var selectedCrust = null;
+        let selectedCrust = null;
 
         document.getElementById('observation1').addEventListener('input', function() {
             const charCount = this.value.length;
@@ -352,6 +406,11 @@
             document.getElementById('observation-input2').value = this.value;
         });
 
+        document.getElementById('observation3').addEventListener('input', function() {
+            const charCount = this.value.length;
+            document.getElementById('char-count3').innerText = charCount + '/140';
+            document.getElementById('observation-input3').value = this.value;
+        });
 
         productCards.forEach(card => {
             card.addEventListener('click', function() {
@@ -367,11 +426,12 @@
                     }
                     updateObservationText(productId, '');
                 } else {
-                    if (selectedProducts.length >= 2) {
+                    if (selectedProducts.length >= 3) {
                         alert('Você só pode selecionar até dois sabores.');
                         return;
                     }
                     checkbox.checked = true;
+                    console.log(selectedProducts);
                     selectedProducts.push(productId);
                     updateObservationText(productId, productName);
                 }
@@ -386,38 +446,89 @@
             });
         });
 
-        function updateObservationText(productId, productName) {
-            const observationId = productId === selectedProducts[0] ? 'observation1' : 'observation2';
-            document.getElementById(observationId).previousElementSibling.innerHTML = productName;
+        function updateObservationText() {
+            const observations = document.querySelectorAll('.observation');
+
+            // Define as observações com base nos produtos selecionados
+            selectedProducts.forEach((productId, index) => {
+                const productName = document.querySelector(
+                    `.product-card[data-product-id="${productId}"] .product-title`).textContent;
+                observations[index].querySelector('small').innerHTML = productName;
+                observations[index].style.display = 'flex'; // Exibe a observação
+            });
+
+            // Oculta observações restantes
+            for (let i = selectedProducts.length; i < observations.length; i++) {
+                observations[i].style.display = 'none';
+            }
         }
+
+
         // Adicione um evento de clique para os elementos .crust-option
         const crustOptions = document.querySelectorAll('.crust-option');
         crustOptions.forEach(option => {
             option.addEventListener('click', function() {
-                // Seleciona o input de rádio dentro do elemento .crust-option clicado
                 const radioInput = this.querySelector('input[type="radio"]');
-                // Verifica se o input já está marcado
                 if (!radioInput.checked) {
-                    // Marca o input
                     radioInput.checked = true;
-                    // Atualiza o preço total
                     selectedCrust = radioInput.value;
                     updateTotalPrice();
                 }
             });
         });
-
+        document.querySelectorAll('.crust-option input[type="radio"]').forEach(radio => {
+    radio.addEventListener('click', function() {
+        selectedCrust = this.value;
+        updateTotalPrice();
+    });
+});
         function updateSwiper() {
             const swiperWrapper = document.querySelector('.swiper-wrapper');
             swiperWrapper.innerHTML = '';
-            selectedProducts.forEach(productId => {
-                const productName = document.querySelector(`.product-card[data-product-id="${productId}"] h3`)
-                    .textContent;
-                const slide = document.createElement('div');
-                slide.classList.add('swiper-slide');
-                slide.textContent = "Metade : " + productName;
-                swiperWrapper.appendChild(slide);
-            });
+
+            if (selectedProducts.length === 1) {
+                selectedProducts.forEach(productId => {
+                    const productName = document.querySelector(`.product-card[data-product-id="${productId}"] h3`)
+                        .textContent;
+                    const slide = document.createElement('div');
+                    slide.classList.add('swiper-slide');
+                    slide.textContent = "Selecione Mais 1  Sabor";
+                    swiperWrapper.appendChild(slide);
+                });
+            } else if (selectedProducts.length === 2) {
+                selectedProducts.forEach(productId => {
+                    const productName = document.querySelector(`.product-card[data-product-id="${productId}"] h3`)
+                        .textContent;
+                    const slide = document.createElement('div');
+                    slide.classList.add('swiper-slide');
+                    slide.textContent = "Metade : " + productName;
+                    swiperWrapper.appendChild(slide);
+                });
+            } else if (selectedProducts.length > 2) {
+                const remainder = selectedProducts.length - 2;
+                selectedProducts.slice(0, 2).forEach(productId => {
+                    const productName = document.querySelector(`.product-card[data-product-id="${productId}"] h3`)
+                        .textContent;
+                    const slide = document.createElement('div');
+                    slide.classList.add('swiper-slide');
+                    slide.textContent = "1/3 terço : " + productName;
+                    swiperWrapper.appendChild(slide);
+                });
+                selectedProducts.slice(2).forEach(productId => {
+                    const productName = document.querySelector(`.product-card[data-product-id="${productId}"] h3`)
+                        .textContent;
+                    const slide = document.createElement('div');
+                    slide.classList.add('swiper-slide');
+                    slide.textContent = "1/3 terço : " + productName;
+                    swiperWrapper.appendChild(slide);
+                });
+            }
+
+            if (selectedProducts.length > 0) {
+                swipperContainer.style.display = 'block';
+            } else {
+                swipperContainer.style.display = 'none';
+            }
 
             if (selectedProducts.length > 0) {
                 swipperContainer.style.display = 'block';
@@ -437,8 +548,8 @@
                 }
             });
 
-            // Adicione o preço da borda selecionada ao preço total
-            if (selectedCrust) {
+            // Adicionar o preço da borda ao preço total apenas se houver uma borda selecionada
+            if (selectedCrust !== null) {
                 const crustPrice = parseFloat(document.querySelector(`input[name="crust"][value="${selectedCrust}"]`)
                     .dataset.price);
                 maxPrice += crustPrice;
@@ -448,7 +559,7 @@
         }
 
         function updateAddToCartButton() {
-            if (selectedProducts.length === 2) {
+            if (selectedProducts.length >= 2) {
                 addToCartButton.disabled = false;
             } else {
                 addToCartButton.disabled = true;
@@ -474,12 +585,14 @@
             }
             const observation1 = document.getElementById('observation1').value;
             const observation2 = document.getElementById('observation2').value;
+            const observation3 = document.getElementById('observation3').value;
 
             const formData = new FormData();
             formData.append('product_ids', JSON.stringify(productIds));
             formData.append('crust_id', crustId);
             formData.append('observation1', observation1);
             formData.append('observation2', observation2);
+            formData.append('observation3', observation3);
             formData.append('_token', '{{ csrf_token() }}');
 
             fetch('{{ route('cart.add2') }}', {
@@ -501,7 +614,7 @@
                         toast: true,
                         position: 'top-end',
                         showConfirmButton: false,
-                        timer: 5000,
+                        timer: 1000,
                         timerProgressBar: true,
                         didOpen: (toast) => {
                             toast.addEventListener('mouseenter', Swal.stopTimer)
@@ -516,7 +629,7 @@
 
                     setTimeout(() => {
                         window.location.href = '{{ route('checkout.home') }}';
-                    }, 3000);
+                    }, 1000);
                 });
         });
     </script>

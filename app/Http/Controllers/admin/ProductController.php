@@ -13,7 +13,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::all();
+        $products = Product::with('category')->get();
         return view('admin.product.index', compact('products'));
     }
 
@@ -34,26 +34,25 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $product = Product::find($id);
-
+    
         if (!$product) {
             // Lidar com o produto não encontrado, redirecionar ou mostrar um erro
+            return redirect()->route('admin.product.index')->with('error', 'Produto não encontrado.');
         }
-
+    
         $data = $request->validate([
             'name' => 'required',
             'price' => 'required',
         ]);
-
+    
         $data['price'] = Utils::prepareMoneyForDatabase($data['price']);
-
-        if ($request->input('sistem')) {
-        } else {
-            $data = $request->validate([
-                'description' => 'required',
+    
+        if (!$request->input('sistem')) {
+            $additionalData = $request->validate([
                 'category_id' => 'required',
-                'imageInput' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Verifica se é uma imagem válida
+                'imageInput' => 'image|mimes:jpeg,png,jpg,gif,avif|max:2048', // Verifica se é uma imagem válida
             ]);
-
+    
             if ($request->hasFile('imageInput')) {
                 // Se uma nova imagem foi enviada, exclua a imagem anterior
                 if ($product->image) {
@@ -63,17 +62,21 @@ class ProductController extends Controller
                 // Salve a nova imagem
                 $imageName = time() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path('assets/images/products'), $imageName);
+                $additionalData['image'] = 'assets/images/products/' . $imageName; // Salvar o caminho da imagem
             }
+    
+            $data = array_merge($data, $additionalData);
         }
-
-
-
-
+     
+         // Remove 'imageInput' do array $additionalData
+         unset($data['imageInput']);
+         
         $product->update($data);
-
+    
         return redirect()->route('admin.product.index')
             ->with('success', 'Produto atualizado com sucesso.');
     }
+    
 
 
     public function store(Request $request)

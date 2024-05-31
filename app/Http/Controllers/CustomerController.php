@@ -16,5 +16,61 @@ class CustomerController extends Controller
         $customer = Customer::orderBy('id');
         return DataTables::of($customer)->make(true);
     }
+
+    public function create(){
+        return view('admin.customer.create');
+    }
+
+    
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'jid' => 'required|string|max:255',
+            'zipcode' => 'required|string|max:255',
+            'public_place' => 'required|string|max:255',
+            'neighborhood' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'number' => 'required|string|max:255',
+        ]);
+
+        Customer::create($data);
+
+        return redirect()->route('admin.customer.index')->with('success', 'Cliente criado com sucesso!');
+    }
+
+    public function edit($id)
+    {
+        $customer = Customer::findOrFail($id);
+        return view('admin.customer.edit', compact('customer'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'jid' => 'required|string|max:255',
+            'zipcode' => 'required|string|max:255',
+            'public_place' => 'required|string|max:255',
+            'neighborhood' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'number' => 'required|string|max:255',
+        ]);
+
+        $customer = Customer::findOrFail($id);
+        $customer->update($data);
+
+        return redirect()->route('admin.customer.index')->with('success', 'Cliente atualizado com sucesso!');
+    }
+
+    public function destroy($id)
+    {
+        $customer = Customer::findOrFail($id);
+        $customer->delete();
+
+        return redirect()->route('admin.customer.index')->with('success', 'Cliente excluído com sucesso!');
+    }
     
 }

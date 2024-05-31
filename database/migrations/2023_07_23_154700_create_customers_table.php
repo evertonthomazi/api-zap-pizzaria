@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('public_place', 255)->nullable();
             $table->string('neighborhood', 255)->nullable();
             $table->string('city', 255)->nullable();
+            $table->string('complement', 255)->nullable();
             $table->string('state', 255)->nullable();
             $table->string('number', 255)->nullable();
             $table->timestamps();

@@ -173,11 +173,7 @@
             <div class="cart-items">
                 @foreach ($cart as $index => $item)
                     <div class="cart-item">
-                        @php
-                            $isHalfHalf = strpos($item['product_id'], ',') !== false;
-                            $imageSrc = $isHalfHalf ? 'https://maissaborgranjalisboa.onezap.link/wp-content/uploads/2022/03/meio-a-meio-scaled.jpg' : 'https://media.istockphoto.com/id/1412974054/pt/vetorial/spicy-pepperoni-pizza-icon.jpg?s=612x612&w=0&k=20&c=zpyXdIWeCzWZBvPc5hg34oo3Q5u1TNaQLS2PeM6NhWQ=';
-                        @endphp
-                        <img src="{{ $imageSrc }}" alt="{{ $item['name'] }}">
+                        <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}">
                         <div class="cart-item-details">
                             <h3>{{ $item['name'] }}</h3>
                             <p>Borda: {{ $item['crust'] }}</p>

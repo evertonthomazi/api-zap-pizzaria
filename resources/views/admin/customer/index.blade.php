@@ -11,10 +11,10 @@
         <div class="page-header-content py-3">
 
             <div class="d-sm-flex align-items-center justify-content-between">
-                <h1 class="h3 mb-0 text-gray-800">Dispositivos</h1>
-                <a href="{{ route('admin.device.create') }}"
+                <h1 class="h3 mb-0 text-gray-800">Clientes</h1>
+                <a href="{{ route('admin.customer.create') }}"
                     class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-                    <i class="fas fa-plus text-white-50"></i> Nova Dispositivos
+                    <i class="fas fa-plus text-white-50"></i> Novo Cliente
                 </a>
             </div>
 

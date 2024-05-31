@@ -23,8 +23,11 @@ class ChekoutController extends Controller
 
         if ($id) {
             $customer = Customer::where('id', $id)->first();
-            $chat = Chat::where(['jid' => $customer->jid, 'await_answer' => 'init_order'])->first();
+
+            $chat = Chat::where(['jid' => $customer->jid, 'active' => '1'])->first();
             if ($chat) {
+
+
                 session()->put('customer', $customer);
                 $categories = Categories::with('products')->get();
                 $cart = session()->get('cart', []);
@@ -43,6 +46,12 @@ class ChekoutController extends Controller
                 dd('inicie um atendimento no zap');
             }
         }
+
+
+
+        // $categories = Categories::with('products')->get();
+        // $cart = session()->get('cart', []);
+        // return view('front.checkout.index', compact('categories', 'cart'));
     }
 
     public function addProduto($id)
@@ -103,43 +112,71 @@ class ChekoutController extends Controller
         // Obter o carrinho da sessão
         $cart = session()->get('cart', []);
 
+
+    
         // Obter os dados do formulário
         $productIds = json_decode($request->input('product_ids'), true); // Convertendo de string para array
         $crustId = $request->input('crust_id');
         $observation1 = $request->input('observation1');
         $observation2 = $request->input('observation2');
+        $observation3 = $request->input('observation3');
 
-        // Verificar se foram selecionados dois produtos
-        if (count($productIds) != 2) {
-            return redirect()->back()->with('error', 'Por favor, selecione exatamente dois produtos.');
+        // Verificar se foram selecionados 2 ou 3 produtos
+        $selectedProductCount = count($productIds);
+        if ($selectedProductCount < 2 || $selectedProductCount > 3) {
+            return redirect()->back()->with('error', 'Por favor, selecione entre 2 e 3 produtos.');
+        }
+     
+        // Inicializar variáveis para armazenar informações dos produtos selecionados
+        $productNames = [];
+        $productDescriptions = [];
+        $totalPrice = 0;
+
+        // Obter informações dos produtos e calcular o preço total
+        foreach ($productIds as $productId) {
+            $product = Product::findOrFail($productId);
+            $productNames[] = $product->name;
+            $productDescriptions[] = $product->description;
+          
         }
 
-        // Obter informações dos produtos
-        $product1 = Product::findOrFail($productIds[0]);
-        $product2 = Product::findOrFail($productIds[1]);
-
-        // Calcular o preço total do produto considerando o maior preço
-        $totalPrice = max($product1->price, $product2->price);
+    
 
         // Se houver borda selecionada, adicionar o preço da borda ao total do produto
         if ($crustId !== null) {
             $crustPrice = Crust::findOrFail($crustId)->price;
-            $totalPrice += $crustPrice;
+            $totalPrice += $crustPrice; // Multiplicar pelo número de produtos selecionados
         }
 
-        // Construir o item do carrinho
+     
+        // Verificar se há 3 produtos e calcular o preço total usando o maior preço
+        if ($selectedProductCount >= 2) {
+            $productPrices = collect();
+            foreach ($productIds as $productId) {
+                $product = Product::findOrFail($productId);
+                $productPrices->push($product->price);
+            }
+            $totalPrice += $productPrices->max();
+        }
+
         $cartItem = [
-            'product_id' => $productIds[0] . ',' . $productIds[1], // Combine os IDs dos produtos
-            'name' => $product1->name . ' / ' . $product2->name, // Combine os nomes dos produtos
-            'image' => $product1->image, // Usar imagem do primeiro produto
-            'description' => $product1->description . ' / ' . $product2->description, // Combine as descrições dos produtos
+            'product_id' => implode(',', $productIds), // Combine os IDs dos produtos
+            'name' => implode(' / ', $productNames), // Combine os nomes dos produtos
+            'description' => implode(' / ', $productDescriptions), // Combine as descrições dos produtos
             'price' => $totalPrice, // Preço total dos produtos
             'quantity' => 1, // Definindo como 1 por enquanto, pode ser ajustado conforme necessário
             'crust' => $crustId !== null ? Crust::findOrFail($crustId)->name : 'Tradicional', // Se não houver borda selecionada, usar 'Tradicional'
             'crust_price' => $crustId !== null ? $crustPrice : 0, // Se não houver borda selecionada, preço da borda será 0
-            'observation' => $observation1 . ' / ' . $observation2, // Combine as observações dos produtos
+            'observation' => $observation1 . ' / ' . $observation2 . ' / ' . $observation3, // Combine as observações dos produtos
             'total' => $totalPrice, // Preço total do produto
         ];
+
+        // Adicionar a lógica para determinar a imagem com base no número de sabores selecionados
+        if ($selectedProductCount == 2) {
+            $cartItem['image'] = 'imagens/pizza_2_sabores.png';
+        } elseif ($selectedProductCount == 3) {
+            $cartItem['image'] = 'imagens/pizza_3_sabores.jpg';
+        }
 
         // Adicionar o item ao carrinho
         $cart[] = $cartItem;
@@ -148,10 +185,8 @@ class ChekoutController extends Controller
         session()->put('cart', $cart);
 
         // Redirecionar para a página de checkout com uma mensagem de sucesso
-        return redirect()->route('checkout.home')->with('success', 'Produto adicionado ao carrinho com sucesso.');
+        return redirect()->route('checkout.home')->with('success', 'Produto(s) adicionado(s) ao carrinho com sucesso.');
     }
-
-
 
 
     public function showCart()
@@ -181,21 +216,22 @@ class ChekoutController extends Controller
             $cart[$index]['quantity'] = $quantity;
 
             // Calcular o novo total do item
-            $itemPrice = 0;
+            $itemTotal = 0;
 
-            // Verificar se é um item de dois sabores
-            if (strpos($cart[$index]['product_id'], ',') !== false) {
-                $productIds = explode(',', $cart[$index]['product_id']);
-                $product1 = Product::findOrFail($productIds[0]);
-                $product2 = Product::findOrFail($productIds[1]);
+            // Obter os IDs dos produtos e inicializar uma array para armazenar os preços
+            $productIds = explode(',', $cart[$index]['product_id']);
+            $productPrices = [];
 
-                // Prevalecer o maior preço entre os dois produtos
-                $itemPrice = max($product1->price, $product2->price);
-            } else {
-                // Caso seja um único produto, usar o preço diretamente
-                $itemPrice = $cart[$index]['price'];
+            // Iterar sobre os IDs dos produtos para obter os preços
+            foreach ($productIds as $productId) {
+                $product = Product::findOrFail($productId);
+                $productPrices[] = $product->price;
             }
 
+            // Determinar o preço do item como o maior preço entre os produtos selecionados
+            $itemPrice = max($productPrices);
+
+            // Calcular o total do item com base na nova quantidade e no preço do item
             $itemTotal = $itemPrice * $quantity;
 
             // Verificar se há uma borda e, se houver, adicionar ao total
@@ -217,6 +253,7 @@ class ChekoutController extends Controller
         return back()->with('success', 'Alterado com sucesso.');
     }
 
+
     public function finish(Request $request)
     {
         // Obter o carrinho da sessão
@@ -237,15 +274,17 @@ class ChekoutController extends Controller
 
         // Criar os itens do pedido
         foreach ($cart as $item) {
-            // Dividir os product_ids em primário e secundário
+            // Dividir os product_ids em primário e secundário e terciário
             $productIds = explode(',', $item['product_id']);
             $primaryProductId = $productIds[0];
             $secondaryProductId = isset($productIds[1]) ? $productIds[1] : null;
+            $tertiaryProductId = isset($productIds[2]) ? $productIds[2] : null;
 
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id_primary' => $primaryProductId,
                 'product_id_secondary' => $secondaryProductId,
+                'product_id_tertiary' => $tertiaryProductId,
                 'name' => $item['name'],
                 'description' => $item['description'],
                 'price' => $item['price'],
@@ -254,11 +293,13 @@ class ChekoutController extends Controller
                 'crust_price' => $item['crust_price'],
                 'observation_primary' => isset($item['observation']) ? $item['observation'] : null,
                 'observation_secondary' => isset($item['observation_secondary']) ? $item['observation_secondary'] : null,
+                'observation_tertiary' => isset($item['observation_tertiary']) ? $item['observation_tertiary'] : null,
             ]);
         }
 
         return view('front.checkout.resumo', compact('cart'));
     }
+
 
 
     public function enviaImagen(Request $request)
@@ -268,8 +309,8 @@ class ChekoutController extends Controller
         // Recuperar o customer da sessão
         $customer = session()->get('customer');
         $service = Chat::where('jid', $customer->jid)
-        ->where('active', 1)
-        ->first();
+            ->where('active', 1)
+            ->first();
         // Obtém a imagem enviada no corpo da requisição
         $imagemBase64 = $request->input('imagem');
         // Verifica se o diretório existe, se não, cria-o
@@ -284,7 +325,7 @@ class ChekoutController extends Controller
         $caminhoArquivo = 'imagens/' . $nomeArquivo;
         Storage::disk('public')->put($caminhoArquivo, $imagem);
         $session = Device::first();
-        $this->sendImage($session->session, $customer->phone,asset('storage/' . $caminhoArquivo), '');
+        $this->sendImage($session->session, $customer->phone, asset('storage/' . $caminhoArquivo), '');
 
         date_default_timezone_set('America/Sao_Paulo');
         $horaAtual = Carbon::now();
@@ -299,7 +340,7 @@ class ChekoutController extends Controller
         $this->sendMessagem($session->session, $customer->phone, $text);
         $service->active = 0;
         $service->update();
-       
+
         session()->forget('cart');
     }
 
@@ -375,9 +416,8 @@ class ChekoutController extends Controller
 
         echo $response;
     }
-    public function iniciar(){
+    public function iniciar()
+    {
         return view('front.checkout.iniciar');
     }
-
-    
 }

@@ -102,21 +102,6 @@ Route::middleware(['auth.user'])->group(function () {
 
 
 
-        Route::prefix('/motorista')->controller(DeliverymenController::class)->group(function () {
-            Route::get('/', 'index');
-            Route::get('/get-motorista-images', 'getDataMotoristaForCharts');
-            Route::post('/store', 'store');
-            Route::get('/detalhes/{id}', 'info');
-            Route::get('/detalhesAjax/{id}', 'getInfo');
-            Route::get('/lista', 'lista');
-            Route::post('/update', 'update');
-            Route::get('/{id}', 'show');
-            Route::post('/{id}/delete', 'delete');
-        });
-
-
-
-
         Route::prefix('/dashboard')->controller(DeviceController::class)->group(function () {
             Route::get('/', 'dash')->name('dashboard');
         });
@@ -130,20 +115,11 @@ Route::middleware(['auth.user'])->group(function () {
             Route::get('/getStatus', 'getStatus');
         });
 
-        Route::prefix('/colaborador')->controller(ColaboradorController::class)->group(function () {
-            Route::get('/', 'index')->name('admin.colaborador.index');
-            Route::post('/novo', 'create')->name('admin.colaborador.create');
-            Route::get('/edit/{id}', 'edit')->name('admin.colaborador.edit');
-            Route::put('/update/{id}', 'update')->name('admin.colaborador.update');
-            Route::delete('/delete/{id}', 'delete')->name('admin.colaborador.delete');
-            Route::get('/lista', 'lista')->name('admin.colaborador.lista');
-            Route::get('/avaliacoes/{id}', 'verAvaliacoes')->name('admin.colaborador.avaliacoes');
-        });
-
-
 
         Route::prefix('/clientes')->controller(CustomerController::class)->group(function () {
             Route::get('/', 'index')->name('admin.customer.index');
+            Route::get('/novo', 'create')->name('admin.customer.create');
+            Route::post('/store', 'store')->name('admin.customer.store');
             Route::get('/getCustomers', 'getCustomers');
         });
 
