@@ -47,23 +47,28 @@ class CustomerController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'jid' => 'required|string|max:255',
-            'zipcode' => 'required|string|max:255',
-            'public_place' => 'required|string|max:255',
-            'neighborhood' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'number' => 'required|string|max:255',
-        ]);
+{
+    $validatedData = $request->validate([
+        'name' => 'required|string|max:255',
+        'jid' => 'required|string|max:255',
+        'zipcode' => 'required|string|max:255',
+        'public_place' => 'required|string|max:255',
+        'complement' => 'nullable|string|max:255',
+        'neighborhood' => 'required|string|max:255',
+        'city' => 'required|string|max:255',
+        'state' => 'required|string|max:255',
+        'number' => 'required|string|max:255',
+    ]);
 
+    try {
         $customer = Customer::findOrFail($id);
-        $customer->update($data);
+        $customer->update($validatedData);
 
         return redirect()->route('admin.customer.index')->with('success', 'Cliente atualizado com sucesso!');
+    } catch (\Exception $e) {
+        return redirect()->back()->withErrors($e->getMessage())->withInput();
     }
+}
 
     public function destroy($id)
     {

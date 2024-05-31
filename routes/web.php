@@ -20,6 +20,9 @@ use App\Models\ChatBot;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
+use App\Models\Customer;
+use League\Csv\Reader;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,8 +68,8 @@ Route::prefix('/checkout')->controller(ChekoutController::class)->group(function
     Route::post('/enviaImagen', 'enviaImagen')->name('checkout.enviaImagen');
     Route::get('/finalizar', 'finish');
     Route::get('/iniciaratendimento', 'iniciar');
-    Route::post('/addToCart','addToCart')->name('cart.add');
-    Route::post('/addToCart2','addToCart2')->name('cart.add2');
+    Route::post('/addToCart', 'addToCart')->name('cart.add');
+    Route::post('/addToCart2', 'addToCart2')->name('cart.add2');
     Route::get('/cart/update-quantity/{index}/{quantity}', 'updateCartItemQuantity')->name('cart.update-quantity');
 });
 
@@ -119,7 +122,9 @@ Route::middleware(['auth.user'])->group(function () {
         Route::prefix('/clientes')->controller(CustomerController::class)->group(function () {
             Route::get('/', 'index')->name('admin.customer.index');
             Route::get('/novo', 'create')->name('admin.customer.create');
+            Route::get('/editar/{id}', 'edit')->name('admin.customer.edit');
             Route::post('/store', 'store')->name('admin.customer.store');
+            Route::put('/update/{customer}', 'update')->name('admin.customer.update');
             Route::get('/getCustomers', 'getCustomers');
         });
 
@@ -173,7 +178,86 @@ Route::middleware(['auth.user'])->group(function () {
 
 
 Route::get('/teste', function () {
+    $filePath = base_path('/customers.csv'); // Atualize o caminho para o seu arquivo CSV
+
+    // dd($filePath);
+    if (file_exists($filePath)) {
+        $csv = Reader::createFromPath($filePath, 'r');
+        $csv->setHeaderOffset(0); // Define a primeira linha como cabeçalho
+
+        $records = $csv->getRecords();
+        foreach ($records as $record) {
+            Customer::create([
+                'name' => $record['NOME'],
+                'jid' => $record['FONE1'],
+                'public_place' => $record['ENDERECO'],
+                'number' => $record['NUMERO'],
+                'neighborhood' => $record['BAIRRO'],
+                'zipcode' => '', // Adicione um valor padrão ou ajuste conforme necessário
+                'city' => '', // Adicione um valor padrão ou ajuste conforme necessário
+                'state' => '', // Adicione um valor padrão ou ajuste conforme necessário
+                'complement' => $record['REFERENCIA'] // Adicione este campo no seu modelo e migração se necessário
+            ]);
+        }
+    }
 });
 
-Route::get('/send', function () {
+Route::get('/testeendereco', function () {
+    $address1 = '4 rua antigo continente, parqu bologne, SP';
+    $address2 = '50 rua antigo continente, parqu bologne, SP';
+
+    $coords1 = getCoordinates($address1);
+    $coords2 = getCoordinates($address2);
+
+    if ($coords1 && $coords2) {
+        list($distance, $duration) = getDistance($coords1, $coords2);
+        return response()->json([
+            'distance' => $distance,
+            'duration' => $duration,
+        ]);
+    } else {
+        return response()->json(['error' => 'Failed to retrieve coordinates for one or both addresses.'], 400);
+    }
+   
 });
+function getCoordinates($address)
+{
+    $url = "https://maps.googleapis.com/maps/api/geocode/json";
+    $response = Http::get($url, [
+        'address' => $address,
+        'key' => 'AIzaSyBjtRzX47y95pI2XlmJrsXgka8SHSMLtQw',
+    ]);
+
+    $data = $response->json();
+
+    if (!empty($data['results'])) {
+        $location = $data['results'][0]['geometry']['location'];
+        return [$location['lat'], $location['lng']];
+    }
+
+    return null;
+}
+
+
+function getDistance($originCoords, $destinationCoords)
+{
+    $origins = implode(',', $originCoords);
+    $destinations = implode(',', $destinationCoords);
+
+    $url = "https://maps.googleapis.com/maps/api/distancematrix/json";
+    $response = Http::get($url, [
+        'origins' => $origins,
+        'destinations' => $destinations,
+        'key' => 'AIzaSyBjtRzX47y95pI2XlmJrsXgka8SHSMLtQw',
+    ]);
+
+    $data = $response->json();
+
+    if (!empty($data['rows'][0]['elements'][0]['distance']) && !empty($data['rows'][0]['elements'][0]['duration'])) {
+        $distance = $data['rows'][0]['elements'][0]['distance']['text'];
+        $duration = $data['rows'][0]['elements'][0]['duration']['text'];
+        return [$distance, $duration];
+    }
+
+    return [null, null];
+}

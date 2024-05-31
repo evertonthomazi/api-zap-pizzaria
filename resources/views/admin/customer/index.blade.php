@@ -2,7 +2,7 @@
 
 
 @section('css')
-    <link href="{{ asset('/assets/admin/css/device.css') }}" rel="stylesheet">
+    <link href="{{ asset('/assets/admin/css/customer.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')

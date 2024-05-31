@@ -5,10 +5,10 @@
 @endsection
 
 @section('content')
-    <section id="customer-create">
+    <section id="customer-edit">
         <div class="page-header-content py-3">
             <div class="d-sm-flex align-items-center justify-content-between">
-                <h1 class="h3 mb-0 text-gray-800">Novo Cliente</h1>
+                <h1 class="h3 mb-0 text-gray-800">Editar Cliente</h1>
                 <a href="{{ route('admin.customer.index') }}"
                     class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
                     <i class="fas fa-arrow-left text-white-50"></i> Voltar
@@ -18,7 +18,7 @@
             <ol class="breadcrumb mb-0 mt-4">
                 <li class="breadcrumb-item"><a href="/">Inicio</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('admin.customer.index') }}">Clientes</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Novo Cliente</li>
+                <li class="breadcrumb-item active" aria-current="page">Editar Cliente</li>
             </ol>
         </div>
 
@@ -26,52 +26,55 @@
             <div class="col-lg-12 mb-4">
                 <div class="card shadow mb-4">
                     <div class="card-body">
-                        <form action="{{ route('admin.customer.store') }}" method="POST">
+                        <form action="/clientes/update/{{ $customer->id }}" method="POST">
                             @csrf
+                            @method('PUT')
                             <div class="form-group">
                                 <label for="name">Nome</label>
                                 <input type="text" name="name" class="form-control title-case" id="name"
-                                    placeholder="Nome do Cliente" required>
+                                    value="{{ $customer->name }}" required>
                             </div>
                             <div class="form-group">
                                 <label for="jid">Telefone</label>
                                 <input type="text" name="jid" class="form-control" id="jid"
-                                    placeholder="Ex. 91234-5678" required>
+                                    value="{{ $customer->jid }}" required>
                             </div>
                             <div class="form-group">
                                 <label for="zipcode">CEP</label>
-                                <input type="text" name="zipcode" class="form-control" id="zipcode" placeholder="CEP"
-                                    required>
+                                <input type="text" name="zipcode" class="form-control" id="zipcode"
+                                    value="{{ $customer->zipcode }}" required>
                             </div>
                             <div class="form-group">
                                 <label for="public_place">Logradouro</label>
                                 <input type="text" name="public_place" class="form-control" id="public_place"
-                                    placeholder="Logradouro" required>
+                                    value="{{ $customer->public_place }}" required>
                             </div>
                             <div class="form-group">
                                 <label for="number">Número</label>
                                 <input type="text" name="number" class="form-control" id="number"
-                                    placeholder="Número" required>
+                                    value="{{ $customer->number }}" required>
                             </div>
+
                             <div class="form-group">
                                 <label for="complement">Complemento</label>
                                 <input type="text" name="complement" class="form-control" id="complement"
+                                value="{{ $customer->complement }}"
                                     placeholder="Complemento" >
                             </div>
                             <div class="form-group">
                                 <label for="neighborhood">Bairro</label>
                                 <input type="text" name="neighborhood" class="form-control" id="neighborhood"
-                                    placeholder="Bairro" required>
+                                    value="{{ $customer->neighborhood }}" required>
                             </div>
                             <div class="form-group">
                                 <label for="city">Cidade</label>
                                 <input type="text" name="city" class="form-control" id="city"
-                                    placeholder="Cidade" required>
+                                    value="{{ $customer->city }}" required>
                             </div>
                             <div class="form-group">
                                 <label for="state">Estado</label>
                                 <input type="text" name="state" class="form-control" id="state"
-                                    placeholder="Estado" required>
+                                    value="{{ $customer->state }}" required>
                             </div>
                          
                             <button type="submit" class="btn btn-primary">Salvar</button>

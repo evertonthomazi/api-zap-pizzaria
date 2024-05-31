@@ -21,6 +21,7 @@ class Customer extends Model
         'public_place',
         'neighborhood',
         'city',
+        'complement',
         'state',
         'number',
         'created_at',

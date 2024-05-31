@@ -26,9 +26,8 @@ $('#table-customer').DataTable({
         }
     ],
     'rowCallback': function (row, data, index) {
-
-        // $('td:eq(0)', row).html( '<div class="imagem-round"><img src="'+data['picture']+'" /></div>');
-         $('td:eq(3)', row).html( '<a href="javascript:;" data-toggle="modal" onClick="configModalDelete(' + data["id"] + ')" data-target="#modalDelete" class="btn btn-sm btn-danger delete"><i class="far fa-trash-alt"></i></a>');
-
+        var deleteButton = '<div class="btn-acoes" ><a href="javascript:;" data-toggle="modal" onClick="configModalDelete(' + data["id"] + ')" data-target="#modalDelete" class="btn btn-sm btn-danger delete"><i class="far fa-trash-alt"></i></a>';
+        var editButton = '<a href="' + url + '/clientes/editar/' + data["id"] + '" class="btn btn-sm btn-info edit"><i class="far fa-edit"></i></a></div>';
+        $('td:eq(3)', row).html(deleteButton + editButton);
     },
 });
