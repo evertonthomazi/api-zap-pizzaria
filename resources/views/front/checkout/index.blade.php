@@ -3,7 +3,16 @@
 @section('css')
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+        :root{
+    --green:#27ae60;
+    --black:#192a56;
+    --ligth-color:#666;
+    --box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);
+
+}
+        
         body {
+           
             font-family: 'Nunito', Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -38,7 +47,25 @@
             background-color: #27ae60;
             color: #fff;
             border-radius: 5px;
-            box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.3);;
+            box-shadow: var(--box-shadow);
+        }
+        body .delivery{
+           width: 100%;
+           display: flex;
+           flex-direction: row-reverse;
+           
+        }
+        .delivery img{
+            position:fixed;
+            width:60px;
+            height:60px;
+            border-radius: 50%;
+            box-shadow: var(--box-shadow);
+            margin-top: 80px;
+           z-index: 999;
+           margin-bottom: -90px;
+           background: #ff4500;
+           margin-right: 20px;
         }
 
         .container {
@@ -171,6 +198,9 @@
 @endsection
 
 @section('content')
+<div class="delivery">
+    <img src="https://cdn-icons-png.freepik.com/512/5889/5889439.png" alt="">
+</div>
     <div class="category-header" id="category-header">
         <!-- Adicionando o item "Home" -->
         <div data-category-id="home">Home</div>
@@ -179,6 +209,7 @@
             <div data-category-id="{{ $category->id }}">{{ $category->name }}</div>
         @endforeach
     </div>
+    
     <div class="container" id="product-container">
        <div class="category" id="category-home">
             <h2>Monte Sua Pizza 2 ou 3 Sabores</h2>

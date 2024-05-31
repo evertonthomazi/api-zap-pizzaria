@@ -21,37 +21,37 @@ class ChekoutController extends Controller
     public function index($id = null)
     {
 
-        if ($id) {
-            $customer = Customer::where('id', $id)->first();
+        // if ($id) {
+        //     $customer = Customer::where('id', $id)->first();
 
-            $chat = Chat::where(['jid' => $customer->jid, 'active' => '1'])->first();
-            if ($chat) {
-
-
-                session()->put('customer', $customer);
-                $categories = Categories::with('products')->get();
-                $cart = session()->get('cart', []);
-                return view('front.checkout.index', compact('categories', 'cart'));
-            } else {
-                dd('inicie um atendimento no zap');
-            }
-        } else {
-            // Recuperar o customer da sessão
-            $customer = session()->get('customer');
-            if ($customer) {
-                $categories = Categories::with('products')->get();
-                $cart = session()->get('cart', []);
-                return view('front.checkout.index', compact('categories', 'cart'));
-            } else {
-                dd('inicie um atendimento no zap');
-            }
-        }
+        //     $chat = Chat::where(['jid' => $customer->jid, 'active' => '1'])->first();
+        //     if ($chat) {
 
 
+        //         session()->put('customer', $customer);
+        //         $categories = Categories::with('products')->get();
+        //         $cart = session()->get('cart', []);
+        //         return view('front.checkout.index', compact('categories', 'cart'));
+        //     } else {
+        //         dd('inicie um atendimento no zap');
+        //     }
+        // } else {
+        //     // Recuperar o customer da sessão
+        //     $customer = session()->get('customer');
+        //     if ($customer) {
+        //         $categories = Categories::with('products')->get();
+        //         $cart = session()->get('cart', []);
+        //         return view('front.checkout.index', compact('categories', 'cart'));
+        //     } else {
+        //         dd('inicie um atendimento no zap');
+        //     }
+        // }
 
-        // $categories = Categories::with('products')->get();
-        // $cart = session()->get('cart', []);
-        // return view('front.checkout.index', compact('categories', 'cart'));
+
+
+        $categories = Categories::with('products')->get();
+        $cart = session()->get('cart', []);
+        return view('front.checkout.index', compact('categories', 'cart'));
     }
 
     public function addProduto($id)

@@ -153,6 +153,7 @@
     </style>
 @endsection
 
+
 @section('content')
     <div class="header">
         <a href="{{ route('checkout.home') }}" class="header">
