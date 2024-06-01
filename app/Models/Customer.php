@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Http;
 
 class Customer extends Model
 {
@@ -12,7 +13,8 @@ class Customer extends Model
     protected $appends = [
         'phone',
         'location',
-        'display_created_at'
+        'display_created_at',
+        'delivery_fee'
     ];
     protected $fillable = [
         'name',
@@ -28,6 +30,13 @@ class Customer extends Model
         'updated_at'
     ];
 
+    protected $googleApiKey;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->googleApiKey = env('GOOGLE_MAPS_API_KEY');
+    }
 
     public function getPhoneAttribute()
     {
@@ -39,7 +48,7 @@ class Customer extends Model
         return date('d/m/Y', strtotime($this->created_at));
     }
 
-    public function getLocationAttribute($number)
+    public function getLocationAttribute()
     {
         return 'CEP: ' . $this->zipcode . " \n " .
             '' . $this->public_place . " \n " .
@@ -47,6 +56,74 @@ class Customer extends Model
             'Bairro: ' . $this->neighborhood . " \n " .
             'Cidade: ' . $this->city . " \n " .
             'Estado: ' . $this->state . " \n ";
+    }
+
+    public function getDeliveryFeeAttribute()
+    {
+        $address1 = 'Rua Nova Providência, 593, Parque Bologne, SP';
+        $address2 = "{$this->number} {$this->public_place}, {$this->neighborhood}, {$this->city}, {$this->state}";
+
+        $coords1 = $this->getCoordinates($address1);
+        $coords2 = $this->getCoordinates($address2);
+
+        if ($coords1 && $coords2) {
+            list($distance, $duration) = $this->getDistance($coords1, $coords2);
+            return $this->calculateDeliveryFeeAmount($distance);
+        } else {
+            return null;
+        }
+    }
+
+    private function getCoordinates($address)
+    {
+        $url = "https://maps.googleapis.com/maps/api/geocode/json";
+        $response = Http::get($url, [
+            'address' => $address,
+            'key' => $this->googleApiKey,
+        ]);
+
+        $data = $response->json();
+
+        if (!empty($data['results'])) {
+            $location = $data['results'][0]['geometry']['location'];
+            return [$location['lat'], $location['lng']];
+        }
+
+        return null;
+    }
+
+    private function getDistance($originCoords, $destinationCoords)
+    {
+        $origins = implode(',', $originCoords);
+        $destinations = implode(',', $destinationCoords);
+
+        $url = "https://maps.googleapis.com/maps/api/distancematrix/json";
+        $response = Http::get($url, [
+            'origins' => $origins,
+            'destinations' => $destinations,
+            'key' => $this->googleApiKey,
+        ]);
+
+        $data = $response->json();
+
+        if (!empty($data['rows'][0]['elements'][0]['distance']) && !empty($data['rows'][0]['elements'][0]['duration'])) {
+            $distanceText = $data['rows'][0]['elements'][0]['distance']['text'];
+            $distanceValue = $data['rows'][0]['elements'][0]['distance']['value'] / 1000; // Convert to kilometers
+            return [$distanceValue, $data['rows'][0]['elements'][0]['duration']['text']];
+        }
+
+        return [null, null];
+    }
+
+    private function calculateDeliveryFeeAmount($distance)
+    {
+        if ($distance <= 1) {
+            return 3.00;
+        } elseif ($distance > 1 && $distance <= 2) {
+            return 4.00;
+        } else {
+            return 4.00 + (($distance - 2) * 2.00);
+        }
     }
 
     public function orders()

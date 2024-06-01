@@ -3,22 +3,23 @@
 @section('css')
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
-        :root{
-    --green:#27ae60;
-    --black:#192a56;
-    --ligth-color:#666;
-    --box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);
 
-}
-        
+        :root {
+            --green: #27ae60;
+            --black: #192a56;
+            --ligth-color: #666;
+            --box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .1);
+
+        }
+
         body {
-           
+
             font-family: 'Nunito', Arial, sans-serif;
             margin: 0;
             padding: 0;
-           
+
         }
-        
+
 
         .category-header {
             position: fixed;
@@ -40,7 +41,7 @@
             font-size: 18px;
             font-weight: bold;
             transition: background-color 0.3s;
-            
+
         }
 
         .category-header div.active {
@@ -49,23 +50,32 @@
             border-radius: 5px;
             box-shadow: var(--box-shadow);
         }
-        body .delivery{
-           width: 100%;
-           display: flex;
-           flex-direction: row-reverse;
-           
+
+        body .delivery {
+            width: 100%;
+            display: flex;
+            flex-direction: row-reverse;
+
         }
-        .delivery img{
-            position:fixed;
-            width:60px;
-            height:60px;
-            border-radius: 50%;
+
+        .img-delivery {
+            display: flex;
+            position: fixed;
+            border-radius: 12%;
             box-shadow: var(--box-shadow);
             margin-top: 80px;
-           z-index: 999;
-           margin-bottom: -90px;
-           background: #ff4500;
-           margin-right: 20px;
+            z-index: 999;
+            margin-bottom: -90px;
+            background: #ff4500;
+            margin-right: 20px;
+            flex-direction: column;
+            align-items: center;
+            top: 102px;
+        }
+
+        .img-delivery img {
+            width: 36px;
+    height: 36px;
         }
 
         .container {
@@ -74,8 +84,8 @@
         }
 
         .category {
-           margin-top: 10px;
-           
+            margin-top: 10px;
+
         }
 
         .product {
@@ -88,7 +98,8 @@
             align-items: center;
             cursor: pointer;
         }
-        .product:hover{
+
+        .product:hover {
             background: #27ae60;
         }
 
@@ -171,8 +182,8 @@
         .animate {
             animation: shake 0.5s;
         }
-         
-       
+
+
         @keyframes shake {
             0% {
                 transform: translateX(0);
@@ -198,23 +209,29 @@
 @endsection
 
 @section('content')
-<div class="delivery">
-    <img src="https://cdn-icons-png.freepik.com/512/5889/5889439.png" alt="">
-</div>
+    <div class="delivery">
+        <div class="img-delivery">
+            <img src="https://cdn-icons-png.freepik.com/512/5889/5889439.png" onclick="modalTaxa()" alt="">
+            <small>R$ {{ number_format($customer->delivery_fee, 2, ',', '.') }}</small>
+            
+        </div>
+
+    </div>
     <div class="category-header" id="category-header">
         <!-- Adicionando o item "Home" -->
         <div data-category-id="home">Home</div>
-      
+
         @foreach ($categories as $category)
             <div data-category-id="{{ $category->id }}">{{ $category->name }}</div>
         @endforeach
     </div>
-    
+
     <div class="container" id="product-container">
-       <div class="category" id="category-home">
+        <div class="category" id="category-home">
             <h2>Monte Sua Pizza 2 ou 3 Sabores</h2>
             <div class="product" data-product-id="perso">
-                <img src="https://maissaborgranjalisboa.onezap.link/wp-content/uploads/2022/03/meio-a-meio-scaled.jpg" alt="">
+                <img src="https://maissaborgranjalisboa.onezap.link/wp-content/uploads/2022/03/meio-a-meio-scaled.jpg"
+                    alt="">
                 <div class="product-details">
                     <div class="product-title">Escolha até 3 Sabores</div>
                     <div class="product-description">Prevalece o valor da Maior</div>
@@ -240,26 +257,25 @@
     </div>
 
     @if (count($cart) > 0)
-    <footer class="cart-footer" onclick="redirectToCart()">
-        <div class="cart-icon">
-            <i class="fas fa-shopping-cart"></i>
-            <span class="cart-count">{{ count($cart) }}</span>
-            
-        </div>
-        <button class="btn">Finalizar Pedido</button>
-        <div class="view-cart" >
-            Total: R$ {{ number_format(array_sum(array_column($cart, 'total')), 2, ',', '.') }}
-        </div>
-    </footer>
-@endif
+        <footer class="cart-footer" onclick="redirectToCart()">
+            <div class="cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">{{ count($cart) }}</span>
 
+            </div>
+            <button class="btn">Finalizar Pedido</button>
+            <div class="view-cart">
+                Total: R$ {{ number_format(array_sum(array_column($cart, 'total'))+session('taxa_entrega'), 2, ',', '.') }}
+            </div>
+        </footer>
+    @endif
 @endsection
 
 @section('scripts')
     <script>
         function redirectToCart() {
-    window.location.href = "{{ route('cart.show') }}";
-}
+            window.location.href = "{{ route('cart.show') }}";
+        }
 
         const categoryHeader = document.getElementById('category-header');
         const categories = document.querySelectorAll('.category-header div');
@@ -269,15 +285,15 @@
         products.forEach(product => {
             product.addEventListener('click', () => {
                 const productId = product.getAttribute('data-product-id');
-               
-                if(productId === 'perso'){
+
+                if (productId === 'perso') {
                     const url = '/checkout/adicionar-2-sabores/';
-                window.location.href = url;
-                }else{
+                    window.location.href = url;
+                } else {
                     const url = '/checkout/adicionar-produto/' + productId;
-                window.location.href = url;
+                    window.location.href = url;
                 }
-              
+
             });
         });
 
@@ -324,5 +340,9 @@
                 }, 1000);
             }, 3000);
         });
+
+        function modalTaxa() {
+            alert('oi');
+        }
     </script>
 @endsection

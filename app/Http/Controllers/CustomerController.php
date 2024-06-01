@@ -70,9 +70,10 @@ class CustomerController extends Controller
     }
 }
 
-    public function destroy($id)
+    public function destroy()
     {
-        $customer = Customer::findOrFail($id);
+        
+        $customer = Customer::findOrFail($_POST['id_survey_deleta']);
         $customer->delete();
 
         return redirect()->route('admin.customer.index')->with('success', 'Cliente excluído com sucesso!');

@@ -198,7 +198,15 @@
         @if (count($cart) > 0)
             <a href="/checkout/finalizar" class="checkout-button">Finalizar Compra</a>
             <div class="total-price">
-                Total: R$ {{ number_format(array_sum(array_column($cart, 'total')), 2, ',', '.') }}
+                <div class="taxa entrega">
+                    <div>
+                        Itens : {{ number_format(array_sum(array_column($cart, 'total')), 2, ',', '.') }}
+                    </div>
+                    Taxa entrega : {{ number_format( session('taxa_entrega'), 2, ',', '.') }}
+                </div>
+               
+               
+                Total : R$ {{ number_format(array_sum(array_column($cart, 'total'))+session('taxa_entrega'), 2, ',', '.') }}
             </div>
         @else
             <a href="/checkout" class="checkout-button">Ir Para Cardápio</a>

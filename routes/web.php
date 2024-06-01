@@ -122,6 +122,7 @@ Route::middleware(['auth.user'])->group(function () {
         Route::prefix('/clientes')->controller(CustomerController::class)->group(function () {
             Route::get('/', 'index')->name('admin.customer.index');
             Route::get('/novo', 'create')->name('admin.customer.create');
+            Route::post('/excluir', 'destroy')->name('admin.customer.delete');
             Route::get('/editar/{id}', 'edit')->name('admin.customer.edit');
             Route::post('/store', 'store')->name('admin.customer.store');
             Route::put('/update/{customer}', 'update')->name('admin.customer.update');
@@ -203,8 +204,8 @@ Route::get('/teste', function () {
 });
 
 Route::get('/testeendereco', function () {
-    $address1 = '4 rua antigo continente, parqu bologne, SP';
-    $address2 = '50 rua antigo continente, parqu bologne, SP';
+    $address1 = '4 rua antigo continente, parque bologne, SP';
+    $address2 = '52 estrada da cumbica, cidade ipava, SP';
 
     $coords1 = getCoordinates($address1);
     $coords2 = getCoordinates($address2);

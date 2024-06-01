@@ -20,38 +20,36 @@ class ChekoutController extends Controller
 {
     public function index($id = null)
     {
-
-        // if ($id) {
-        //     $customer = Customer::where('id', $id)->first();
-
-        //     $chat = Chat::where(['jid' => $customer->jid, 'active' => '1'])->first();
-        //     if ($chat) {
-
-
-        //         session()->put('customer', $customer);
-        //         $categories = Categories::with('products')->get();
-        //         $cart = session()->get('cart', []);
-        //         return view('front.checkout.index', compact('categories', 'cart'));
-        //     } else {
-        //         dd('inicie um atendimento no zap');
-        //     }
-        // } else {
-        //     // Recuperar o customer da sessão
-        //     $customer = session()->get('customer');
-        //     if ($customer) {
-        //         $categories = Categories::with('products')->get();
-        //         $cart = session()->get('cart', []);
-        //         return view('front.checkout.index', compact('categories', 'cart'));
-        //     } else {
-        //         dd('inicie um atendimento no zap');
-        //     }
-        // }
+        // $cart = session()->get('cart', []);
+        // unset($cart[0]);
+        // session()->put('cart', array_values($cart));
+        if ($id) {
+            $customer = Customer::where('id', $id)->first();
 
 
+            session()->put('taxa_entrega', $customer->delivery_fee);
+            $chat = Chat::where(['jid' => $customer->jid, 'active' => '1'])->first();
+            if ($chat) {
 
-        $categories = Categories::with('products')->get();
-        $cart = session()->get('cart', []);
-        return view('front.checkout.index', compact('categories', 'cart'));
+
+                session()->put('customer', $customer);
+                $categories = Categories::with('products')->get();
+                $cart = session()->get('cart', []);
+                return view('front.checkout.index', compact('categories', 'cart', 'customer'));
+            } else {
+                dd('inicie um atendimento no zap');
+            }
+        } else {
+            // Recuperar o customer da sessão
+            $customer = session()->get('customer');
+            if ($customer) {
+                $categories = Categories::with('products')->get();
+                $cart = session()->get('cart', []);
+                return view('front.checkout.index', compact('categories', 'cart', 'customer'));
+            } else {
+                dd('inicie um atendimento no zap');
+            }
+        }
     }
 
     public function addProduto($id)
@@ -113,7 +111,7 @@ class ChekoutController extends Controller
         $cart = session()->get('cart', []);
 
 
-    
+
         // Obter os dados do formulário
         $productIds = json_decode($request->input('product_ids'), true); // Convertendo de string para array
         $crustId = $request->input('crust_id');
@@ -126,7 +124,7 @@ class ChekoutController extends Controller
         if ($selectedProductCount < 2 || $selectedProductCount > 3) {
             return redirect()->back()->with('error', 'Por favor, selecione entre 2 e 3 produtos.');
         }
-     
+
         // Inicializar variáveis para armazenar informações dos produtos selecionados
         $productNames = [];
         $productDescriptions = [];
@@ -137,10 +135,9 @@ class ChekoutController extends Controller
             $product = Product::findOrFail($productId);
             $productNames[] = $product->name;
             $productDescriptions[] = $product->description;
-          
         }
 
-    
+
 
         // Se houver borda selecionada, adicionar o preço da borda ao total do produto
         if ($crustId !== null) {
@@ -148,7 +145,7 @@ class ChekoutController extends Controller
             $totalPrice += $crustPrice; // Multiplicar pelo número de produtos selecionados
         }
 
-     
+
         // Verificar se há 3 produtos e calcular o preço total usando o maior preço
         if ($selectedProductCount >= 2) {
             $productPrices = collect();
@@ -269,7 +266,7 @@ class ChekoutController extends Controller
         // Criar o pedido
         $order = Order::create([
             'customer_id' => $customer->id,
-            'total_price' => array_sum(array_column($cart, 'total'))
+            'total_price' => array_sum(array_column($cart, 'total'))+session('taxa_entrega')
         ]);
 
         // Criar os itens do pedido
@@ -291,9 +288,10 @@ class ChekoutController extends Controller
                 'quantity' => $item['quantity'],
                 'crust' => $item['crust'],
                 'crust_price' => $item['crust_price'],
-                'observation_primary' => isset($item['observation']) ? $item['observation'] : null,
-                'observation_secondary' => isset($item['observation_secondary']) ? $item['observation_secondary'] : null,
-                'observation_tertiary' => isset($item['observation_tertiary']) ? $item['observation_tertiary'] : null,
+                'observation_primary' => isset($item['observation']) && $item['observation'] !== '' ? $item['observation'] : null,
+                'observation_secondary' => isset($item['observation_secondary']) && $item['observation_secondary'] !== '' ? $item['observation_secondary'] : null,
+                'observation_tertiary' => isset($item['observation_tertiary']) && $item['observation_tertiary'] !== '' ? $item['observation_tertiary'] : null,
+                
             ]);
         }
 

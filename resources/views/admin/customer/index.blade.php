@@ -52,25 +52,25 @@
     </section>
 
 
-    <!-- Modal -->
-    <div class="modal fade" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body text-center">
-                    <h5 class="py-3 m-0">Tem certeza que deseja excluir este registro?</h5>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Fechar</button>
-                    <form action="" method="post" class="float-right">
-                        @csrf
-                        <input type="hidden" id="id_survey_deleta" name="id_survey_deleta">
-                        <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
-                    </form>
-                </div>
+  <!-- Modal -->
+<div class="modal fade" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <h5 class="py-3 m-0">Tem certeza que deseja excluir este registro?</h5>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Fechar</button>
+                <form action="{{ url('clientes/excluir') }}" method="post" class="float-right">
+                    @csrf
+                    <input type="hidden" id="id_survey_deleta" name="id_survey_deleta">
+                    <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
+
 
     <!-- Modal -->
     <div class="modal fade" id="modalUp" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"

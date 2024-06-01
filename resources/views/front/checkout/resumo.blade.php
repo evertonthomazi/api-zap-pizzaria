@@ -132,28 +132,30 @@
                     </div>
                     <div class="col-md-6">
                         @if (!empty($observations))
-                            <di>
+                            <div>
                                 <h3>Observações:</h3>
                                 @foreach ($observations as $index => $observation)
                                     @php
-                                        $obsPizzaName = trim($itemDetails[$index]); // Nome da pizza
+                                        $obsPizzaName = trim($itemDetails[$index] ?? ''); // Nome da pizza
                                         $obsText = trim($observation); // Observação
                                     @endphp
-                                    <p class="observation">{{ $obsPizzaName }}: {{ $obsText }}</p>
+                                    @if (!empty($obsText))
+                                        <p class="observation">{{ $obsPizzaName }}: {{ $obsText }}</p>
+                                    @endif
                                 @endforeach
+                            </div>
+                        @endif
                     </div>
-    @endif
-    </div>
-    </div>
+                </div>
 
 
-    </div>
-    <div style="clear:both;"></div>
-    </div>
+            </div>
+            <div style="clear:both;"></div>
+        </div>
     @endforeach
 
     <!-- Total Geral -->
-    <div class="total">Total Geral: R$ {{ number_format(array_sum(array_column($cart, 'total')), 2, ',', '.') }}</div>
+    <div class="total">Total Geral: R$ {{ number_format(array_sum(array_column($cart, 'total'))+session('taxa_entrega'), 2, ',', '.') }}</div>
 
     <!-- Modal de Agradecimento -->
     <div id="myModal" class="modal">
