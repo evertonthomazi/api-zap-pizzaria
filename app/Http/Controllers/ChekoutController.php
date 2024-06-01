@@ -322,6 +322,8 @@ class ChekoutController extends Controller
         Storage::disk('public')->put($caminhoArquivo, $imagem);
         $session = Device::first();
         $this->sendImage($session->session, $customer->phone, asset('storage/' . $caminhoArquivo), '');
+        echo  asset('storage/' . $caminhoArquivo);
+        exit;
 
         date_default_timezone_set('America/Sao_Paulo');
         $horaAtual = Carbon::now();
