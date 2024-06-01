@@ -302,8 +302,6 @@ class ChekoutController extends Controller
 
     public function enviaImagen(Request $request)
     {
-
-
         // Recuperar o customer da sessão
         $customer = session()->get('customer');
         $service = Chat::where('jid', $customer->jid)

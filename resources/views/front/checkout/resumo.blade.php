@@ -237,7 +237,7 @@
     // Função para enviar a imagem via AJAX e exibir o modal
     function sendImageAndShowModal() {
         // Mostrar o overlay de carregamento
-        $('.loading-overlay').css('display', 'block');
+       
 
         // Tirar o print da página
         html2canvas(document.body).then(function(canvas) {
@@ -262,6 +262,8 @@
                 }
             });
         });
+
+         $('.loading-overlay').css('display', 'block');
     }
 
     // Chamada da função ao carregar a página
