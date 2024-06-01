@@ -321,8 +321,8 @@ class ChekoutController extends Controller
         $caminhoArquivo = 'imagens/' . $nomeArquivo;
         Storage::disk('public')->put($caminhoArquivo, $imagem);
         $session = Device::first();
-        $this->sendImage($session->session, $customer->phone, asset('storage/' . $caminhoArquivo), '');
-        echo  asset('storage/' . $caminhoArquivo);
+        $this->sendImage($session->session, $customer->phone, storage( $caminhoArquivo), '');
+        echo  storage( $caminhoArquivo);
         exit;
 
         date_default_timezone_set('America/Sao_Paulo');
