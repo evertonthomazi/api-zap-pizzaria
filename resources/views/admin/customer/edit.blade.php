@@ -37,7 +37,7 @@
                             <div class="form-group">
                                 <label for="jid">Telefone</label>
                                 <input type="text" name="jid" class="form-control" id="jid"
-                                    value="{{ $customer->jid }}" required>
+                                    value="{{ $customer->phone }}" required>
                             </div>
                             <div class="form-group">
                                 <label for="zipcode">CEP</label>

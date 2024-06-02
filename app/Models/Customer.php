@@ -38,10 +38,28 @@ class Customer extends Model
         $this->googleApiKey = env('GOOGLE_MAPS_API_KEY');
     }
 
+    
+    // Adicione este método ao seu modelo Customer
+    public function setJidAttribute($value)
+    {
+        // Remover todos os caracteres que não sejam números
+        $value = preg_replace('/[^0-9]/', '', $value);
+    
+        // Verificar se o valor começa com "5511"
+        if (strpos($value, '5511') !== 0) {
+            $value = '5511' . $value;
+        }
+    
+        $this->attributes['jid'] = $value;
+    }
+
+    // Modifique o método getPhoneAttribute
     public function getPhoneAttribute()
     {
-        return explode('@', $this->jid)[0];
+        // Remova os primeiros 4 caracteres ("5511") antes de retornar o número de telefone
+        return substr($this->jid, 4);
     }
+
 
     public function getDisplayCreatedAtAttribute()
     {

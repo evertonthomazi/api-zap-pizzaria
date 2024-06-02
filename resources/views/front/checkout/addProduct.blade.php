@@ -3,12 +3,13 @@
 @section('css')
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
         body {
             font-family: 'Nunito', Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
-            
+
         }
 
         .header {
@@ -117,7 +118,8 @@
             cursor: pointer;
             border-radius: 5px;
             margin-right: 5px;
-            margin-left;: 5px
+            margin-left;
+            : 5px
         }
 
         .btn-add {
@@ -145,8 +147,10 @@
                 <div class="crust-options">
                     @foreach ($crusts as $crust)
                         <div class="crust-option">
-                            <input type="radio" name="crust" value="{{ json_encode($crust) }}" {{ $loop->first ? 'checked' : '' }}>
-                            {{ $crust->name }} <span class="pizza-price">+ R$ {{ number_format($crust->price, 2, ',', '.') }}</span>
+                            <input type="radio" name="crust" value="{{ json_encode($crust) }}"
+                                {{ $loop->first ? 'checked' : '' }}>
+                            {{ $crust->name }} <span class="pizza-price">+ R$
+                                {{ number_format($crust->price, 2, ',', '.') }}</span>
                         </div>
                     @endforeach
                 </div>
@@ -161,7 +165,7 @@
     </div>
 
     <div class="footer">
-        <form action="{{ route('cart.add') }}" method="POST">
+        <form action="{{ route('cart.add') }}" method="POST" onsubmit="disableButton()">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">
             <input type="hidden" name="crust" id="selected-crust" value="Tradicional">
@@ -172,7 +176,7 @@
                 <input type="number" id="quantity" name="quantity" value="1" min="1">
                 <button type="button" class="increment" onclick="changeQuantity(1)">+</button>
 
-                <button type="submit" class="btn-add">Adicionar ao Carrinho</button>
+                <button type="submit" id="add-to-cart-btn" class="btn-add">Adicionar ao Carrinho</button>
             </div>
             <span class="pizza-price" id="total-price">R$ {{ number_format($product->price, 2, ',', '.') }}</span>
         </form>
@@ -181,8 +185,11 @@
 
 @section('scripts')
     <script>
+        function disableButton() {
+            document.getElementById("add-to-cart-btn").disabled = true;
+        }
         var globalCrustPrice = parseFloat('{{ $crusts->first()->price }}');
-        
+
         document.getElementById('observation').addEventListener('input', function() {
             const charCount = this.value.length;
             document.getElementById('char-count').innerText = charCount + '/140';

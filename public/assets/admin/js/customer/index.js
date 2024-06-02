@@ -9,7 +9,7 @@ $('#table-customer').DataTable({
     "columns": [{
         "data": "name"
     },{
-        "data": "jid"
+        "data": "phone"
     },
     {
         "data": "jid"

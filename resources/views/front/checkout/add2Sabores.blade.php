@@ -371,10 +371,10 @@
         @endif
     </div>
     <div class="sobe" style="margin-top: 116px;"></div>
-    <div class="footer">
-        <div class="total-price">Total: R$ <span id="totalPrice">0.00</span></div>
-        <button id="addToCartButton" disabled>Adicionar ao Carrinho</button>
-    </div>
+        <div class="footer">
+            <div class="total-price">Total: R$ <span id="totalPrice">0.00</span></div>
+            <button id="addToCartButton" disabled>Adicionar ao Carrinho</button>
+        </div>
 @endsection
 
 @section('scripts')
