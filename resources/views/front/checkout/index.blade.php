@@ -50,21 +50,12 @@
             border-radius: 5px;
             box-shadow: var(--box-shadow);
         }
-<<<<<<< Updated upstream
 
         body .delivery {
             width: 100%;
             display: flex;
             flex-direction: row-reverse;
 
-=======
-        body .delivery{
-           width: 100%;
-         
-           display: flex;
-           flex-direction: row-reverse;
-           
->>>>>>> Stashed changes
         }
 
         .img-delivery {
@@ -73,7 +64,6 @@
             border-radius: 12%;
             box-shadow: var(--box-shadow);
             margin-top: 80px;
-<<<<<<< Updated upstream
             z-index: 999;
             margin-bottom: -90px;
             background: #ff4500;
@@ -86,13 +76,6 @@
         .img-delivery img {
             width: 36px;
     height: 36px;
-=======
-           z-index: 999;
-           margin-bottom: -90px;
-           background: #ff4500;
-           margin-right: 20px;
-           
->>>>>>> Stashed changes
         }
 
         .container {
@@ -226,7 +209,6 @@
 @endsection
 
 @section('content')
-<<<<<<< Updated upstream
     <div class="delivery">
         <div class="img-delivery">
             <img src="https://cdn-icons-png.freepik.com/512/5889/5889439.png" onclick="modalTaxa()" alt="">
@@ -235,11 +217,6 @@
         </div>
 
     </div>
-=======
-<div class="delivery">
-<img src="https://cdn-icons-png.freepik.com/512/5889/5889439.png" alt=""> 
-</div>
->>>>>>> Stashed changes
     <div class="category-header" id="category-header">
         <!-- Adicionando o item "Home" -->
         <div data-category-id="home">Home</div>
