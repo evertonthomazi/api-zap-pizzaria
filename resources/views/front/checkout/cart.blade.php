@@ -12,7 +12,7 @@
         }
 
         .container {
-            padding: 20px;
+            padding:5px;
         }
 
         .alert-success {
@@ -150,6 +150,83 @@
             cursor: pointer;
             margin-right: 10px;
         }
+
+body .carousel {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+.carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+.carousel-inner {
+    
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-item {
+    min-width: 100%;
+    transition: opacity 0.5s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.product-card {
+    background-color: #fff;
+    padding: 5px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 300px;
+    
+}
+
+.product-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    width: 90px;
+    height: 90px;
+}
+.btn-carousel{
+    background: #27ae60;
+    color: #fff;
+    border-radius: 7px;
+}
+.prev, .next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    padding: 15px;
+    cursor: pointer;
+    color: white;
+    font-size: 18px;
+    border-radius: 50%;
+    user-select: none;
+}
+
+.prev {
+    left: 10px;
+}
+
+.next {
+    right: 10px;
+}
     </style>
 @endsection
 
@@ -212,7 +289,42 @@
             <a href="/checkout" class="checkout-button">Ir Para Cardápio</a>
         @endif
     </div>
+
+    <div class="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="product-card">
+                    <img src="https://cdn-icons-png.flaticon.com/512/99/99955.png" alt="Product 1">
+                    
+                    <p>$10.00</p>
+                    <button class="btn-carousel"><p>Short description of product 1.</p></button>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="product-card">
+                    <img src="https://cdn-icons-png.flaticon.com/512/4689/4689720.png" alt="Product 2">
+                    
+                    <p>$20.00</p>
+                    <button class="btn-carousel"><p>Short description of product 2.</p></button>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="product-card">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1308/1308307.png" alt="Product 3">
+                   
+                    <p>$30.00</p>
+                    <button class="btn-carousel"><p>Short description of product 3.</p></button>
+                </div>
+            </div>
+        </div>
+        <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
+        <button class="next" onclick="moveSlide(1)">&#10095;</button>
+    </div>
+
+
 @endsection
+
+
 
 
 @section('scripts')
@@ -286,5 +398,33 @@
             window.location.href = urlUp;
 
         }
+
+let currentIndex = 0;
+
+function showSlide(index) {
+    const slides = document.querySelectorAll('.carousel-item');
+    if (index >= slides.length) {
+        currentIndex = 0;
+    } else if (index < 0) {
+        currentIndex = slides.length - 1;
+    } else {
+        currentIndex = index;
+    }
+
+    slides.forEach((slide, i) => {
+        slide.style.opacity = i === currentIndex ? '1' : '0';
+    });
+
+    const carouselInner = document.querySelector('.carousel-inner');
+    carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
+}
+
+function moveSlide(direction) {
+    showSlide(currentIndex + direction);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    showSlide(currentIndex);
+});
     </script>
 @endsection
