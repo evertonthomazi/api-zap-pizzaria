@@ -3,7 +3,7 @@
 /public/build
 /public/hot
 /public/storage
-/public/imagens
+/public/assets
 /public/index.php
 /storage/*.key
 /vendor
