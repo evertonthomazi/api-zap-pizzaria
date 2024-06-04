@@ -6,6 +6,7 @@ use App\Helpers\Base62Helper;
 use App\Models\Avaliacao;
 use App\Models\Chat;
 use App\Models\Colaborador;
+use App\Models\Config;
 use App\Models\Customer;
 use App\Models\Device;
 use App\Models\Messagen;
@@ -121,7 +122,7 @@ class EventsController extends Controller
         // file_put_contents(Utils::createCode()."-audio.txt",$reponseJson);
         $reponseArray = json_decode($reponseJson, true);
         $session = Device::where('session', $reponseArray['data']['sessionId'])->first();
-
+        $config = Config::firstOrFail();
         if ($reponseArray['data']['event'] == "DISCONNECTED") {
             $session->status = "DISCONNECTED";
             $session->update();
@@ -130,8 +131,8 @@ class EventsController extends Controller
 
         // verifica se o serviço está em andamento
 
-        $active = 1;
-        if ($active) {
+
+        if ($config->chatbot) {
 
             $this->verifyService($reponseArray, $session);
         }
@@ -230,6 +231,8 @@ class EventsController extends Controller
 
                 $cep = $reponseArray['data']['message']['text'];
                 $cep = Utils::returnCep($cep);
+
+
                 if ($cep) {
                     $customer->zipcode = $cep['cep'];
                     $customer->public_place = $cep['logradouro'];
@@ -250,6 +253,20 @@ class EventsController extends Controller
 
 
             if ($service->await_answer == "number") {
+
+                $text = $customer->getDistanceInKilometers();
+                if ($text > 8) {
+                    $text = 'Infelizmente, não conseguimos fazer entregas na sua área, 🚫\n' .
+                        'pois a distância é maior do que a que costumamos atender. 😔\n' .
+                        'Sentimos muito por isso.\n\n' .
+                        'Se tiver alguma dúvida ou precisar de mais informações, por favor, nos avise. 🤔\n' .
+                        'Obrigado pela compreensão. 🙏';
+                    $this->sendMessagem($session->session, $customer->jid, $text);
+                    $service->active = 0;
+                    $service->update();
+                    exit;
+                }
+
 
                 $customer->number = $reponseArray['data']['message']['text'];
                 $customer->update();
@@ -273,6 +290,21 @@ class EventsController extends Controller
 
                 switch ($response) {
                     case  "1";
+
+                        $text = $customer->getDistanceInKilometers();
+                        if ($text > 8) {
+                            $text = 'Infelizmente, não conseguimos fazer entregas na sua área, 🚫\n' .
+                                'pois a distância é maior do que a que costumamos atender. 😔\n' .
+                                'Sentimos muito por isso.\n\n' .
+                                'Se tiver alguma dúvida ou precisar de mais informações, por favor, nos avise. 🤔\n' .
+                                'Obrigado pela compreensão. 🙏';
+                            $this->sendMessagem($session->session, $customer->jid, $text);
+                            $service->active = 0;
+                            $service->update();
+                            exit;
+                        }
+
+
                         $service->await_answer = "init_chat_1";
                         $service->update();
                         $text =  $customer->name . " \n  Seu cadastro foi Realizado \n com sucesso ";
@@ -334,6 +366,20 @@ class EventsController extends Controller
 
                 switch ($response) {
                     case  "1";
+
+                        $text = $customer->getDistanceInKilometers();
+                        if ($text > 8) {
+                            $text = 'Infelizmente, não conseguimos fazer entregas na sua área, 🚫\n' .
+                                'pois a distância é maior do que a que costumamos atender. 😔\n' .
+                                'Sentimos muito por isso.\n\n' .
+                                'Se tiver alguma dúvida ou precisar de mais informações, por favor, nos avise. 🤔\n' .
+                                'Obrigado pela compreensão. 🙏';
+                            $this->sendMessagem($session->session, $customer->jid, $text);
+                            $service->active = 0;
+                            $service->update();
+                            exit;
+                        }
+
 
                         $service->await_answer = "welcome";
                         $service->update();
@@ -592,7 +638,7 @@ class EventsController extends Controller
         }
     }
 
-   
+
 
     public function sendMessagem($session, $phone, $texto)
     {

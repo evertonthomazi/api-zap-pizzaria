@@ -211,7 +211,7 @@
 @section('content')
     <div class="delivery">
         <div class="img-delivery">
-            <img src="https://cdn-icons-png.freepik.com/512/5889/5889439.png" onclick="modalTaxa()" alt="">
+            <img src="https://cdn-icons-png.freepik.com/512/5889/5889439.png" alt="">
             <small>R$ {{ number_format($customer->delivery_fee, 2, ',', '.') }}</small>
             
         </div>
@@ -341,8 +341,6 @@
             }, 3000);
         });
 
-        function modalTaxa() {
-            alert('oi');
-        }
+        
     </script>
 @endsection

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('customer_id')->constrained()->onDelete('cascade');
             $table->decimal('total_price', 10, 2);
-            $table->string('status')->default('pending'); // Status do pedido (e.g., pending, completed, cancelled)
+            $table->string('status_id')->default('1'); // Status do pedido (e.g., pending, completed, cancelled)
             $table->timestamps();
         });
     }

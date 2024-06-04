@@ -52,15 +52,55 @@
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/dispositivo">
                 <div class="sidebar-brand-icon ">Benjamin</div>
             </a>
-
-
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
             <!-- Heading -->
             <div class="sidebar-heading">
-                Conexões
+                Pedidos
             </div>
 
+            <li class="nav-item">
+                <a href="{{ route('admin.order.index') }}" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span>Pedidos</span>
+                </a>
+            </li>
+
+
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <li class="nav-item">
+                <a href="{{ route('admin.product.index') }}" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span>Produtos</span>
+                </a>
+            </li>
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <li class="nav-item">
+                <a href="{{ route('admin.customer.index') }}" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+            </li>
+             <!-- Divider -->
+             <hr class="sidebar-divider my-0">
+
+            <li class="nav-item">
+                <a href="{{ route('admin.config.index') }}" class="nav-link">
+                    <i class="far fa-images"></i>
+                    <span>Configuração</span>
+                </a>
+            </li>
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+               <!-- Heading -->
+               <div class="sidebar-heading">
+                Conexões
+            </div>
             <!-- Dispositivos -->
             <li class="nav-item">
                 <a href="{{ route('admin.device.index') }}" class="nav-link">
@@ -69,33 +109,16 @@
                 </a>
             </li>
 
-             <!-- Divider -->
-             <hr class="sidebar-divider my-0">
-             <!-- Heading -->
-             <div class="sidebar-heading">
-                 produtos
-             </div>
-
-             <li class="nav-item">
-                <a href="{{ route('admin.product.index') }}" class="nav-link">
-                    <i class="fas fa-users"></i>
-                    <span>Produtos</span>
-                </a>
-            </li>
 
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
+          
             <!-- Heading -->
             <div class="sidebar-heading">
                 Mensagens
             </div>
-            <li class="nav-item">
-                <a href="{{ route('admin.customer.index') }}" class="nav-link">
-                    <i class="fas fa-users"></i>
-                    <span>Clientes</span>
-                </a>
-            </li>
+
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#message"
                     aria-expanded="true" aria-controls="message">
@@ -113,7 +136,10 @@
 
             </li>
 
-           
+
+
+
+
 
 
 
@@ -161,6 +187,11 @@
                                     pedidos</a>
                             </div>
                         </li>
+
+
+                     
+                       
+
 
 
                         <!-- Nav Item - Messages -->

@@ -3,6 +3,20 @@
 
 @section('css')
     <link href="{{ asset('/assets/admin/css/device.css') }}" rel="stylesheet">
+    <style>
+        .status-dot {
+            display: inline-block;
+            width: 32px;
+            height: 30px;
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+
+        .div-circulo {
+            display: flex;
+            flex-direction: row;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -62,18 +76,16 @@
                     <div class="row">
                         <div class="col-md-6">
                             <label for="">Nome</label>
-                            <input type="text" id="customer-name" class="form-control" 
-                                readonly>
+                            <input type="text" id="customer-name" class="form-control" readonly>
                         </div>
                         <div class="col-md-6">
                             <label for="">Telefone</label>
-                            <input type="text" id="customer-phone" class="form-control" 
-                                readonly>
+                            <input type="text" id="customer-phone" class="form-control" readonly>
                         </div>
 
                         <div class="col-md-12">
                             <label for="">Endereço</label>
-                            <textarea id="customer-address" class="form-control"  style="height: 169px;" readonly></textarea>
+                            <textarea id="customer-address" class="form-control" style="height: 169px;" readonly></textarea>
                         </div>
 
                     </div>
@@ -102,6 +114,31 @@
             </div>
         </div>
     </div>
+
+
+    <!-- Modal de confirmação -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Confirmar Alteração de Status</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza de que deseja alterar o status do pedido para "Saiu Para Entrega"? O cliente será notificado
+                    sobre a saída para entrega.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="confirmBtn" class="btn btn-primary">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Modal -->
     <div class="modal fade" id="modalUp" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"

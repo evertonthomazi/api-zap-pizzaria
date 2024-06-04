@@ -38,18 +38,18 @@ class Customer extends Model
         $this->googleApiKey = env('GOOGLE_MAPS_API_KEY');
     }
 
-    
+
     // Adicione este método ao seu modelo Customer
     public function setJidAttribute($value)
     {
         // Remover todos os caracteres que não sejam números
         $value = preg_replace('/[^0-9]/', '', $value);
-    
+
         // Verificar se o valor começa com "5511"
         if (strpos($value, '5511') !== 0) {
             $value = '5511' . $value;
         }
-    
+
         $this->attributes['jid'] = $value;
     }
 
@@ -87,6 +87,22 @@ class Customer extends Model
         if ($coords1 && $coords2) {
             list($distance, $duration) = $this->getDistance($coords1, $coords2);
             return $this->calculateDeliveryFeeAmount($distance);
+        } else {
+            return null;
+        }
+    }
+
+    public function getDistanceInKilometers()
+    {
+        $address1 = 'Rua Nova Providência, 593, Parque Bologne, SP';
+        $address2 = "{$this->number} {$this->public_place}, {$this->neighborhood}, {$this->city}, {$this->state}";
+
+         $coords1 = $this->getCoordinates($address1);
+        $coords2 = $this->getCoordinates($address2);
+        if ($coords1 && $coords2) {
+            list($distance, $duration) = $this->getDistance($coords1, $coords2);
+           
+            return intval($distance);
         } else {
             return null;
         }

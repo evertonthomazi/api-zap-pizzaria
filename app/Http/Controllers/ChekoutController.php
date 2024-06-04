@@ -170,9 +170,9 @@ class ChekoutController extends Controller
 
         // Adicionar a lógica para determinar a imagem com base no número de sabores selecionados
         if ($selectedProductCount == 2) {
-            $cartItem['image'] = 'imagens/pizza_2_sabores.png';
+            $cartItem['image'] = 'assets/imagens/pizza_2_sabores.png';
         } elseif ($selectedProductCount == 3) {
-            $cartItem['image'] = 'imagens/pizza_3_sabores.jpg';
+            $cartItem['image'] = 'assets/imagens/pizza_3_sabores.jpg';
         }
 
         // Adicionar o item ao carrinho
@@ -189,7 +189,11 @@ class ChekoutController extends Controller
     public function showCart()
     {
         $cart = session()->get('cart', []);
-        return view('front.checkout.cart', compact('cart'));
+
+        $produtosBebidas = Product::whereHas('category', function ($query) {
+            $query->where('name', 'bebidas');
+        })->get();
+        return view('front.checkout.cart', compact('cart', 'produtosBebidas'));
     }
 
     public function removeCartItem($index)
@@ -266,7 +270,8 @@ class ChekoutController extends Controller
         // Criar o pedido
         $order = Order::create([
             'customer_id' => $customer->id,
-            'total_price' => array_sum(array_column($cart, 'total'))+session('taxa_entrega')
+            'status_id' => 1,
+            'total_price' => array_sum(array_column($cart, 'total')) + session('taxa_entrega')
         ]);
 
         // Criar os itens do pedido
@@ -291,7 +296,7 @@ class ChekoutController extends Controller
                 'observation_primary' => isset($item['observation']) && $item['observation'] !== '' ? $item['observation'] : null,
                 'observation_secondary' => isset($item['observation_secondary']) && $item['observation_secondary'] !== '' ? $item['observation_secondary'] : null,
                 'observation_tertiary' => isset($item['observation_tertiary']) && $item['observation_tertiary'] !== '' ? $item['observation_tertiary'] : null,
-                
+
             ]);
         }
 

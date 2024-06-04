@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\admin\ConfigController;
 use App\Http\Controllers\admin\MenssageController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\ScheduleController;
@@ -143,7 +144,13 @@ Route::middleware(['auth.user'])->group(function () {
         Route::prefix('/pedidos')->controller(OrderController::class)->group(function () {
             Route::get('/', 'index')->name('admin.order.index');
             Route::get('/getOrders', 'getOrders');
+            Route::post('/atualizar-status', 'updateStatus');
             Route::get('/getOrder', 'getOrder');
+        });
+
+        Route::prefix('/config')->controller(ConfigController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.config.index');
+            Route::put('/', 'update')->name('admin.config.update');
         });
 
         Route::prefix('/rota')->controller(RouteController::class)->group(function () {

@@ -13,6 +13,8 @@
 
         .container {
             padding:5px;
+            padding-bottom: 156px;
+            
         }
 
         .alert-success {
@@ -191,7 +193,7 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
     max-width: 300px;
-    
+    margin-bottom: 20px;
 }
 
 .product-card img {
@@ -203,8 +205,10 @@
 }
 .btn-carousel{
     background: #27ae60;
-    color: #fff;
-    border-radius: 7px;
+    color: #000;
+    text-decoration-line: none;
+    padding: 10px;
+    border-radius: 5px;
 }
 .prev, .next {
     position: absolute;
@@ -226,6 +230,11 @@
 
 .next {
     right: 10px;
+}
+
+.title-bebida{
+        display: flex;
+    justify-content: center;
 }
     </style>
 @endsection
@@ -254,7 +263,6 @@
                         <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}">
                         <div class="cart-item-details">
                             <h3>{{ $item['name'] }}</h3>
-                            <p>Borda: {{ $item['crust'] }}</p>
                             <div class="cart-item-price">R$ {{ number_format($item['total'], 2, ',', '.') }}</div>
                             <div class="cart-item-quantity">
                                 <button class="decrement" data-index="{{ $index }}">-</button>
@@ -270,7 +278,31 @@
         @else
             <p>Seu carrinho está vazio.</p>
         @endif
+
+        <div class="title-bebida">
+            <h5>Já escolheu sua Bebida ?</h5>
+        </div>
+    
+        <div class="carousel">
+            <div class="carousel-inner">
+                @foreach ($produtosBebidas as $produto)
+                    <div class="carousel-item">
+                        <div class="product-card">
+                            <img src="{{ asset($produto->image) }}" alt="{{ $produto->name }}">
+                            <p>R$ {{ $produto->price }}</p>
+                            <a class="btn-carousel" href="/checkout/adicionar-produto/{{ $produto->id }}">Adicionar ao Pedido</a>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
+            <button class="next" onclick="moveSlide(1)">&#10095;</button>
+        </div>
     </div>
+   
+
+   
+
     <div class="checkout-footer">
         @if (count($cart) > 0)
             <a href="/checkout/finalizar" class="checkout-button">Finalizar Compra</a>
@@ -288,37 +320,6 @@
         @else
             <a href="/checkout" class="checkout-button">Ir Para Cardápio</a>
         @endif
-    </div>
-
-    <div class="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="product-card">
-                    <img src="https://cdn-icons-png.flaticon.com/512/99/99955.png" alt="Product 1">
-                    
-                    <p>$10.00</p>
-                    <button class="btn-carousel"><p>Short description of product 1.</p></button>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="product-card">
-                    <img src="https://cdn-icons-png.flaticon.com/512/4689/4689720.png" alt="Product 2">
-                    
-                    <p>$20.00</p>
-                    <button class="btn-carousel"><p>Short description of product 2.</p></button>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="product-card">
-                    <img src="https://cdn-icons-png.flaticon.com/512/1308/1308307.png" alt="Product 3">
-                   
-                    <p>$30.00</p>
-                    <button class="btn-carousel"><p>Short description of product 3.</p></button>
-                </div>
-            </div>
-        </div>
-        <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
-        <button class="next" onclick="moveSlide(1)">&#10095;</button>
     </div>
 @endsection
 
