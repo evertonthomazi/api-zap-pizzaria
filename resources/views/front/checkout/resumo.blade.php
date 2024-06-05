@@ -218,7 +218,7 @@
             <h2>Obrigado pelo seu pedido!</h2>
             <p>Seu pedido foi recebido com sucesso. retorna para o WhatsApp.</p>
             <div class="icons">
-                <a href="https://api.whatsapp.com/send?phone=5511986123660"><i class="fa-brands fa-whatsapp"></i> clique
+                <a href="https://api.whatsapp.com/send?phone=5511933361625"><i class="fa-brands fa-whatsapp"></i> clique
                     aqui!</a>
             </div>
         </div>

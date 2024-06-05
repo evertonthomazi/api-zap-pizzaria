@@ -92,16 +92,24 @@ class Customer extends Model
         }
     }
 
+    public function getLocationLink()
+    {
+        $address1 = 'Rua Nova Providência, 593, Parque Bologne, SP';
+        $origin = urlencode($address1);
+        $destination = urlencode($this->location);
+        return "https://www.google.com/maps/dir/?api=1&origin={$origin}&destination={$destination}";
+    }
+
     public function getDistanceInKilometers()
     {
         $address1 = 'Rua Nova Providência, 593, Parque Bologne, SP';
         $address2 = "{$this->number} {$this->public_place}, {$this->neighborhood}, {$this->city}, {$this->state}";
 
-         $coords1 = $this->getCoordinates($address1);
+        $coords1 = $this->getCoordinates($address1);
         $coords2 = $this->getCoordinates($address2);
         if ($coords1 && $coords2) {
             list($distance, $duration) = $this->getDistance($coords1, $coords2);
-           
+
             return intval($distance);
         } else {
             return null;

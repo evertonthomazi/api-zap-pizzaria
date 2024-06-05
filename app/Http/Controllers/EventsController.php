@@ -23,97 +23,6 @@ use Illuminate\Support\Facades\DB;
 class EventsController extends Controller
 {
 
-    public function storeAvaliacao(Request $request)
-    {
-        //    dd($request->all());
-
-
-        // Crie uma nova instância de Avaliacao
-        $avaliacao = new Avaliacao();
-
-        // Preencha os campos com os dados do formulário
-        $avaliacao->nota = $request->input('rate');
-        $avaliacao->comentario = $request->input('comentario');
-        $avaliacao->telefone = $request->input('telefone');
-        $avaliacao->ip_device = $request->input('ip_device');
-        $avaliacao->colaborador_id = $request->input('colaborador_id');
-        $avaliacao->nota = $request->input('nota');
-
-
-        // Salve a avaliação no banco de dados
-        $avaliacao->save();
-
-        // Você pode retornar uma resposta ou redirecionar o usuário após salvar a avaliação
-        return view("front.avaliacao.obrigado");
-    }
-    public function sendImage($session, $phone, $nomeImagen, $detalhes)
-    {
-        $curl = curl_init();
-
-        $send = array(
-            "number" => $phone,
-            "message" => array(
-                "image" => array(
-                    "url" => $nomeImagen // public_path('uploads/' . $nomeImagen)
-                ),
-                "caption" => $detalhes
-            ),
-            "delay" => 3
-        );
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => env('APP_URL_ZAP') . '/' . $session . '/messages/send',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => json_encode($send),
-            CURLOPT_HTTPHEADER => array(
-                'secret: $2a$12$VruN7Mf0FsXW2mR8WV0gTO134CQ54AmeCR.ml3wgc9guPSyKtHMgC',
-                'Content-Type: application/json'
-            ),
-        ));
-
-        $response = curl_exec($curl);
-
-        //  file_put_contents(Utils::createCode() . ".txt", $response);
-
-        curl_close($curl);
-    }
-
-    public function avaliacao(Request $request)
-    {
-
-
-        if ($request->name_rota) {
-
-            // Buscar colaborador com base no colaborador_od associado à rota
-            $rota = Route::where("name",  urldecode($request->name_rota))->first();
-
-
-
-
-            if (!isset($rota->colaborador_id)) {
-                echo json_encode(array("Mensagem" => "Sem Colaborador Vinculado"));
-                exit;
-            } else {
-                $colaborador = Colaborador::find($rota->colaborador_id);
-                return view("front.avaliacao.index", compact('colaborador'));
-            }
-        }
-
-        $colaborador = Colaborador::find($request->colaborador);
-
-        if (!$colaborador) {
-            echo json_encode(array("Mensagem" => "Sem Colaborador Vinculado"));
-            exit;
-        } else {
-            return view("front.avaliacao.index", compact('colaborador'));
-        }
-    }
 
     public function index()
     {
@@ -346,8 +255,7 @@ class EventsController extends Controller
 
             if ($service->await_answer == "init_chat") {
 
-                $customer->number = $reponseArray['data']['message']['text'];
-                $customer->update();
+             
                 $text = "Olá " . $customer->name . " é bom ter você novamente aki! ";
                 $this->sendMessagem($session->session, $customer->jid, $text);
                 $location =  "------Este ainda é Seu Endereço ?-------- \n " . $customer->location;
@@ -638,7 +546,97 @@ class EventsController extends Controller
         }
     }
 
+    public function storeAvaliacao(Request $request)
+    {
+        //    dd($request->all());
 
+
+        // Crie uma nova instância de Avaliacao
+        $avaliacao = new Avaliacao();
+
+        // Preencha os campos com os dados do formulário
+        $avaliacao->nota = $request->input('rate');
+        $avaliacao->comentario = $request->input('comentario');
+        $avaliacao->telefone = $request->input('telefone');
+        $avaliacao->ip_device = $request->input('ip_device');
+        $avaliacao->colaborador_id = $request->input('colaborador_id');
+        $avaliacao->nota = $request->input('nota');
+
+
+        // Salve a avaliação no banco de dados
+        $avaliacao->save();
+
+        // Você pode retornar uma resposta ou redirecionar o usuário após salvar a avaliação
+        return view("front.avaliacao.obrigado");
+    }
+    public function sendImage($session, $phone, $nomeImagen, $detalhes)
+    {
+        $curl = curl_init();
+
+        $send = array(
+            "number" => $phone,
+            "message" => array(
+                "image" => array(
+                    "url" => $nomeImagen // public_path('uploads/' . $nomeImagen)
+                ),
+                "caption" => $detalhes
+            ),
+            "delay" => 3
+        );
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => env('APP_URL_ZAP') . '/' . $session . '/messages/send',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($send),
+            CURLOPT_HTTPHEADER => array(
+                'secret: $2a$12$VruN7Mf0FsXW2mR8WV0gTO134CQ54AmeCR.ml3wgc9guPSyKtHMgC',
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        //  file_put_contents(Utils::createCode() . ".txt", $response);
+
+        curl_close($curl);
+    }
+
+    public function avaliacao(Request $request)
+    {
+
+
+        if ($request->name_rota) {
+
+            // Buscar colaborador com base no colaborador_od associado à rota
+            $rota = Route::where("name",  urldecode($request->name_rota))->first();
+
+
+
+
+            if (!isset($rota->colaborador_id)) {
+                echo json_encode(array("Mensagem" => "Sem Colaborador Vinculado"));
+                exit;
+            } else {
+                $colaborador = Colaborador::find($rota->colaborador_id);
+                return view("front.avaliacao.index", compact('colaborador'));
+            }
+        }
+
+        $colaborador = Colaborador::find($request->colaborador);
+
+        if (!$colaborador) {
+            echo json_encode(array("Mensagem" => "Sem Colaborador Vinculado"));
+            exit;
+        } else {
+            return view("front.avaliacao.index", compact('colaborador'));
+        }
+    }
 
     public function sendMessagem($session, $phone, $texto)
     {
