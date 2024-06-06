@@ -108,10 +108,8 @@ class EventsController extends Controller
 
     public function verifyService($reponseArray, $session)
     {
-        if ($reponseArray['data']['message']['fromMe']) {
-            // exit;
-        }
-        if ($reponseArray['data']['message']['fromMe'] && !$reponseArray['data']['message']['fromGroup']) {
+       
+        if (!$reponseArray['data']['message']['fromMe'] && !$reponseArray['data']['message']['fromGroup']) {
 
 
 
