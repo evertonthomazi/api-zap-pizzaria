@@ -59,7 +59,6 @@ class ConfigController extends Controller
         $config->motoboy_fone = Utils::sanitizePhone($request->input('motoboy_fone'));
         $config->status = $request->has('status');
         $config->chatbot = $request->has('chatbot');
-        $config->resposta = $request->resposta;
         $config->save();
 
         return redirect()->back()->with('success', 'Configurações atualizadas com sucesso!');

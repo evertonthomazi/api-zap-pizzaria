@@ -48,10 +48,10 @@
                                 </div>
                             </div>
 
-                            <div class="form-group d-none" >
+                            {{-- <div class="form-group d-none" >
                               <label for="">Mensagem de Resposta </label>
                               <textarea class="form-control" name="resposta" id="" rows="3">{{ $config->resposta }}</textarea>
-                            </div>
+                            </div> --}}
                           
 
                         </div>
