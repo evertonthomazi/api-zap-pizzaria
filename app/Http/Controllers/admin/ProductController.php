@@ -43,6 +43,7 @@ class ProductController extends Controller
         $data = $request->validate([
             'name' => 'required',
             'price' => 'required',
+            'description' => '',
         ]);
     
         $data['price'] = Utils::prepareMoneyForDatabase($data['price']);

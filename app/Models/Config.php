@@ -14,6 +14,7 @@ class Config extends Model
         'motoboy_fone',
         'status',
         'chatbot',
+        'resposta',
     ];
 
     protected $casts = [

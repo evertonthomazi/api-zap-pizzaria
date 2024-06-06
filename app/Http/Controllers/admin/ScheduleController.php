@@ -12,7 +12,6 @@ class ScheduleController extends Controller
     public function index()
     {
         $availableSlots = AvailableSlot::all();
-        //  $this->insertAvailableSlots();
         return view('admin.schedule.index')->with('availability', $availableSlots);
     }
     public function update(Request $request)

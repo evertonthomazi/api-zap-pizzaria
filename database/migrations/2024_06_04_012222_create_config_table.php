@@ -18,7 +18,7 @@ class CreateConfigTable extends Migration
             $table->id();
             $table->string('motoboy_fone')->nullable();
             $table->boolean('status')->default(false);
-            $table->boolean('chabot')->default(false);
+            $table->boolean('chatbot')->default(false);
             $table->timestamps();
         });
 

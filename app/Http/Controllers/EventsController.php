@@ -27,7 +27,7 @@ class EventsController extends Controller
     public function index()
     {
         $reponseJson = file_get_contents('php://input');
-
+      
         // file_put_contents(Utils::createCode()."-audio.txt",$reponseJson);
         $reponseArray = json_decode($reponseJson, true);
         $session = Device::where('session', $reponseArray['data']['sessionId'])->first();
@@ -38,15 +38,73 @@ class EventsController extends Controller
             exit;
         }
 
-        // verifica se o serviço está em andamento
+
+        // Configurar o Carbon para usar o fuso horário de São Paulo
+        $now = Carbon::now('America/Sao_Paulo');
+
+        $daysOfWeek = [
+            0 => 'domingo',
+            1 => 'segunda',
+            2 => 'terça',
+            3 => 'quarta',
+            4 => 'quinta',
+            5 => 'sexta',
+            6 => 'sábado',
+        ];
+
+        $dayOfWeek =  $daysOfWeek[$now->dayOfWeek];
+        // Obter a hora e minutos atuais
+        $currentTime = $now->format('H:i:s');
+
+        // Verifique se existe um slot disponível com os parâmetros fornecidos
+        $exists = DB::table('available_slots_config')
+            ->where('day_of_week', $dayOfWeek)
+            ->where('start_time', '<=', $currentTime)
+            ->where('end_time', '>=', $currentTime)
+            ->exists();
 
 
-        if ($config->chatbot) {
 
+        $jid = $reponseArray['data']['message']['from'];
+        // Remover o texto antes do '@'
+        $numero_sem_arroba = substr($jid, 0, strpos($jid, '@'));
+        // Extrair apenas os últimos 9 dígitos (número de celular)
+        $jid = $numero_sem_arroba;
+
+        // Se não houver slot disponível, enviar mensagem fora do horário
+        if ($exists) {
             $this->verifyService($reponseArray, $session);
+
+        } else {
+            // Montar a lista de horários de funcionamento
+            $operatingHours = [];
+            foreach ($daysOfWeek as $index => $day) {
+                $slots = DB::table('available_slots_config')
+                    ->where('day_of_week', $day)
+                    ->select('start_time', 'end_time')
+                    ->get();
+
+                if ($slots->isEmpty()) {
+                    $operatingHours[$day] = 'Fechado';
+                } else {
+                    $hours = [];
+                    foreach ($slots as $slot) {
+                        $hours[] = $slot->start_time . ' às ' . $slot->end_time;
+                    }
+                    $operatingHours[$day] = implode(', ', $hours);
+                }
+            }
+
+            // Construir a mensagem com os horários de funcionamento
+            $message = 'Desculpe, estamos fora do horário de atendimento. Os nossos horários de funcionamento são:\n\n';
+            foreach ($operatingHours as $day => $hours) {
+                $message .= ucfirst($day) . ': ' . $hours . '\n';
+            }
+
+            $this->sendMessagem($session->session, $jid, $message);
+            exit;
         }
 
-        //  file_put_contents(Utils::createCode().".txt",$reponseJson);
     }
 
     public function verifyService($reponseArray, $session)
@@ -54,7 +112,7 @@ class EventsController extends Controller
         if ($reponseArray['data']['message']['fromMe']) {
             // exit;
         }
-        if (!$reponseArray['data']['message']['fromMe'] && !$reponseArray['data']['message']['fromGroup']) {
+        if ($reponseArray['data']['message']['fromMe'] && !$reponseArray['data']['message']['fromGroup']) {
 
 
 
@@ -255,7 +313,7 @@ class EventsController extends Controller
 
             if ($service->await_answer == "init_chat") {
 
-             
+
                 $text = "Olá " . $customer->name . " é bom ter você novamente aki! ";
                 $this->sendMessagem($session->session, $customer->jid, $text);
                 $location =  "------Este ainda é Seu Endereço ?-------- \n " . $customer->location;
