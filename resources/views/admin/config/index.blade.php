@@ -40,7 +40,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group d-none">
                                 <div class="form-check">
                                     <input type="checkbox" id="chatbot" name="chatbot" class="form-check-input"
                                         {{ $config->chatbot ? 'checked' : '' }}>

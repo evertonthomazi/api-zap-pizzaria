@@ -38,7 +38,6 @@ class EventsController extends Controller
             exit;
         }
 
-
         // Configurar o Carbon para usar o fuso horário de São Paulo
         $now = Carbon::now('America/Sao_Paulo');
 
