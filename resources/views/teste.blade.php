@@ -13,34 +13,30 @@
 
             qz.api.setPromiseType(function(fn) { return new Promise(fn); });
 
-            qz.websocket.connect().then(() => {
-                console.log("QZ Tray connected");
-
-                const siteConfig = {
-                    hostname: window.location.hostname,
-                    port: window.location.port,
-                    protocol: window.location.protocol.replace(":", "")
-                };
-
-                console.log("Configuring site permissions for:", siteConfig);
-
-                // Define site permissions programmatically
-                qz.security.setCertificatePromise(function(resolve, reject) {
-                    // Resolve with the certificate data
-                    resolve("YOUR_CERTIFICATE_HERE");
-                });
-
-                qz.security.setSignaturePromise(function(toSign) {
-                    return function(resolve, reject) {
-                        resolve("YOUR_SIGNATURE_HERE");
-                    };
-                });
-
-                // This example will print on button click
-                document.getElementById('printButton').addEventListener('click', printText);
-            }).catch(err => {
-                console.error("Failed to connect to QZ Tray:", err);
+            // Configure certificates and signature
+            qz.security.setCertificatePromise(function(resolve, reject) {
+                resolve("-----BEGIN CERTIFICATE-----\n...YOUR CERTIFICATE...\n-----END CERTIFICATE-----");
             });
+
+            qz.security.setSignaturePromise(function(toSign) {
+                return function(resolve, reject) {
+                    var pk = "-----BEGIN PRIVATE KEY-----\n...YOUR PRIVATE KEY...\n-----END PRIVATE KEY-----";
+                    var sign = forge.md.sha256.create();
+                    sign.update(toSign, 'utf8');
+                    var pki = forge.pki;
+                    var privateKey = pki.privateKeyFromPem(pk);
+                    resolve(btoa(privateKey.sign(sign)));
+                };
+            });
+
+            // Connect to QZ Tray
+            if (!qz.websocket.isActive()) {
+                qz.websocket.connect().then(() => {
+                    console.log("QZ Tray connected");
+                }).catch(err => {
+                    console.error("Failed to connect to QZ Tray:", err);
+                });
+            }
         });
 
         function printText() {
@@ -49,24 +45,39 @@
                 return;
             }
 
-            qz.websocket.connect().then(function() {
-                return qz.printers.find(); // Encontra a impressora padrão
-            }).then(function(printer) {
-                var config = qz.configs.create(printer); // Configuração da impressora
-                var data = [
-                    { type: 'raw', format: 'plain', data: 'Hello World!\n' },
-                    { type: 'raw', format: 'plain', data: '\x1B\x69' } // Comando de corte de papel
-                ];
-                return qz.print(config, data);
-            }).catch(function(e) {
-                console.error(e);
-            }).finally(function() {
-                qz.websocket.disconnect();
-            });
+            if (!qz.websocket.isActive()) {
+                qz.websocket.connect().then(function() {
+                    return qz.printers.find(); // Encontra a impressora padrão
+                }).then(function(printer) {
+                    var config = qz.configs.create(printer); // Configuração da impressora
+                    var data = [
+                        { type: 'raw', format: 'plain', data: 'Hello World!\n' },
+                        { type: 'raw', format: 'plain', data: '\x1B\x69' } // Comando de corte de papel
+                    ];
+                    return qz.print(config, data);
+                }).catch(function(e) {
+                    console.error(e);
+                }).finally(function() {
+                    qz.websocket.disconnect();
+                });
+            } else {
+                qz.printers.find().then(function(printer) {
+                    var config = qz.configs.create(printer); // Configuração da impressora
+                    var data = [
+                        { type: 'raw', format: 'plain', data: 'Hello World!\n' },
+                        { type: 'raw', format: 'plain', data: '\x1B\x69' } // Comando de corte de papel
+                    ];
+                    return qz.print(config, data);
+                }).catch(function(e) {
+                    console.error(e);
+                }).finally(function() {
+                    qz.websocket.disconnect();
+                });
+            }
         }
     </script>
 </head>
 <body>
-    <button id="printButton">Imprimir</button>
+    <button id="printButton" onclick="printText()">Imprimir</button>
 </body>
 </html>
