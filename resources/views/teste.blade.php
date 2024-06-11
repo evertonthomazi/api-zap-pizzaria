@@ -3,6 +3,7 @@
 <head>
     <title>Impressão Automática com QZ Tray</title>
     <script src="https://demo.qz.io/js/qz-tray.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/node-forge@0.9.1/dist/forge.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             qz.api.setSha256Type(function(data) {
