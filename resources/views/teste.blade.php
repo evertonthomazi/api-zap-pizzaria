@@ -1,62 +1,72 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-
+<html>
 <head>
-  <meta charset="utf-8">
-  <title>QR Codes</title>
-  
-  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-  
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
+    <title>Impressão Automática com QZ Tray</title>
+    <script src="https://demo.qz.io/js/qz-tray.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            qz.api.setSha256Type(function(data) {
+                return crypto.subtle.digest("SHA-256", new TextEncoder("utf-8").encode(data)).then(function(hash) {
+                    return btoa(String.fromCharCode.apply(null, new Uint8Array(hash)));
+                });
+            });
 
-    .qr-container {
-      text-align: center;
-      margin: 70px;
-    }
-  </style>
+            qz.api.setPromiseType(function(fn) { return new Promise(fn); });
+
+            qz.websocket.connect().then(() => {
+                console.log("QZ Tray connected");
+
+                const siteConfig = {
+                    hostname: window.location.hostname,
+                    port: window.location.port,
+                    protocol: window.location.protocol.replace(":", "")
+                };
+
+                console.log("Configuring site permissions for:", siteConfig);
+
+                // Define site permissions programmatically
+                qz.security.setCertificatePromise(function(resolve, reject) {
+                    // Resolve with the certificate data
+                    resolve("YOUR_CERTIFICATE_HERE");
+                });
+
+                qz.security.setSignaturePromise(function(toSign) {
+                    return function(resolve, reject) {
+                        resolve("YOUR_SIGNATURE_HERE");
+                    };
+                });
+
+                // This example will print on button click
+                document.getElementById('printButton').addEventListener('click', printText);
+            }).catch(err => {
+                console.error("Failed to connect to QZ Tray:", err);
+            });
+        });
+
+        function printText() {
+            if (typeof qz === 'undefined') {
+                console.error("QZ Tray is not loaded.");
+                return;
+            }
+
+            qz.websocket.connect().then(function() {
+                return qz.printers.find(); // Encontra a impressora padrão
+            }).then(function(printer) {
+                var config = qz.configs.create(printer); // Configuração da impressora
+                var data = [
+                    { type: 'raw', format: 'plain', data: 'Hello World!\n' },
+                    { type: 'raw', format: 'plain', data: '\x1B\x69' } // Comando de corte de papel
+                ];
+                return qz.print(config, data);
+            }).catch(function(e) {
+                console.error(e);
+            }).finally(function() {
+                qz.websocket.disconnect();
+            });
+        }
+    </script>
 </head>
-
 <body>
-  <div class="qr-container" id="qr-container1">
-    <a href="https://www.example.com/link1" target="_blank">Aracati</a>
-  </div>
-
-  <div class="qr-container" id="qr-container2">
-    <a href="https://www.example.com/link2" target="_blank">Jd Nakamura</a>
-  </div>
-
-  <div class="qr-container" id="qr-container3">
-    <a href="https://www.example.com/link3" target="_blank">PQ do Lago</a>
-  </div>
- 
-
-  <script>
-    // Função para gerar QR code para cada div
-    function generateQRCode(elementId, text) {
-      var container = document.getElementById(elementId);
-      var qrcode = new QRCode(container, {
-        text: text,
-        width: 128,
-        height: 128
-      });
-    }
-
-    // Chame a função para cada div
-    generateQRCode("qr-container1", "https://ruangas.com.br/events/avaliacao?name_rota=Aracati");
-    generateQRCode("qr-container2", "https://ruangas.com.br/events/avaliacao?name_rota=JD Nakamura");	
-    generateQRCode("qr-container3", "https://ruangas.com.br/events/avaliacao?name_rota=PQ do Lago");
-
-    // generateQRCode("qr-container1", "http://localhost:8000/events/avaliacao?name_rota=Aracati");
-    // generateQRCode("qr-container2", "http://localhost:8000/events/avaliacao?name_rota=JD Nakamura");	
-    // generateQRCode("qr-container3", "http://localhost:8000/events/avaliacao?name_rota=PQ do Lago");
-  </script>
+    <button id="printButton">Imprimir</button>
 </body>
-
 </html>

@@ -23,7 +23,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use App\Models\Customer;
+use Illuminate\Support\Facades\Http;
 use League\Csv\Reader;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\Printer;
 
 /*
 |--------------------------------------------------------------------------
@@ -209,6 +213,11 @@ Route::get('/teste', function () {
         }
     }
 });
+Route::get('/testePrint', function () {
+   return view('teste');
+});
+
+
 
 Route::get('/testeendereco', function () {
     $address1 = '4 rua antigo continente, parque bologne, SP';
