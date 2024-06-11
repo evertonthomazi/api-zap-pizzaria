@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use App\Models\Customer;
+use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Support\Facades\Http;
 use League\Csv\Reader;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
@@ -214,7 +216,49 @@ Route::get('/teste', function () {
     }
 });
 Route::get('/testePrint', function () {
-   return view('teste');
+    // Obter o carrinho da sessão
+    $cart = session()->get('cart', []);
+
+    if (empty($cart)) {
+        return redirect()->back()->with('error', 'Seu carrinho está vazio.');
+    }
+    // Recuperar o customer da sessão
+    $customer = session()->get('customer');
+
+
+    // Criar o pedido
+    $order = Order::create([
+        'customer_id' => $customer->id,
+        'status_id' => 1,
+        'total_price' => array_sum(array_column($cart, 'total')) + session('taxa_entrega')
+    ]);
+
+    // Criar os itens do pedido
+    foreach ($cart as $item) {
+        // Dividir os product_ids em primário e secundário e terciário
+        $productIds = explode(',', $item['product_id']);
+        $primaryProductId = $productIds[0];
+        $secondaryProductId = isset($productIds[1]) ? $productIds[1] : null;
+        $tertiaryProductId = isset($productIds[2]) ? $productIds[2] : null;
+
+        OrderItem::create([
+            'order_id' => $order->id,
+            'product_id_primary' => $primaryProductId,
+            'product_id_secondary' => $secondaryProductId,
+            'product_id_tertiary' => $tertiaryProductId,
+            'name' => $item['name'],
+            'description' => $item['description'],
+            'price' => $item['price'],
+            'quantity' => $item['quantity'],
+            'crust' => $item['crust'],
+            'crust_price' => $item['crust_price'],
+            'observation_primary' => isset($item['observation']) && $item['observation'] !== '' ? $item['observation'] : null,
+            'observation_secondary' => isset($item['observation_secondary']) && $item['observation_secondary'] !== '' ? $item['observation_secondary'] : null,
+            'observation_tertiary' => isset($item['observation_tertiary']) && $item['observation_tertiary'] !== '' ? $item['observation_tertiary'] : null,
+
+        ]);
+    }
+   return view('teste', compact('cart'));
 });
 
 
