@@ -81,7 +81,6 @@
         <p>Telefone: (XX) XXXX-XXXX</p>
     </div>
 
-    <!-- Conteúdo do Cupom -->
     @foreach ($cart as $item)
         <div class="item">
             <div class="item-details">
@@ -151,59 +150,63 @@
 
             qz.api.setPromiseType(function(fn) { return new Promise(fn); });
 
+
             const certificate = `-----BEGIN CERTIFICATE-----
-MIIECzCCAvOgAwIBAgIGAZAJcaxLMA0GCSqGSIb3DQEBCwUAMIGiMQswCQYDVQQG
+MIIECzCCAvOgAwIBAgIGAZAJrz41MA0GCSqGSIb3DQEBCwUAMIGiMQswCQYDVQQG
 EwJVUzELMAkGA1UECAwCTlkxEjAQBgNVBAcMCUNhbmFzdG90YTEbMBkGA1UECgwS
 UVogSW5kdXN0cmllcywgTExDMRswGQYDVQQLDBJRWiBJbmR1c3RyaWVzLCBMTEMx
 HDAaBgkqhkiG9w0BCQEWDXN1cHBvcnRAcXouaW8xGjAYBgNVBAMMEVFaIFRyYXkg
-RGVtbyBDZXJ0MB4XDTI0MDYxMDIyMzYwM1oXDTQ0MDYxMDIyMzYwM1owgaIxCzAJ
+RGVtbyBDZXJ0MB4XDTI0MDYxMDIzNDMxOFoXDTQ0MDYxMDIzNDMxOFowgaIxCzAJ
 BgNVBAYTAlVTMQswCQYDVQQIDAJOWTESMBAGA1UEBwwJQ2FuYXN0b3RhMRswGQYD
 VQQKDBJRWiBJbmR1c3RyaWVzLCBMTEMxGzAZBgNVBAsMElFaIEluZHVzdHJpZXMs
 IExMQzEcMBoGCSqGSIb3DQEJARYNc3VwcG9ydEBxei5pbzEaMBgGA1UEAwwRUVog
-VHJheSBEZW1vIENlcnQwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDu
-fHmWDOKwYxRSUCzNUIP8xdqS4PPOYK1AqpW0Yhta6ZIH3f0+n8ZJAjnu0jA7KVSA
-3T87o2PUQ62jPvObneJW/fQOTImaiU3VIbqHs4zpoZqRpNrHxQ0NyACZQ/rsExHz
-GMteIg8QJpeL1uP9AdbZ67ZUalug19ici91L29Qqjpu8eHN6FZKC8ZIyebGwDeXU
-M/U33hMX+q2S3zQQZza5AS7IRlg0Cv/9hkbuMOQQF4qlw61iURVjblfyo4N1UHkX
-eMJ3R8NPGUlYbbImKatB/keFtHGZR6H5mVgLQgR8IJpX3nT0pY+P9QyATApWETYl
-bKhUEvL1jYjTF85YrD8PAgMBAAGjRTBDMBIGA1UdEwEB/wQIMAYBAf8CAQEwDgYD
-VR0PAQH/BAQDAgEGMB0GA1UdDgQWBBTEmKBpEee/npV3G9nKTyxW4+kL0zANBgkq
-hkiG9w0BAQsFAAOCAQEAqkLS/nf9tC3K3UryQaAbKZwieSCDkmlmIc8k6HzqeavP
-CfpemcSdkf5gJqrEgPwDOM72ElbbwC54ub+aitJ0rWq0bnZycqa12Ne48uCqs+LI
-k+OAA4hi0Mpf2MinUUGn/AxZwEv26PqiQ+Pjd2e2h+ahgwinH8OQ9llOB+1tT4au
-U0TiStgpwoec+IP0SgH9iMyrDq8SKHwdWsbjyjiOYp8Y4JjqNbwHMSdkblfjFVfi
-vuadDBFOnoorktRDXPcdg57qW+snoprn8gFB9I5UXyHo4bJUpdLiVhV7cd/wRyGj
-JkbrcOPOFG10t1Og3zGcS5zftQ8OJXtzIdXbIeMYeg==
------END CERTIFICATE-----`;
+VHJheSBEZW1vIENlcnQwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDq
+8ZuheqU85Vat2csxtzQO37Mef2Rai4iO7W6m9IeuywiR7NxiohygvT+xOuezJySu
+EuAlGSnaMHmwFwCDrGlvuMBzvRVkjEWMHweIWylE9GCFVOCmUvNL4KIs2f3cYG6Z
+bIM6Rs/Ki+JMWpsZbOp2Oy98xhC4MJvQsyYX2rQAiXBwSufWTsZnyV4kQj6Tm7Re
+QkyzqRPZpTt1uTqdInCf9PKmXGH9BlQXqgka/l6D2FZoFUPzSCX5YoX7awJcNC5A
+YGdiIPGJyqksNMpW4W1YtXtSbDRWe65UMyp9S9oFUpwlrqIuAY7GGBC5Wi/iqUnj
+waDaz9BrBJN/pMIrWVRDAgMBAAGjRTBDMBIGA1UdEwEB/wQIMAYBAf8CAQEwDgYD
+VR0PAQH/BAQDAgEGMB0GA1UdDgQWBBS+S9OyeCKrPf4GW3yJ5k+Uxx8DQzANBgkq
+hkiG9w0BAQsFAAOCAQEA4OOOHuoznrahGlOydgh+mcv3YEwTydkcjGlDQ6YhnCB2
+40EVqt9ADEY6BlYEqqlNvAEGWwpMtDgUwxdTBX6nvhxxp941oQwJtXd/NSziOZ8I
+wpGZjc3QWQgk/rAqcltOk8xSExgdzi4hElFT6lELmh+itDIXFwaiI7wkz/mjLnOG
+PV/+wFT6xKaMYUMyCNia6RrfEf/WdRN4pdiHDMzrXJ9hjp0VZrRkWTeAa2IenrzD
+n5DFvMUoGXaSf51mqJIDrIS/5H7+zJjAD2iudlKQ827qGNFCUeLSUZvmUH6juRg4
+ZPPP+n6fYOs9Ja4AO8OqVEKhOby+amKHlIUvqCepBg==
+-----END CERTIFICATE-----
+`;
             const privateKey = `-----BEGIN PRIVATE KEY-----
-MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDufHmWDOKwYxRS
-UCzNUIP8xdqS4PPOYK1AqpW0Yhta6ZIH3f0+n8ZJAjnu0jA7KVSA3T87o2PUQ62j
-PvObneJW/fQOTImaiU3VIbqHs4zpoZqRpNrHxQ0NyACZQ/rsExHzGMteIg8QJpeL
-1uP9AdbZ67ZUalug19ici91L29Qqjpu8eHN6FZKC8ZIyebGwDeXUM/U33hMX+q2S
-3zQQZza5AS7IRlg0Cv/9hkbuMOQQF4qlw61iURVjblfyo4N1UHkXeMJ3R8NPGUlY
-bbImKatB/keFtHGZR6H5mVgLQgR8IJpX3nT0pY+P9QyATApWETYlbKhUEvL1jYjT
-F85YrD8PAgMBAAECggEAGk9FIpadU5Q6o7IQnz3osbQqHtYOT5A+zMmE5neESQ1H
-fPKyg3wg5eEG/x/VDlHK7sR5u1yVIM+ukjnZqitK0woFKKas742CNqcX6uyV+RhI
-8xRaxnsoq4KK/l2Piwe3jTgJB4N+YevAAD9eu4S+bSAh50IshZwKW4raiQnhaChI
-4bedX3Q+BJzqfZP7tg7XieTjyk+U9hrFgHsb3DAljwKRrBy98Hm3AGJjSiIZFNRa
-JqnyyXAQRTgdbgFIFGzr73mYqpTD7rpVZ0X5CpNS8BGumorez+7gDn6nyLR1kBiQ
-b0n/MmfugKhGvzF1xbyY5vFjnOnssP8P3RP/w8g2QQKBgQD826xgCC3GmZH3bh8G
-f6ZBX5AI+Ab9q8rCpwMysA8Stl6Jz4KjhtC8ufj35As6dQ568iSUG4sqV8Ea7l7Y
-OfVDHpXM5B7QXRFFXhk8/XRbBJp9n4/ux50yyHtUowYaVppSmE6K7U7lLCAZayNt
-0E5OVJt0YOmHdH/45krLqt5pnwKBgQDxcxXmA5ZylRG9GGVjGM2z3hH7bqv7g9lk
-9r5SRe3/Ev1DybpbMWHwMXHX+rscuDtOVn6vNzv6lGiqWja3EYoUCYt/F+OsN9i0
-rYQ/UcTEwPGuIZNuiYPpKM56HhS+bvTOKY758rDsguR6ttMIDLlAfmCD0dLljvEQ
-Tz1vvk4UkQKBgGYqnEtxAo3sHv5KkF6f1R00742wKaL1dsePk8s3N9/nr+se3ToV
-juGygtYmXiMQiPlEPWNafbBuJKgtCEV1pZOpF/3hblHiSMgubSQnhIwCICoB/rYM
-EYgjWTGpbR3XQCN/Rrz7hZUzbwTWNUp5kCo2JVmwjqscd1iqNC52q8chAoGBAOvi
-7qMAIEyjXGgsXGkbQ2QVceX9sqIPpyTfdwLz9Nc9mxdODvWm4jMCa2GBQKqHRtF6
-6VuPD9b4hOThLBFgXlDDHni1QyXujZW+67Pc0+sRQUxI2zujt67jwg1GNCf0SNDd
-gySoOLdoDYXh9Xwoyhe7H9nI9Ux2gQbZE4GHH8sxAoGBAJ3CNK8/ocGu8BZ0MThr
-JoB6Khy/xEkOGVbtSUxbuERTjlATp/PU0q3AmF2N1LsHuEH0xzomQWIMZ5KmyuqJ
-yNDqIWi3DpYNIcgv1hXoxfPcCqZFRkYbl97a4bPCfrBIeT+O6dHqO0jp09pTB2xL
-6YMha+Thd8ItMg+TM9lqAOKK
------END PRIVATE KEY-----`;
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDq8ZuheqU85Vat
+2csxtzQO37Mef2Rai4iO7W6m9IeuywiR7NxiohygvT+xOuezJySuEuAlGSnaMHmw
+FwCDrGlvuMBzvRVkjEWMHweIWylE9GCFVOCmUvNL4KIs2f3cYG6ZbIM6Rs/Ki+JM
+WpsZbOp2Oy98xhC4MJvQsyYX2rQAiXBwSufWTsZnyV4kQj6Tm7ReQkyzqRPZpTt1
+uTqdInCf9PKmXGH9BlQXqgka/l6D2FZoFUPzSCX5YoX7awJcNC5AYGdiIPGJyqks
+NMpW4W1YtXtSbDRWe65UMyp9S9oFUpwlrqIuAY7GGBC5Wi/iqUnjwaDaz9BrBJN/
+pMIrWVRDAgMBAAECggEACv9ONUvOtOqt7lYAgI4+cz0eCZ0VmctoPqXMhSdzER0o
+hIlyyMclJzz/NeY3oZeBIbN5JyNmEHQubgNVnymQhziTAZfl4B6qGWSmb0fdHFYt
+YnBWUlLAWAU8HMoDa6+z3Z31B+L3/QIj5fEOdi02owbNh+ikMGBOGtcX6baaBbWn
+lsnP6OUpaDsdFR/cR9WSsQ1XEhPV991pv5F4/pObhBiPXBJ2tnPImWC8ozAKKodm
+PaH68qzPbH5fna9ehPN7S2qhZueaU+KxWPtiPF3xuxyLJAoAIW0fwIknJ/Bkn5lt
+7dnBTkNhvQOotyzSHzlg7a46r3OqE/0odSdBTHTmCQKBgQD/jdZzYNba7kfDDDPJ
+p6pjXu04FRhry5hDbLZFbi8vE7squ3N+HOa13sCQDBwtKbF/5bwiK/fdiT5AJU26
+/QD1qyO2i0w7sWaRY2wqMjNQsOhq6APtbYV4WOVaQjcwIo5zIT9Annk1Wtnllx9Y
+uPAmgNsk1CCk/yW9gYFnX1u9fwKBgQDrWpAodZn/jbaur2LDnRf3Sn3EP76iWXyF
+A24BnQ4s2UzhijuGTllHR9l6ENuSFIGfwzoRSLXyJvG4WqnnkjdmoO0tVNBS3AFo
+EESdmtwOtukcRdDwMlJhrsmKmNyX3GtoXHJYL0/TMlLqKsCy8QSmENO0jJDxpYPy
+weHybHNTPQKBgHE7+Ozw2OLzOAr96iiNSVt0oWn7NvH0qYgesHj9RJz4gjOCEb+s
+sLGffPWW2BlO4x6Hvh/qGY8pE9M6dEHJf1ZbuZxWBrZgedEsG65qxgAYEzPjkHHw
+2HYl9aJTur5yYWo0LiHE1nJEyk4H81TNxWNaL0AXWkuh3qgkrSEPyMejAoGBALc1
+y6zDR3tJjSFVBHQ0cTifM2I3ISZutOEyt0roQOWmzxNvsUCu8w7rHp/ISbTg47tD
+lYto58I2kMqrQUI0b44jzh4QvQ8TlsC0kUWDDLUjrDnHG4wwEDNchiWvM2HAQ5h9
+BsIhKmnE7gi9+T4TI0RHKxaMqjSCXUH3rfUyeWAdAoGBAKq/EaFCN8zFt2PpALjW
+keAL+zlvBE59lWSeNN07zE00+nsWl7REALqPl67WpjBxqMIgT/5GgjLJraY7P5Rr
+kURHj8kZZVgfy01YsMIGjcs78yuv4IPU/dOWnO+3rrLy7lWiavctiKXCCseuAmrW
+lCWS1aShIjjGPf8srZzgy0y7
+-----END PRIVATE KEY-----
+`;
 
+         
             qz.security.setCertificatePromise(function(resolve, reject) {
                 resolve(certificate);
             });
@@ -218,9 +221,9 @@ yNDqIWi3DpYNIcgv1hXoxfPcCqZFRkYbl97a4bPCfrBIeT+O6dHqO0jp09pTB2xL
                 };
             });
 
-            if (!qz.websocket.isActive()) {
+            function connectAndPrint() {
                 qz.websocket.connect().then(() => {
-                    return qz.printers.find(); // Encontrar a impressora padrão
+                    return qz.printers.find("Microsoft Print to PDF"); // Nome da impressora virtual
                 }).then(printer => {
                     if (!printer) {
                         throw new Error("No printer found");
@@ -233,6 +236,13 @@ yNDqIWi3DpYNIcgv1hXoxfPcCqZFRkYbl97a4bPCfrBIeT+O6dHqO0jp09pTB2xL
                 }).catch(err => {
                     console.error("Failed to connect to QZ Tray:", err);
                 });
+            }
+
+            // Verifica se o QZ Tray está ativo
+            if (!qz.websocket.isActive()) {
+                connectAndPrint();
+            } else {
+                connectAndPrint();
             }
         });
     </script>

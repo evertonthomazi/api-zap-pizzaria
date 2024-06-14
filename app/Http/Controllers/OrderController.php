@@ -16,16 +16,16 @@ class OrderController extends Controller
     }
 
     public function getOrders()
-    {
-        $orders = Order::with(['customer', 'status'])->orderBy('id')->get();
-    
-        // Modificando os dados para incluir o atributo display_data
-        foreach ($orders as $order) {
-            $order->display_data = $order->display_data;
-        }
-    
-        return DataTables::of($orders)->make(true);
+{
+    $orders = Order::with(['customer', 'status'])->orderBy('id', 'desc')->get();
+
+    // Modificando os dados para incluir o atributo display_data
+    foreach ($orders as $order) {
+        $order->display_data = $order->display_data;
     }
+
+    return DataTables::of($orders)->make(true);
+}
 
     public function getOrder(Request $request){
         $order = Order::with(['customer', 'items'])->where('id',$request->id)->first();
