@@ -65,7 +65,7 @@
         }
 
         .modal-content {
-         
+
             background-color: #fefefe;
             margin: 5% auto;
             padding: 20px;
@@ -208,9 +208,17 @@
         </div>
     @endforeach
 
-    <!-- Total Geral -->
-    <div class="total">Total Geral: R$
-        {{ number_format(array_sum(array_column($cart, 'total')) + session('taxa_entrega'), 2, ',', '.') }}</div>
+    <div class="total-price">
+        <div>
+            Itens: R$ {{ number_format(array_sum(array_column($cart, 'total')), 2, ',', '.') }}
+        </div>
+        <div>
+            Taxa de entrega: R$ {{ number_format($taxaEntrega, 2, ',', '.') }}
+        </div>
+        <div>
+            Total: R$ {{ number_format($totalPrice, 2, ',', '.') }}
+        </div>
+    </div>
 
     <!-- Modal de Agradecimento -->
     <div id="myModal" class="modal">
@@ -238,7 +246,7 @@
     // Função para enviar a imagem via AJAX e exibir o modal
     function sendImageAndShowModal() {
         // Mostrar o overlay de carregamento
-       
+
 
         // Tirar o print da página
         html2canvas(document.body).then(function(canvas) {
@@ -254,17 +262,17 @@
                     imagem: imgData
                 },
                 success: function(response) {
-                 
+
                     showModal();
                 },
                 error: function(xhr, status, error) {
-                 
+
                     $('.loading-overlay').css('display', 'none');
                 }
             });
         });
 
-         $('.loading-overlay').css('display', 'block');
+        $('.loading-overlay').css('display', 'block');
     }
 
     // Chamada da função ao carregar a página

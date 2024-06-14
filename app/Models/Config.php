@@ -13,6 +13,7 @@ class Config extends Model
     protected $fillable = [
         'motoboy_fone',
         'status',
+        'minuts',
         'chatbot',
         'resposta',
     ];
@@ -21,4 +22,14 @@ class Config extends Model
         'status' => 'boolean',
         'chatbot' => 'boolean',
     ];
+
+    public function getHoursAttribute()
+    {
+        return intdiv($this->minuts, 60);
+    }
+
+    public function getMinutesAttribute()
+    {
+        return $this->minuts % 60;
+    }
 }

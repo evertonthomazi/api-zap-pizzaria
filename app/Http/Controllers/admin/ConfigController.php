@@ -54,11 +54,15 @@ class ConfigController extends Controller
                 }
             }
         }
+
+         // Calcular o total de minutos
+    $totalMinutos = ($request->input('hora') * 60) + $request->input('minutos');
         $config = Config::firstOrFail(); // Supondo que você tenha apenas uma entrada na tabela config
 
         $config->motoboy_fone = Utils::sanitizePhone($request->input('motoboy_fone'));
         $config->status = $request->has('status');
         $config->chatbot = $request->has('chatbot');
+        $config->minuts = $totalMinutos;
         $config->save();
 
         return redirect()->back()->with('success', 'Configurações atualizadas com sucesso!');

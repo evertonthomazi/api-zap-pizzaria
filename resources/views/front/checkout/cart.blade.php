@@ -8,13 +8,11 @@
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
-           
         }
 
         .container {
-            padding:5px;
+            padding: 5px;
             padding-bottom: 156px;
-            
         }
 
         .alert-success {
@@ -126,9 +124,7 @@
             align-items: center;
             color: #fff;
             box-sizing: border-box;
-            /* Adicionado */
         }
-
 
         .checkout-button {
             padding: 10px 20px;
@@ -146,6 +142,7 @@
             padding: 10px;
             display: flex;
             align-items: center;
+            justify-content: space-between; /* Adjusted to space items between */
         }
 
         .header i {
@@ -154,101 +151,122 @@
         }
 
         body .carousel {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0;
-    background-color: #f0f0f0;
-}
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
 
-.carousel {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    background-color: white;
-}
+        .carousel {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
 
-.carousel-inner {
-    
-    display: flex;
-    transition: transform 0.5s ease-in-out;
-}
+        .carousel-inner {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
 
-.carousel-item {
-    min-width: 100%;
-    transition: opacity 0.5s ease-in-out;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
-}
+        .carousel-item {
+            min-width: 100%;
+            transition: opacity 0.5s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-.product-card {
-    background-color: #fff;
-    padding: 5px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    max-width: 300px;
-    margin-bottom: 20px;
-}
+        .product-card {
+            background-color: #fff;
+            padding: 5px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 300px;
+            margin-bottom: 20px;
+        }
 
-.product-card img {
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-    width: 90px;
-    height: 90px;
-}
-.btn-carousel{
-    background: #27ae60;
-    color: #000;
-    text-decoration-line: none;
-    padding: 10px;
-    border-radius: 5px;
-}
-.prev, .next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.5);
-    border: none;
-    padding: 15px;
-    cursor: pointer;
-    color: white;
-    font-size: 18px;
-    border-radius: 50%;
-    user-select: none;
-}
+        .product-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            width: 90px;
+            height: 90px;
+        }
 
-.prev {
-    left: 10px;
-}
+        .btn-carousel {
+            background: #27ae60;
+            color: #000;
+            text-decoration-line: none;
+            padding: 10px;
+            border-radius: 5px;
+        }
 
-.next {
-    right: 10px;
-}
+        .prev, .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            border: none;
+            padding: 15px;
+            cursor: pointer;
+            color: white;
+            font-size: 18px;
+            border-radius: 50%;
+            user-select: none;
+        }
 
-.title-bebida{
-        display: flex;
-    justify-content: center;
-}
+        .prev {
+            left: 10px;
+        }
+
+        .next {
+            right: 10px;
+        }
+
+        .title-bebida {
+            display: flex;
+            justify-content: center;
+        }
+
+        .frete-options {
+            display: flex;
+            align-items: center;
+        }
+
+        .frete-options input[type="radio"] {
+            margin-left: 10px;
+        }
     </style>
 @endsection
 
-
 @section('content')
     <div class="header">
-        <a href="{{ route('checkout.home') }}" class="header">
-            <i class="fas fa-arrow-left"></i>
-            <span>Voltar</span>
-        </a>
+        <div>
+            <a href="{{ route('checkout.home') }}" class="header">
+                <i class="fas fa-arrow-left"></i>
+                <span>Voltar</span>
+            </a>
+        </div>
+      
     </div>
     <div class="container">
         <h2>Carrinho de Compras</h2>
+        <div class="frete-options">
+            <label>
+                <input type="radio" name="frete" value="{{ session('taxa_entrega') }}" checked>
+                Entrega (R$ {{ number_format(session('taxa_entrega'), 2, ',', '.') }})
+            </label>
+            <label>
+                <input type="radio" name="frete" value="0.00">
+                Retirar na loja (R$ 0,00)
+            </label>
+        </div>
 
         @if (session('success'))
             <div class="alert-success">
@@ -270,8 +288,7 @@
                                 <button class="increment" data-index="{{ $index }}">+</button>
                             </div>
                         </div>
-                        <span class="cart-item-remove" data-index="{{ $index }}"><i
-                                class="fas fa-trash-alt"></i></span>
+                        <span class="cart-item-remove" data-index="{{ $index }}"><i class="fas fa-trash-alt"></i></span>
                     </div>
                 @endforeach
             </div>
@@ -280,9 +297,9 @@
         @endif
 
         <div class="title-bebida">
-            <h5>Já escolheu sua Bebida ?</h5>
+            <h5>Já escolheu sua Bebida?</h5>
         </div>
-    
+
         <div class="carousel">
             <div class="carousel-inner">
                 @foreach ($produtosBebidas as $produto)
@@ -299,9 +316,6 @@
             <button class="next" onclick="moveSlide(1)">&#10095;</button>
         </div>
     </div>
-   
-
-   
 
     <div class="checkout-footer">
         @if (count($cart) > 0)
@@ -311,19 +325,15 @@
                     <div>
                         Itens : {{ number_format(array_sum(array_column($cart, 'total')), 2, ',', '.') }}
                     </div>
-                    Taxa entrega : {{ number_format( session('taxa_entrega'), 2, ',', '.') }}
+                    Taxa entrega : R$ <span id="taxa-entrega">{{ number_format(session('taxa_entrega'), 2, ',', '.') }}</span>
                 </div>
-               
-               
-                Total : R$ {{ number_format(array_sum(array_column($cart, 'total'))+session('taxa_entrega'), 2, ',', '.') }}
+                Total : R$ <span id="total">{{ number_format(array_sum(array_column($cart, 'total')) + session('taxa_entrega'), 2, ',', '.') }}</span>
             </div>
         @else
             <a href="/checkout" class="checkout-button">Ir Para Cardápio</a>
         @endif
     </div>
 @endsection
-
-
 @section('scripts')
     <script>
         document.querySelectorAll('.cart-item-remove').forEach(button => {
@@ -347,22 +357,6 @@
             });
         });
 
-
-        document.querySelectorAll('.increment').forEach(button => {
-            button.addEventListener('click', function() {
-                const index = this.getAttribute('data-index');
-                // Adicionar lógica para incrementar a quantidade e atualizar o carrinho via AJAX
-            });
-        });
-
-        document.querySelectorAll('.decrement').forEach(button => {
-            button.addEventListener('click', function() {
-                const index = this.getAttribute('data-index');
-                // Adicionar lógica para decrementar a quantidade e atualizar o carrinho via AJAX
-            });
-        });
-    </script>
-    <script>
         document.querySelectorAll('.increment').forEach(button => {
             button.addEventListener('click', function() {
                 const index = this.getAttribute('data-index');
@@ -393,35 +387,67 @@
         function updateCartItemQuantity(index, quantity) {
             const urlUp = `/checkout/cart/update-quantity/${index}/${quantity}`;
             window.location.href = urlUp;
-
         }
 
         let currentIndex = 0;
 
-function showSlide(index) {
-    const slides = document.querySelectorAll('.carousel-item');
-    if (index >= slides.length) {
-        currentIndex = 0;
-    } else if (index < 0) {
-        currentIndex = slides.length - 1;
-    } else {
-        currentIndex = index;
-    }
+        function showSlide(index) {
+            const slides = document.querySelectorAll('.carousel-item');
+            if (index >= slides.length) {
+                currentIndex = 0;
+            } else if (index < 0) {
+                currentIndex = slides.length - 1;
+            } else {
+                currentIndex = index;
+            }
 
-    slides.forEach((slide, i) => {
-        slide.style.opacity = i === currentIndex ? '1' : '0';
-    });
+            slides.forEach((slide, i) => {
+                slide.style.opacity = i === currentIndex ? '1' : '0';
+            });
 
-    const carouselInner = document.querySelector('.carousel-inner');
-    carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
-}
+            const carouselInner = document.querySelector('.carousel-inner');
+            carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
+        }
 
-function moveSlide(direction) {
-    showSlide(currentIndex + direction);
-}
+        function moveSlide(direction) {
+            showSlide(currentIndex + direction);
+        }
 
-document.addEventListener('DOMContentLoaded', () => {
-    showSlide(currentIndex);
-});
+        document.addEventListener('DOMContentLoaded', () => {
+            showSlide(currentIndex);
+        });
+
+        document.querySelectorAll('input[name="frete"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const selectedValue = parseFloat(this.value);
+                const itemTotal = parseFloat({{ array_sum(array_column($cart, 'total')) }});
+                const totalPriceElement = document.getElementById('total');
+                const taxaEntregaElement = document.getElementById('taxa-entrega');
+
+                taxaEntregaElement.textContent = selectedValue.toFixed(2).replace('.', ',');
+                totalPriceElement.textContent = (itemTotal + selectedValue).toFixed(2).replace('.', ',');
+
+                 // Enviar valor do frete via AJAX para atualizar a sessão
+            fetch('/checkout/update-taxa-entrega', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ taxa_entrega: selectedValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Taxa de entrega atualizada na sessão.');
+                } else {
+                    console.error('Falha ao atualizar a taxa de entrega.');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+            });
+            });
+        });
     </script>
 @endsection

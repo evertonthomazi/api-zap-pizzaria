@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\Base62Helper;
 use App\Models\Categories;
 use App\Models\Chat;
+use App\Models\Config;
 use App\Models\Crust;
 use App\Models\Customer;
 use App\Models\Device;
@@ -37,7 +38,7 @@ class ChekoutController extends Controller
                 $cart = session()->get('cart', []);
                 return view('front.checkout.index', compact('categories', 'cart', 'customer'));
             } else {
-                dd('inicie um atendimento no zap');
+                return view('front.checkout.va_pro_zap');
             }
         } else {
             // Recuperar o customer da sessão
@@ -47,7 +48,7 @@ class ChekoutController extends Controller
                 $cart = session()->get('cart', []);
                 return view('front.checkout.index', compact('categories', 'cart', 'customer'));
             } else {
-                dd('inicie um atendimento no zap');
+                return view('front.checkout.va_pro_zap');
             }
         }
     }
@@ -187,14 +188,23 @@ class ChekoutController extends Controller
 
 
     public function showCart()
-    {
-        $cart = session()->get('cart', []);
+{
+    // Obter o carrinho da sessão
+    $cart = session()->get('cart', []);
 
-        $produtosBebidas = Product::whereHas('category', function ($query) {
-            $query->where('name', 'bebidas');
-        })->get();
-        return view('front.checkout.cart', compact('cart', 'produtosBebidas'));
+    // Verificar se o carrinho está vazio
+    if (empty($cart)) {
+        return view('front.checkout.va_pro_zap');
     }
+
+    // Obter produtos da categoria 'bebidas'
+    $produtosBebidas = Product::whereHas('category', function ($query) {
+        $query->where('name', 'bebidas');
+    })->get();
+
+    return view('front.checkout.cart', compact('cart', 'produtosBebidas'));
+}
+
 
     public function removeCartItem($index)
     {
@@ -256,52 +266,59 @@ class ChekoutController extends Controller
 
 
     public function finish(Request $request)
-    {
-        // Obter o carrinho da sessão
-        $cart = session()->get('cart', []);
+{
+    // Obter o carrinho da sessão
+    $cart = session()->get('cart', []);
 
-        if (empty($cart)) {
-            return redirect()->back()->with('error', 'Seu carrinho está vazio.');
-        }
-        // Recuperar o customer da sessão
-        $customer = session()->get('customer');
-
-
-        // Criar o pedido
-        $order = Order::create([
-            'customer_id' => $customer->id,
-            'status_id' => 1,
-            'total_price' => array_sum(array_column($cart, 'total')) + session('taxa_entrega')
-        ]);
-
-        // Criar os itens do pedido
-        foreach ($cart as $item) {
-            // Dividir os product_ids em primário e secundário e terciário
-            $productIds = explode(',', $item['product_id']);
-            $primaryProductId = $productIds[0];
-            $secondaryProductId = isset($productIds[1]) ? $productIds[1] : null;
-            $tertiaryProductId = isset($productIds[2]) ? $productIds[2] : null;
-
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id_primary' => $primaryProductId,
-                'product_id_secondary' => $secondaryProductId,
-                'product_id_tertiary' => $tertiaryProductId,
-                'name' => $item['name'],
-                'description' => $item['description'],
-                'price' => $item['price'],
-                'quantity' => $item['quantity'],
-                'crust' => $item['crust'],
-                'crust_price' => $item['crust_price'],
-                'observation_primary' => isset($item['observation']) && $item['observation'] !== '' ? $item['observation'] : null,
-                'observation_secondary' => isset($item['observation_secondary']) && $item['observation_secondary'] !== '' ? $item['observation_secondary'] : null,
-                'observation_tertiary' => isset($item['observation_tertiary']) && $item['observation_tertiary'] !== '' ? $item['observation_tertiary'] : null,
-
-            ]);
-        }
-
-        return view('front.checkout.resumo', compact('cart'));
+    if (empty($cart)) {
+        return redirect()->back()->with('error', 'Seu carrinho está vazio.');
     }
+
+    // Recuperar o customer da sessão
+    $customer = session()->get('customer');
+
+    // Obter o valor do frete da sessão
+    $taxaEntrega = session('taxa_entrega', 0);
+
+    $totalPrice = array_sum(array_column($cart, 'total')) + $taxaEntrega;
+    // Criar o pedido
+    $order = Order::create([
+        'customer_id' => $customer->id,
+        'status_id' => 1,
+        'total_price' =>  $totalPrice
+    ]);
+
+    // Criar os itens do pedido
+    foreach ($cart as $item) {
+        // Dividir os product_ids em primário e secundário e terciário
+        $productIds = explode(',', $item['product_id']);
+        $primaryProductId = $productIds[0];
+        $secondaryProductId = isset($productIds[1]) ? $productIds[1] : null;
+        $tertiaryProductId = isset($productIds[2]) ? $productIds[2] : null;
+
+        OrderItem::create([
+            'order_id' => $order->id,
+            'product_id_primary' => $primaryProductId,
+            'product_id_secondary' => $secondaryProductId,
+            'product_id_tertiary' => $tertiaryProductId,
+            'name' => $item['name'],
+            'description' => $item['description'],
+            'price' => $item['price'],
+            'quantity' => $item['quantity'],
+            'crust' => $item['crust'],
+            'crust_price' => $item['crust_price'],
+            'observation_primary' => isset($item['observation']) && $item['observation'] !== '' ? $item['observation'] : null,
+            'observation_secondary' => isset($item['observation_secondary']) && $item['observation_secondary'] !== '' ? $item['observation_secondary'] : null,
+            'observation_tertiary' => isset($item['observation_tertiary']) && $item['observation_tertiary'] !== '' ? $item['observation_tertiary'] : null,
+        ]);
+    }
+
+    // Limpar a sessão do carrinho e do customer
+    session()->forget(['cart']);
+
+    return view('front.checkout.resumo', compact('cart', 'taxaEntrega', 'totalPrice'));
+}
+
 
 
 
@@ -330,7 +347,8 @@ class ChekoutController extends Controller
 
         date_default_timezone_set('America/Sao_Paulo');
         $horaAtual = Carbon::now();
-        $horaMais45Minutos = $horaAtual->addMinutes(45);
+        $config = Config::firstOrFail(); 
+        $horaMais45Minutos = $horaAtual->addMinutes($config->minuts);
         $text = " Pedido feito com Sucesso .";
         $this->sendMessagem($session->session, $customer->phone, $text);
 
@@ -342,7 +360,8 @@ class ChekoutController extends Controller
         $service->active = 0;
         $service->update();
 
-        session()->forget('cart');
+        // Limpar a sessão do carrinho e do customer
+    session()->forget([ 'customer', 'taxa_entrega']);
     }
 
     public function sendImage($session, $phone, $nomeImagen, $detalhes)
@@ -420,5 +439,11 @@ class ChekoutController extends Controller
     public function iniciar()
     {
         return view('front.checkout.iniciar');
+    }
+    public function updateTaxaEntrega(Request $request){
+        $taxaEntrega = $request->input('taxa_entrega', 0);
+        session(['taxa_entrega' => $taxaEntrega]);
+    
+        return response()->json(['success' => true]);
     }
 }

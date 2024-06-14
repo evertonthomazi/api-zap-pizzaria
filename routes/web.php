@@ -77,6 +77,7 @@ Route::prefix('/checkout')->controller(ChekoutController::class)->group(function
     Route::get('/iniciaratendimento', 'iniciar');
     Route::post('/addToCart', 'addToCart')->name('cart.add');
     Route::post('/addToCart2', 'addToCart2')->name('cart.add2');
+    Route::post('/update-taxa-entrega', 'updateTaxaEntrega')->name('update-taxa-entrega');
     Route::get('/cart/update-quantity/{index}/{quantity}', 'updateCartItemQuantity')->name('cart.update-quantity');
 });
 

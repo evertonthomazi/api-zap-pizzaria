@@ -346,8 +346,6 @@ class EventsController extends Controller
 
                         $service->await_answer = "welcome";
                         $service->update();
-                        $text = "Olá " . $customer->name . " é bom ter você novamente aki! ";
-                        $this->sendMessagem($session->session, $customer->jid, $text);
 
                         $service->await_answer = "init_chat_1";
                         $service->update();

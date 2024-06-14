@@ -40,6 +40,21 @@
                                 </div>
                             </div>
 
+                            <div class="card-header">tempo de Entrega</div>
+                            <div class="form-group row">
+                               
+                                <div>
+                                    <label for="hora">Horas:</label>
+                                    <input type="number" id="hora" name="hora" value="{{ intdiv($config->minuts, 60) }}" class="form-control">
+                                </div>
+                               <div>
+                                <label for="minutos">Minutos:</label>
+                                <input type="number" id="minutos" name="minutos" value="{{ $config->minuts % 60 }}" class="form-control">
+                               </div>
+                            </div>
+                            
+                          
+
                             <div class="form-group d-none">
                                 <div class="form-check">
                                     <input type="checkbox" id="chatbot" name="chatbot" class="form-check-input"
