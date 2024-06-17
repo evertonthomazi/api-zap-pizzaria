@@ -17,7 +17,7 @@ class OrderController extends Controller
 
     public function getOrders()
 {
-    $orders = Order::with(['customer', 'status'])->orderBy('created_at', 'desc')->get();
+    $orders = Order::with(['customer', 'status'])->get();
 
     // Modificando os dados para incluir o atributo display_data
     foreach ($orders as $order) {
