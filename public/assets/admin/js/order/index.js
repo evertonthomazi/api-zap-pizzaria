@@ -34,32 +34,32 @@ $('#table-order').DataTable({
         $('td:eq(1)', row).html('<label>' + data['customer'].name + ' / ' + data['customer'].phone + '</label>');
         $('td:eq(4)', row).html('<label>' + data['display_data'] + '</label>');
         $('td:eq(5)', row).html('<a href="javascript:;" data-toggle="modal" onClick="configModal(' + data["id"] + ')" data-target="#modalInfo" class="btn btn-sm btn-gray delete"><i class="fa fa-eye"></i></a>');
-// Adicionando botões para selecionar o status
-$('td:eq(3)', row).html('<div class="div-circulo"><select class="form-control status-select" data-order-id="' + data['id'] + '">' +
-    '<option value="1" style="color: red;" ' + (data['status'].id == 1 ? 'selected' : '') + '>Pendente</option>' +
-    '<option value="2" style="color: orange;" ' + (data['status'].id == 2 ? 'selected' : '') + '>Processando</option>' +
-    '<option value="3" style="color: green;" ' + (data['status'].id == 3 ? 'selected' : '') + '>Completo</option>' +
-    '<option value="4" style="color: grey;" ' + (data['status'].id == 4 ? 'selected' : '') + '>Cancelado</option>' +
-    '<option value="5" style="color: blue;" ' + (data['status'].id == 5 ? 'selected' : '') + '>Saiu Para Entrega</option>' +
-    '</select><span class="status-dot" style="background-color:' + getStatusColor(data['status'].id) + '"></span></div>');
+        // Adicionando botões para selecionar o status
+        $('td:eq(3)', row).html('<div class="div-circulo"><select class="form-control status-select" data-order-id="' + data['id'] + '">' +
+            '<option value="1" style="color: red;" ' + (data['status'].id == 1 ? 'selected' : '') + '>Pendente</option>' +
+            '<option value="2" style="color: orange;" ' + (data['status'].id == 2 ? 'selected' : '') + '>Processando</option>' +
+            '<option value="3" style="color: green;" ' + (data['status'].id == 3 ? 'selected' : '') + '>Completo</option>' +
+            '<option value="4" style="color: grey;" ' + (data['status'].id == 4 ? 'selected' : '') + '>Cancelado</option>' +
+            '<option value="5" style="color: blue;" ' + (data['status'].id == 5 ? 'selected' : '') + '>Saiu Para Entrega</option>' +
+            '</select><span class="status-dot" style="background-color:' + getStatusColor(data['status'].id) + '"></span></div>');
 
-// Função para obter a cor do status
-function getStatusColor(statusId) {
-    switch (statusId) {
-        case 1:
-            return 'red';
-        case 2:
-            return 'orange';
-        case 3:
-            return 'green';
-        case 4:
-            return 'grey';
-        case 5:
-            return 'blue';
-        default:
-            return 'black';
-    }
-}
+        // Função para obter a cor do status
+        function getStatusColor(statusId) {
+            switch (statusId) {
+                case 1:
+                    return 'red';
+                case 2:
+                    return 'orange';
+                case 3:
+                    return 'green';
+                case 4:
+                    return 'grey';
+                case 5:
+                    return 'blue';
+                default:
+                    return 'black';
+            }
+        }
 
         // Evento de mudança para o select
         $('td:eq(3) select', row).on('change', function () {
@@ -92,7 +92,8 @@ function getStatusColor(statusId) {
             $(this).siblings('.status-dot').css('background-color', statusColor);
 
         });
-    }
+    },
+    "order": [[ 0, "desc" ]]
 });
 
 // Evento de mudança de status
