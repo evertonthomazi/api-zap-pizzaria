@@ -63,6 +63,8 @@
                 <a href="{{ route('admin.order.index') }}" class="nav-link">
                     <i class="fas fa-users"></i>
                     <span>Pedidos</span>
+                    <span
+                        class="badge badge-danger badge-counter">{{ session('userData')->unreadNotifications->count() }}</span>
                 </a>
             </li>
 
@@ -86,8 +88,8 @@
                     <span>Clientes</span>
                 </a>
             </li>
-             <!-- Divider -->
-             <hr class="sidebar-divider my-0">
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
 
             <li class="nav-item">
                 <a href="{{ route('admin.config.index') }}" class="nav-link">
@@ -97,8 +99,8 @@
             </li>
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
-               <!-- Heading -->
-               <div class="sidebar-heading">
+            <!-- Heading -->
+            <div class="sidebar-heading">
                 Conexões
             </div>
             <!-- Dispositivos -->
@@ -113,7 +115,7 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
-          
+
             <!-- Heading -->
             <div class="sidebar-heading">
                 Mensagens
@@ -170,30 +172,38 @@
                         <ul id="notificacoes">
                             <!-- Aqui é onde as notificações aparecerão -->
                         </ul>
-                        <!-- Nav Item - Alerts -->
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle" href="#" id="alertsOrder" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
-                                <span class="badge badge-danger badge-counter countOrders"></span>
+                                <span
+                                    class="badge badge-danger badge-counter">{{ session('userData')->unreadNotifications->count() }}</span>
                             </a>
                             <!-- Dropdown - Alerts -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="alertsOrder">
                                 <h6 class="dropdown-header">Pedidos</h6>
-                                <div class="dropdown-orders"></div>
-                                <a class="dropdown-item text-center small text-gray-500" href="">Ver todos os
-                                    pedidos</a>
+                                <div class="dropdown-orders">
+                                    @foreach (session('userData')->unreadNotifications as $notification)
+                                        <a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="mr-3">
+                                                <div class="icon-circle bg-primary">
+                                                    <i class="fas fa-file-alt text-white"></i>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="small text-gray-500">{{ $notification->created_at }}</div>
+                                                <span
+                                                    class="font-weight-bold">{{ $notification->data['message'] }}</span>
+                                            </div>
+                                        </a>
+                                    @endforeach
+                                </div>
+                                <a class="dropdown-item text-center small text-gray-500"
+                                    href="{{ route('admin.notifications.index') }}">Ver todas as notificações</a>
                             </div>
                         </li>
-
-
-                     
-                       
-
-
-
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle" href="#" id="alertsMessage" role="button"
@@ -316,6 +326,59 @@
 
     @yield('scripts')
     <script>
+        let notificationSoundPlayed = false;
+
+        function checkNotifications() {
+            $.ajax({
+                url: '{{ route('admin.notifications.check') }}',
+                method: 'GET',
+                success: function(response) {
+                    if (response.notifications.length > 0 && !notificationSoundPlayed) {
+                        showNotificationAlert(response.notifications.length);
+                        notificationSoundPlayed = true; // Marque que o som já foi tocado
+                    }
+                }
+            });
+        }
+
+        function showNotificationAlert(count) {
+            const audio = new Howl({
+                src: ['/audioTelefone.mp3'],
+                onend: function() {
+                    audio.stop(); // Parar o áudio depois que ele tocar uma vez
+                }
+            });
+
+            Swal.fire({
+                title: 'Novo Pedido!',
+                text: `Você tem ${count} novo(s) pedido(s).`,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Ver Pedidos',
+                cancelButtonText: 'Fechar',
+                customClass: {
+                    popup: 'animated shake'
+                },
+                didOpen: () => {
+                    audio.play(); // Tocar o som de notificação uma vez
+                    const intervalId = setInterval(() => {
+                        Swal.getPopup().classList.toggle('shake');
+                    }, 2000);
+
+                    Swal.getPopup().addEventListener('mouseleave', () => clearInterval(
+                    intervalId)); // Limpar o intervalo quando o modal for fechado
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '{{ route('admin.order.index2') }}';
+                }
+                notificationSoundPlayed = false; // Reseta a flag ao fechar o modal
+            });
+        }
+
+        // Verificar notificações a cada 5 segundos
+        setInterval(checkNotifications, 5000);
+
         function showToast(icon, message) {
             const Toast = Swal.mixin({
                 toast: true,
