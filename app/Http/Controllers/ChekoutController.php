@@ -357,7 +357,7 @@ class ChekoutController extends Controller
 
         $text = "Muito Obrigado! ";
         $this->sendMessagem($session->session, $customer->phone, $text);
-        $service->active = 0;
+        $service->await_human = 'await_human';
         $service->update();
 
         // Limpar a sessão do carrinho e do customer
