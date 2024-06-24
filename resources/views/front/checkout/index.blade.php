@@ -398,9 +398,7 @@
             }, 3000);
         });
 
-        function redirectToCart() {
-            window.location.href = "{{ route('cart.show') }}";
-        }
+        
 
         const categoryHeader = document.getElementById('category-header');
         const categories = document.querySelectorAll('.category-header div');
