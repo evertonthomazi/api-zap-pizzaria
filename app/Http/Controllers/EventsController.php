@@ -157,7 +157,7 @@ class EventsController extends Controller
                     $text = 'Olá ' . $customer->name . '! É bom ter você aqui novamente! 😊\n\n'
                     . 'Para Fazer seu pedido clique no link Abaixo \n'
                     . '🔗 ' . 'https://benjamin.enviazap.shop/checkout/?phone=' . $numero_sem_arroba
-                    . 'Fácil, rápido e prático! 🚀';
+                    . '\nFácil, rápido e prático! 🚀';
                 }else{
                     $customer = new Customer();
                     $customer->jid = $jid;
