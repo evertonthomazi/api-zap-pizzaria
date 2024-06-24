@@ -358,8 +358,8 @@
                 // Exibe o modal
                 document.getElementById('addressModal').style.display = 'block';
             } else {
-              
-                Redireciona para a rota de adicionar endereço
+
+                // Redireciona para a rota de adicionar endereço
                 window.location.href = "{{ route('cart.show') }}";
             }
         }
