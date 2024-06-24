@@ -1,7 +1,7 @@
 <!-- resources/views/carrinho/resumo.blade.php -->
 
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
