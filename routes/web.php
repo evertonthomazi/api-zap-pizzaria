@@ -14,6 +14,7 @@ use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NotificacaoController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\RouteController;
@@ -30,6 +31,7 @@ use League\Csv\Reader;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
+use App\Notifications\NewOrderNotification;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +49,13 @@ use Mike42\Escpos\Printer;
 
 Route::get('/notificacoes', 'NotificacaoController@index')->name('notificacoes.index');
 Route::post('/marcar-como-lida/{id}', 'NotificacaoController@marcarComoLida')->name('notificacoes.marcar_como_lida');
+
+// routes/web.php
+
+Route::get('/admin/notifications', 'NotificationController@index')->name('admin.notifications.index');
+Route::get('/admin/notifications/mark-as-read/{id}',  'NotificationController@markAsRead')->name('admin.notifications.markAsRead');
+Route::get('/admin/notifications/check', [NotificacaoController::class, 'check'])->name('admin.notifications.check');
+
 
 
 Route::prefix('/admin')->controller(AdminController::class)->group(function () {
@@ -73,8 +82,10 @@ Route::prefix('/checkout')->controller(ChekoutController::class)->group(function
     Route::get('/cart/remove/{id}', 'removeCartItem');
     Route::get('/cart', 'showCart')->name('cart.show');
     Route::post('/enviaImagen', 'enviaImagen')->name('checkout.enviaImagen');
-    Route::get('/finalizar', 'finish');
+    Route::post('/finalizar', 'finish');
     Route::get('/iniciaratendimento', 'iniciar');
+    Route::post('/pagamento', 'pagamento')->name('cart.payment');
+    Route::get('/pagamento', 'pagamento')->name('cart.payment');
     Route::post('/addToCart', 'addToCart')->name('cart.add');
     Route::post('/addToCart2', 'addToCart2')->name('cart.add2');
     Route::post('/update-taxa-entrega', 'updateTaxaEntrega')->name('update-taxa-entrega');
@@ -150,8 +161,10 @@ Route::middleware(['auth.user'])->group(function () {
 
         Route::prefix('/pedidos')->controller(OrderController::class)->group(function () {
             Route::get('/', 'index')->name('admin.order.index');
+            Route::get('/apagaNotifica', 'index2')->name('admin.order.index2');
             Route::get('/getOrders', 'getOrders');
             Route::post('/atualizar-status', 'updateStatus');
+            Route::post('/atualizar-notify', 'updateNotify')->name('admin.notifications.markAllRead');
             Route::get('/getOrder', 'getOrder');
         });
 

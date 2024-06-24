@@ -75,7 +75,7 @@
 
         .img-delivery img {
             width: 36px;
-    height: 36px;
+            height: 36px;
         }
 
         .container {
@@ -205,18 +205,73 @@
                 transform: translateX(0);
             }
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal .btn {
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: var(--green);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .modal .btn:hover {
+            background-color: #218c54;
+        }
     </style>
 @endsection
 
 @section('content')
-    <div class="delivery">
-        <div class="img-delivery">
-            <img src="https://cdn-icons-png.freepik.com/512/5889/5889439.png" alt="">
-            <small>R$ {{ number_format($customer->delivery_fee, 2, ',', '.') }}</small>
-            
-        </div>
+    @if ($customer->delivery_fee)
+        <div class="delivery">
+            <div class="img-delivery">
+                <img src="https://cdn-icons-png.freepik.com/512/5889/5889439.png" alt="">
+                <small>R$ {{ number_format($customer->delivery_fee, 2, ',', '.') }}</small>
 
-    </div>
+            </div>
+        </div>
+    @endif
+
     <div class="category-header" id="category-header">
         <!-- Adicionando o item "Home" -->
         <div data-category-id="home">Home</div>
@@ -256,6 +311,18 @@
         @endforeach
     </div>
 
+    <!-- Modal -->
+    <div id="addressModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Confirmar Endereço de Entrega</h2>
+            <p id="addressInfo"></p>
+            <button id="confirmAddress" class="btn">Sim, está correto</button>
+            <button id="changeAddress" class="btn">Não, quero alterar</button>
+        </div>
+    </div>
+
+
     @if (count($cart) > 0)
         <footer class="cart-footer" onclick="redirectToCart()">
             <div class="cart-icon">
@@ -265,7 +332,8 @@
             </div>
             <button class="btn">Finalizar Pedido</button>
             <div class="view-cart">
-                Total: R$ {{ number_format(array_sum(array_column($cart, 'total'))+session('taxa_entrega'), 2, ',', '.') }}
+                Total: R$
+                {{ number_format(array_sum(array_column($cart, 'total')) + session('taxa_entrega'), 2, ',', '.') }}
             </div>
         </footer>
     @endif
@@ -274,8 +342,63 @@
 @section('scripts')
     <script>
         function redirectToCart() {
-            window.location.href = "{{ route('cart.show') }}";
+            // Verifica se o cliente possui zip_code
+            const customerZipcode = @json($customer['zipcode']);
+            if (customerZipcode) {
+                const customerName = @json($customer['name']);
+                const customerAddress = @json($customer['public_place']);
+                const customerCity = @json($customer['city']);
+                const customerState = @json($customer['state']);
+                const customerNumber = @json($customer['number']);
+                const customerNeighborhood = @json($customer['neighborhood']);
+                // Preenche as informações do endereço no modal
+                document.getElementById('addressInfo').innerText = `
+                ${customerAddress}, N° ${customerNumber}\nBairro: ${customerNeighborhood}\nCEP: ${customerZipcode}
+            `;
+                // Exibe o modal
+                document.getElementById('addressModal').style.display = 'block';
+            } else {
+                console.log('aki');
+                // Redireciona para a rota de adicionar endereço
+                // window.location.href = "{{ route('cart.show') }}";
+            }
         }
+
+        // Fecha o modal ao clicar no botão de fechar
+        document.querySelector('.close').addEventListener('click', function() {
+            document.getElementById('addressModal').style.display = 'none';
+        });
+
+        // Redireciona para a rota de confirmação do endereço
+        document.getElementById('confirmAddress').addEventListener('click', function() {
+            window.location.href = "{{ route('cart.payment') }}";
+        });
+
+        // Redireciona para a rota de alteração do endereço
+        document.getElementById('changeAddress').addEventListener('click', function() {
+            window.location.href = "{{ route('cart.show') }}";
+        });
+
+        // Fecha o modal ao clicar fora do conteúdo do modal
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('addressModal')) {
+                document.getElementById('addressModal').style.display = 'none';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const cartIcon = document.querySelector('.cart-icon');
+            setInterval(() => {
+                cartIcon.classList.add('animate');
+                setTimeout(() => {
+                    cartIcon.classList.remove('animate');
+                }, 1000);
+            }, 3000);
+        });
+
+        // function redirectToCart() {
+        //     window.location.href = "{{ route('cart.show') }}";
+        // }
 
         const categoryHeader = document.getElementById('category-header');
         const categories = document.querySelectorAll('.category-header div');
@@ -340,7 +463,5 @@
                 }, 1000);
             }, 3000);
         });
-
-        
     </script>
 @endsection

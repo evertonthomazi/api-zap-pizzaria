@@ -197,4 +197,8 @@ spOptionsPhone = {
 };
 $('.telefone').mask(SPMaskBehaviorPhone, spOptionsPhone);
 
+$('.money').mask("#.##0,00", {
+    reverse: true
+  });
+
 

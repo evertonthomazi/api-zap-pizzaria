@@ -12,7 +12,6 @@ class DeviceController extends Controller
 
     public function dash()
     {
-
         return view('admin.dashboard.index');
     }
     public function index()
