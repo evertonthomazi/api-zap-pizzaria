@@ -23,11 +23,10 @@ use Illuminate\Support\Facades\DB;
 class EventsController extends Controller
 {
 
-
     public function index()
     {
         $reponseJson = file_get_contents('php://input');
-      
+
         // file_put_contents(Utils::createCode()."-audio.txt",$reponseJson);
         $reponseArray = json_decode($reponseJson, true);
         $session = Device::where('session', $reponseArray['data']['sessionId'])->first();
@@ -73,7 +72,6 @@ class EventsController extends Controller
         // Se não houver slot disponível, enviar mensagem fora do horário
         if ($exists) {
             $this->verifyService($reponseArray, $session);
-
         } else {
             // Montar a lista de horários de funcionamento
             $operatingHours = [];
@@ -103,12 +101,11 @@ class EventsController extends Controller
             $this->sendMessagem($session->session, $jid, $message);
             exit;
         }
-
     }
 
     public function verifyService($reponseArray, $session)
     {
-       
+
         if (!$reponseArray['data']['message']['fromMe'] && !$reponseArray['data']['message']['fromGroup']) {
 
 
@@ -130,281 +127,122 @@ class EventsController extends Controller
             $customer = Customer::where('jid',  $jid)
                 ->first();
 
-
-
-
             if (!$service) {
-
                 $service = new Chat();
                 $service->jid = $jid;
                 $service->session_id = $session->id;
                 $service->service_id = Utils::createCode();
-                $service->save();
-            }
-
-            if (!$customer) {
-                $customer = new Customer();
-                $customer->jid = $jid;
-                $customer->save();
-                if ($reponseArray['data']['message']['type'] == "audio") {
-                    $service->await_answer = "await_human";
-                    $service->update();
-                    exit;
-                }
-
-
-                $text = 'Olá! 🌟 Antes de continuarmos, poderia, por favor, nos fornecer o seu nome ?';
-                $service->await_answer = "name";
-                $service->save();
-                $this->sendMessagem($session->session, $customer->jid, $text);
-                exit;
-            }
-
-
-            if ($customer && $service->await_answer == null) {
-
-                if ($reponseArray['data']['message']['type'] == "audio") {
-                    $service->await_answer = "await_human";
-                    $service->update();
-                    exit;
-                }
-
-                if ($service->await_answe == "await_human" || $service->await_answe == "in_service") {
-                    exit;
-                }
                 $service->await_answer = "init_chat";
-            }
-            //dd($service);
-
-
-
-
-            if ($service->await_answer == "name") {
-                $customer->name = $reponseArray['data']['message']['text'];
-                $customer->update();
-                $text = "Por favor " . $customer->name . " Digite seu Cep";
-                $service->await_answer = "cep";
-                $service->update();
-                $this->sendMessagem($session->session, $customer->jid, $text);
-                exit;
+                $service->save();
+                
             }
 
+            // if ($customer && $service->await_answer == null) {
 
+            //     if ($reponseArray['data']['message']['type'] == "audio") {
+            //         $service->await_answer = "await_human";
+            //         $service->update();
+            //         exit;
+            //     }
 
-            if ($service->await_answer == "cep") {
-
-                $cep = $reponseArray['data']['message']['text'];
-                $cep = Utils::returnCep($cep);
-
-
-                if ($cep) {
-                    $customer->zipcode = $cep['cep'];
-                    $customer->public_place = $cep['logradouro'];
-                    $customer->neighborhood = $cep['bairro'];
-                    $customer->city = $cep['localidade'];
-                    $customer->state = $cep['uf'];
-                    $customer->update();
-                    $service->await_answer = "number";
-                    $service->update();
-                    $text = "Por Favor Digite o Número da residência";
-                } else {
-                    $service->await_answer = "cep";
-                    $text = "Cep inválido Digite novamente!";
-                }
-                $this->sendMessagem($session->session, $customer->jid, $text);
-                exit;
-            }
-
-
-            if ($service->await_answer == "number") {
-
-                $text = $customer->getDistanceInKilometers();
-                if ($text > 8) {
-                    $text = 'Infelizmente, não conseguimos fazer entregas na sua área, 🚫\n' .
-                        'pois a distância é maior do que a que costumamos atender. 😔\n' .
-                        'Sentimos muito por isso.\n\n' .
-                        'Se tiver alguma dúvida ou precisar de mais informações, por favor, nos avise. 🤔\n' .
-                        'Obrigado pela compreensão. 🙏';
-                    $this->sendMessagem($session->session, $customer->jid, $text);
-                    $service->active = 0;
-                    $service->update();
-                    exit;
-                }
-
-
-                $customer->number = $reponseArray['data']['message']['text'];
-                $customer->update();
-                $location = $customer->location . " \n  O Endereço está Correto ? ";
-                $options = [
-                    "Sim",
-                    "Não"
-                ];
-                $this->sendMessagewithOption($session->session, $customer->jid, $location, $options);
-
-                $service->await_answer = "cep_confirmation";
-                $service->update();
-                exit;
-            }
-
-
-
-            if ($service->await_answer == "cep_confirmation") {
-
-                $response = $reponseArray['data']['message']['text'];
-
-                switch ($response) {
-                    case  "1";
-
-                        $text = $customer->getDistanceInKilometers();
-                        if ($text > 8) {
-                            $text = 'Infelizmente, não conseguimos fazer entregas na sua área, 🚫\n' .
-                                'pois a distância é maior do que a que costumamos atender. 😔\n' .
-                                'Sentimos muito por isso.\n\n' .
-                                'Se tiver alguma dúvida ou precisar de mais informações, por favor, nos avise. 🤔\n' .
-                                'Obrigado pela compreensão. 🙏';
-                            $this->sendMessagem($session->session, $customer->jid, $text);
-                            $service->active = 0;
-                            $service->update();
-                            exit;
-                        }
-
-
-                        $service->await_answer = "init_chat_1";
-                        $service->update();
-                        $text =  $customer->name . " \n  Seu cadastro foi Realizado \n com sucesso ";
-                        $this->sendMessagem($session->session, $customer->jid, $text);
-
-                        $text = "Por favor " . $customer->name . " Selecione uma das Opções .";
-                        $options = [
-                            "Novo Pedido",
-                            "Falar com um Atendente."
-                        ];
-                        $this->sendMessagewithOption($session->session, $customer->jid, $text, $options);
-                        exit;
-                        break;
-
-                    case "2";
-                        $service->await_answer = "cep";
-                        $service->update();
-                        $text = "Por favor Digite seu cep Novamente.";
-                        $this->sendMessagem($session->session, $customer->jid, $text);
-                        exit;
-                        break;
-
-                    default:
-                        $service->erro =  $service->erro + 1;
-                        $service->update();
-                        $text =  "Opção inválida!";
-                        $this->sendMessagem($session->session, $customer->jid, $text);
-                        if ($service->erro > 2) {
-                            $text =  "Por favor aguarde ,em instantes você será atendido(a).";
-                            $this->sendMessagem($session->session, $customer->jid, $text);
-                            $service->await_answer = "await_human";
-                            $service->update();
-                        }
-                        exit;
-                        break;
-                }
-            }
-
+            //     if ($service->await_answe == "await_human" || $service->await_answe == "in_service") {
+            //         exit;
+            //     }
+            //     $service->await_answer = "init_chat";
+            // }
 
             if ($service->await_answer == "init_chat") {
 
-
-                $text = "Olá " . $customer->name . " é bom ter você novamente aki! ";
-                $this->sendMessagem($session->session, $customer->jid, $text);
-                $location =  "------Este ainda é Seu Endereço ?-------- \n " . $customer->location;
-                $options = [
-                    "Sim",
-                    "Não"
-                ];
-                $this->sendMessagewithOption($session->session, $customer->jid, $location, $options);
-
-                $service->await_answer = "address_confirmation";
-                $service->update();
-            }
-
-            if ($service->await_answer == "address_confirmation") {
-                $response = $reponseArray['data']['message']['text'];
-
-                switch ($response) {
-                    case  "1";
-
-                        $text = $customer->getDistanceInKilometers();
-                        if ($text > 8) {
-                            $text = 'Infelizmente, não conseguimos fazer entregas na sua área, 🚫\n' .
-                                'pois a distância é maior do que a que costumamos atender. 😔\n' .
-                                'Sentimos muito por isso.\n\n' .
-                                'Se tiver alguma dúvida ou precisar de mais informações, por favor, nos avise. 🤔\n' .
-                                'Obrigado pela compreensão. 🙏';
-                            $this->sendMessagem($session->session, $customer->jid, $text);
-                            $service->active = 0;
-                            $service->update();
-                            exit;
-                        }
-
-
-                        $service->await_answer = "welcome";
+                if($customer){
+                    $text = 'Olá ' . $customer->name . '! É bom ter você aqui novamente! 😊\n\n'
+                    . 'Para Fazer seu pedido clique no link Abaixo \n'
+                    . '🔗 ' . 'https://benjamin.enviazap.shop/checkout/?phone=' . $numero_sem_arroba
+                    . 'Fácil, rápido e prático! 🚀';
+                }else{
+                    $customer = new Customer();
+                    $customer->jid = $jid;
+                    $customer->save();
+                    if ($reponseArray['data']['message']['type'] == "audio") {
+                        $service->await_answer = "await_human";
                         $service->update();
-
-                        $service->await_answer = "init_chat_1";
-                        $service->update();
-                        $text = "Por favor " . $customer->name . " Selecione uma das Opções .";
-                        $options = [
-                            "Novo Pedido",
-                            "Falar com um Atendente."
-                        ];
-                        $this->sendMessagewithOption($session->session, $customer->jid, $text, $options);
                         exit;
-
-                    case '2';
-                        $service->await_answer = "cep";
-                        $service->update();
-                        $text = "Por favor Digite seu cep Novamente.";
-                        $this->sendMessagem($session->session, $customer->jid, $text);
-                        exit;
-                        break;
-                    default:
-                        break;
+                    }
+                    $text = 'Olá!! Para Fazer seu pedido \nclique no link Abaixo\n'
+                    . '🔗 ' . 'https://benjamin.enviazap.shop/checkout/?phone=' . $numero_sem_arroba
+                    . '\nFácil, rápido e prático! 🚀';
                 }
-            }
 
-
-            if ($service->await_answer == "welcome") {
-
-
-                $service->await_answer = "init_chat_1";
-                $service->update();
-                $text = "Por favor " . $customer->name . " Selecione uma das Opções .";
+                
+                $this->sendMessagem($session->session, $customer->jid, $text);
+                $text =  "Posso te ajudar em mais alguma coisa?";
                 $options = [
-                    "Novo Pedido",
-                    "Falar com um Atendente."
+                    "Falar com Atendente",
+                    "Horário de Funcionamento"
                 ];
                 $this->sendMessagewithOption($session->session, $customer->jid, $text, $options);
+                $service->await_answer = "menu1";
+                $service->update();
                 exit;
             }
 
-            if ($service->await_answer == "init_chat_1") {
+            if ($service->await_answer == "menu1") {
                 $response = $reponseArray['data']['message']['text'];
 
                 switch ($response) {
+
                     case  "1";
 
-                        // Construir a URL com o telefone criptografado
-                        $url = 'https://benjamin.enviazap.shop/checkout/pedido/' . $customer->id;
-                        $service->await_answer = "init_order";
-                        $service->update();
-                        $this->sendMessagem($session->session, $customer->jid, "Por Favor Clique no Link abaixo para fazer seu pedido");
-                        $this->sendMessagem($session->session, $customer->jid, $url);
-                        exit;
-                        break;
-
-                    case '2';
                         $service->await_answer = "await_human";
                         $service->update();
                         $text =  "Por favor aguarde ,em instantes você será atendido(a).";
                         $this->sendMessagem($session->session, $customer->jid, $text);
+                        exit;
+                        break;
 
+                    case '2';
+                        $daysOfWeek = [
+                            0 => 'domingo',
+                            1 => 'segunda',
+                            2 => 'terça',
+                            3 => 'quarta',
+                            4 => 'quinta',
+                            5 => 'sexta',
+                            6 => 'sábado',
+                        ];
+
+                        // Montar a lista de horários de funcionamento
+                        $operatingHours = [];
+                        foreach ($daysOfWeek as $index => $day) {
+                            $slots = DB::table('available_slots_config')
+                                ->where('day_of_week', $day)
+                                ->select('start_time', 'end_time')
+                                ->get();
+
+                            if ($slots->isEmpty()) {
+                                $operatingHours[$day] = 'Fechado';
+                            } else {
+                                $hours = [];
+                                foreach ($slots as $slot) {
+                                    $hours[] = $slot->start_time . ' às ' . $slot->end_time;
+                                }
+                                $operatingHours[$day] = implode(', ', $hours);
+                            }
+                        }
+
+                        // Construir a mensagem com os horários de funcionamento
+                        $message = '𝗛𝗢𝗥Á𝗥𝗜𝗢 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗔𝗠𝗘𝗡𝗧𝗢  ⏰\n';
+                        foreach ($operatingHours as $day => $hours) {
+                            $message .= ucfirst($day) . ': ' . $hours . '\n';
+                        }
+
+                        $this->sendMessagem($session->session, $jid, $message);
+                        $text =  "Posso te ajudar em mais alguma coisa?";
+                        $options = [
+                            "Falar com Atendente",
+                            "Horário de Funcionamento"
+                        ];
+                        $this->sendMessagewithOption($session->session, $customer->jid, $text, $options);
+                        exit;
                         break;
 
 
@@ -423,106 +261,184 @@ class EventsController extends Controller
                         break;
                 }
             }
-            if ($service->await_answer == "init_order") {
-                $response = $reponseArray['data']['message']['text'];
-                $order = new Order();
-                $order->status = "opened";
-                $order->customer_id = $customer->id;
-                $order->save();
-                $orderItem = new OrderItem();
-                $orderItem->order_id = $order->id;
 
-                if ($response == '1') {
-                    $orderItem->price = "99.00";
-                }
-                if ($response == '2') {
-                    $orderItem->price = "140.00";
-                }
-                if ($response != "1" && $response != "2") {
-
-                    $service->erro =  $service->erro + 1;
-                    $service->update();
-                    $text =  "Opção inválida!";
-                    $this->sendMessagem($session->session, $customer->jid, $text);
-                    if ($service->erro > 2) {
-                        $text =  "Por favor aguarde ,em instantes você será atendido(a).";
-                        $this->sendMessagem($session->session, $customer->jid, $text);
-                        $service->await_answer = "await_human";
-                        $service->update();
-                    }
-                }
-
-
-                $orderItem->save();
-                $service->await_answer = "question_closes";
-                $service->update();
-                $text = "Por favor Selecione uma das Opções .";
-                $options = [
-                    "Finalizar Pedido",
-                    "Continuar Comprando"
-                ];
-                $this->sendMessagewithOption($session->session, $customer->jid, $text, $options);
-                exit;
-            }
-
-            if ($service->await_answer == "question_closes") {
-                $response = $reponseArray['data']['message']['text'];
-
-                if ($response == '1') {
-
-                    $order = Order::where('customer_id', $customer->id)
-                        ->where("status", "opened")->orderByDesc('id')->first();
-
-                    $orderItens = $order->orderItens->first();
-
-                    $text = "Por favor verifique o pedido \n  Total :" . $orderItens->price . " \n"
-                        . " Endereço  \n" . $customer->location . " \n Os dados do pedido estão correto ?";
-                    $options = [
-                        "Sim",
-                        "Não"
-                    ];
-                    $service->await_answer = "finish";
-
-                    $service->update();
-                    $this->sendMessagewithOption($session->session, $customer->jid, $text, $options);
-                    exit;
-                }
-                if ($response == '2') {
-                    $text =  "Por favor aguarde ,em instantes você será atendido(a).";
-                    $this->sendMessagem($session->session, $customer->jid, $text);
-                    $service->await_answer = "await_human";
-                    $service->update();
-                }
-
-                if ($response != "1" && $response != "2") {
-
-                    $service->erro =  $service->erro + 1;
-                    $service->update();
-                    $text =  "Opção inválida!";
-                    $this->sendMessagem($session->session, $customer->jid, $text);
-                    if ($service->erro > 2) {
-                        $text =  "Por favor aguarde ,em instantes você será atendido(a).";
-                        $this->sendMessagem($session->session, $customer->jid, $text);
-                        $service->await_answer = "await_human";
-                        $service->update();
-                    }
-                }
-            }
-
-            // if ($service->await_answer == "finish") {
-            //     date_default_timezone_set('America/Sao_Paulo');
-            //     $horaAtual = Carbon::now();
-            //     $horaMais45Minutos = $horaAtual->addMinutes(45);
-            //     $text = " Pedido feito com Sucesso .";
-            //     $this->sendMessagem($session->session, $customer->jid, $text);
-
-            //     $text = "Previsão da entrega " . $horaMais45Minutos->format('H:i');
-            //     $this->sendMessagem($session->session, $customer->jid, $text);
-
-            //     $text = "Muito Obrigado! ";
-            //     $this->sendMessagem($session->session, $customer->jid, $text);
-            //     $service->active = 0;
+            // //dd($service);
+            // if ($service->await_answer == "name") {
+            //     $customer->name = $reponseArray['data']['message']['text'];
+            //     $customer->update();
+            //     $text = "Por favor " . $customer->name . " Digite seu Cep";
+            //     $service->await_answer = "cep";
             //     $service->update();
+            //     $this->sendMessagem($session->session, $customer->jid, $text);
+            //     exit;
+            // }
+            // if ($service->await_answer == "cep") {
+
+            //     $cep = $reponseArray['data']['message']['text'];
+            //     $cep = Utils::returnCep($cep);
+
+
+            //     if ($cep) {
+            //         $customer->zipcode = $cep['cep'];
+            //         $customer->public_place = $cep['logradouro'];
+            //         $customer->neighborhood = $cep['bairro'];
+            //         $customer->city = $cep['localidade'];
+            //         $customer->state = $cep['uf'];
+            //         $customer->update();
+            //         $service->await_answer = "number";
+            //         $service->update();
+            //         $text = "Por Favor Digite o Número da residência";
+            //     } else {
+            //         $service->await_answer = "cep";
+            //         $text = "Cep inválido Digite novamente!";
+            //     }
+            //     $this->sendMessagem($session->session, $customer->jid, $text);
+            //     exit;
+            // }
+            // if ($service->await_answer == "number") {
+
+            //     $text = $customer->getDistanceInKilometers();
+            //     if ($text > 8) {
+            //         $text = 'Infelizmente, não conseguimos fazer entregas na sua área, 🚫\n' .
+            //             'pois a distância é maior do que a que costumamos atender. 😔\n' .
+            //             'Sentimos muito por isso.\n\n' .
+            //             'Se tiver alguma dúvida ou precisar de mais informações, por favor, nos avise. 🤔\n' .
+            //             'Obrigado pela compreensão. 🙏';
+            //         $this->sendMessagem($session->session, $customer->jid, $text);
+            //         $service->active = 0;
+            //         $service->update();
+            //         exit;
+            //     }
+
+
+            //     $customer->number = $reponseArray['data']['message']['text'];
+            //     $customer->update();
+            //     $location = $customer->location . " \n  O Endereço está Correto ? ";
+            //     $options = [
+            //         "Sim",
+            //         "Não"
+            //     ];
+            //     $this->sendMessagewithOption($session->session, $customer->jid, $location, $options);
+
+            //     $service->await_answer = "cep_confirmation";
+            //     $service->update();
+            //     exit;
+            // }
+            // if ($service->await_answer == "cep_confirmation") {
+
+            //     $response = $reponseArray['data']['message']['text'];
+
+            //     switch ($response) {
+            //         case  "1";
+
+            //             $text = $customer->getDistanceInKilometers();
+            //             if ($text > 8) {
+            //                 $text = 'Infelizmente, não conseguimos fazer entregas na sua área, 🚫\n' .
+            //                     'pois a distância é maior do que a que costumamos atender. 😔\n' .
+            //                     'Sentimos muito por isso.\n\n' .
+            //                     'Se tiver alguma dúvida ou precisar de mais informações, por favor, nos avise. 🤔\n' .
+            //                     'Obrigado pela compreensão. 🙏';
+            //                 $this->sendMessagem($session->session, $customer->jid, $text);
+            //                 $service->active = 0;
+            //                 $service->update();
+            //                 exit;
+            //             }
+
+
+            //             $service->await_answer = "init_chat_1";
+            //             $service->update();
+            //             $text =  $customer->name . " \n  Seu cadastro foi Realizado \n com sucesso ";
+            //             $this->sendMessagem($session->session, $customer->jid, $text);
+
+            //             $text = "Por favor " . $customer->name . " Selecione uma das Opções .";
+            //             $options = [
+            //                 "Novo Pedido",
+            //                 "Falar com um Atendente."
+            //             ];
+            //             $this->sendMessagewithOption($session->session, $customer->jid, $text, $options);
+            //             exit;
+            //             break;
+
+            //         case "2";
+            //             $service->await_answer = "cep";
+            //             $service->update();
+            //             $text = "Por favor Digite seu cep Novamente.";
+            //             $this->sendMessagem($session->session, $customer->jid, $text);
+            //             exit;
+            //             break;
+
+            //         default:
+            //             $service->erro =  $service->erro + 1;
+            //             $service->update();
+            //             $text =  "Opção inválida!";
+            //             $this->sendMessagem($session->session, $customer->jid, $text);
+            //             if ($service->erro > 2) {
+            //                 $text =  "Por favor aguarde ,em instantes você será atendido(a).";
+            //                 $this->sendMessagem($session->session, $customer->jid, $text);
+            //                 $service->await_answer = "await_human";
+            //                 $service->update();
+            //             }
+            //             exit;
+            //             break;
+            //     }
+            // }
+
+            // if ($service->await_answer == "address_confirmation") {
+            //     $response = $reponseArray['data']['message']['text'];
+
+            //     switch ($response) {
+            //         case  "1";
+
+            //             $text = $customer->getDistanceInKilometers();
+            //             if ($text > 8) {
+            //                 $text = 'Infelizmente, não conseguimos fazer entregas na sua área, 🚫\n' .
+            //                     'pois a distância é maior do que a que costumamos atender. 😔\n' .
+            //                     'Sentimos muito por isso.\n\n' .
+            //                     'Se tiver alguma dúvida ou precisar de mais informações, por favor, nos avise. 🤔\n' .
+            //                     'Obrigado pela compreensão. 🙏';
+            //                 $this->sendMessagem($session->session, $customer->jid, $text);
+            //                 $service->active = 0;
+            //                 $service->update();
+            //                 exit;
+            //             }
+
+
+            //             $service->await_answer = "welcome";
+            //             $service->update();
+
+            //             $service->await_answer = "init_chat_1";
+            //             $service->update();
+            //             $text = "Por favor " . $customer->name . " Selecione uma das Opções .";
+            //             $options = [
+            //                 "Novo Pedido",
+            //                 "Falar com um Atendente."
+            //             ];
+            //             $this->sendMessagewithOption($session->session, $customer->jid, $text, $options);
+            //             exit;
+
+            //         case '2';
+            //             $service->await_answer = "cep";
+            //             $service->update();
+            //             $text = "Por favor Digite seu cep Novamente.";
+            //             $this->sendMessagem($session->session, $customer->jid, $text);
+            //             exit;
+            //             break;
+            //         default:
+            //             break;
+            //     }
+            // }
+            // if ($service->await_answer == "welcome") {
+
+
+            //     $service->await_answer = "init_chat_1";
+            //     $service->update();
+            //     $text = "Por favor " . $customer->name . " Selecione uma das Opções .";
+            //     $options = [
+            //         "Novo Pedido",
+            //         "Falar com um Atendente."
+            //     ];
+            //     $this->sendMessagewithOption($session->session, $customer->jid, $text, $options);
+            //     exit;
             // }
         }
     }
@@ -541,7 +457,6 @@ class EventsController extends Controller
         // verifica se o serviço está em andamento
         $this->verifyService($reponseArray, $session);
     }
-
     public function mensagemEmMassa()
     {
         $devices = Device::get(); // IDs dos dispositivos
@@ -598,7 +513,6 @@ class EventsController extends Controller
             }
         }
     }
-
     public function storeAvaliacao(Request $request)
     {
         //    dd($request->all());
@@ -659,7 +573,6 @@ class EventsController extends Controller
 
         curl_close($curl);
     }
-
     public function avaliacao(Request $request)
     {
 
@@ -690,7 +603,6 @@ class EventsController extends Controller
             return view("front.avaliacao.index", compact('colaborador'));
         }
     }
-
     public function sendMessagem($session, $phone, $texto)
     {
 
@@ -725,7 +637,6 @@ class EventsController extends Controller
 
         echo $response;
     }
-
     public function sendMessagewithOption($session, $phone, $text, $options)
     {
         $curl = curl_init();
@@ -761,7 +672,6 @@ class EventsController extends Controller
         curl_close($curl);
         echo $response;
     }
-
     public function sendAudio($session, $phone)
     {
         $curl = curl_init();

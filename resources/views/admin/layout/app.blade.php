@@ -59,14 +59,17 @@
                 Pedidos
             </div>
 
-            <li class="nav-item">
-                <a href="{{ route('admin.order.index') }}" class="nav-link">
-                    <i class="fas fa-users"></i>
-                    <span>Pedidos</span>
-                    <span
-                        class="badge badge-danger badge-counter">{{ session('userData')->unreadNotifications->count() }}</span>
-                </a>
-            </li>
+            <!-- Na sidebar -->
+            @if (session('authenticated') && session('userData') && session('userData')->role == 'admin')
+                <li class="nav-item">
+                    <a href="{{ route('admin.order.index') }}" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        <span>Pedidos</span>
+                        <span class="badge badge-danger badge-counter"
+                            id="sidebar-notification-count">{{ session('userData')->unreadNotifications->count() }}</span>
+                    </a>
+                </li>
+            @endif
 
 
 
@@ -172,38 +175,45 @@
                         <ul id="notificacoes">
                             <!-- Aqui é onde as notificações aparecerão -->
                         </ul>
-                        <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="alertsOrder" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-bell fa-fw"></i>
-                                <!-- Counter - Alerts -->
-                                <span
-                                    class="badge badge-danger badge-counter">{{ session('userData')->unreadNotifications->count() }}</span>
-                            </a>
-                            <!-- Dropdown - Alerts -->
-                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="alertsOrder">
-                                <h6 class="dropdown-header">Pedidos</h6>
-                                <div class="dropdown-orders">
-                                    @foreach (session('userData')->unreadNotifications as $notification)
-                                        <a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="mr-3">
-                                                <div class="icon-circle bg-primary">
-                                                    <i class="fas fa-file-alt text-white"></i>
+                        <!-- No header, adicione o contador de notificações -->
+                        @if (session('authenticated') && session('userData') && session('userData')->role == 'admin')
+                            <li class="nav-item dropdown no-arrow mx-1">
+                                <a class="nav-link dropdown-toggle" href="#" id="alertsOrder" role="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-bell fa-fw"></i>
+                                    <!-- Counter - Alerts -->
+                                    <span class="badge badge-danger badge-counter"
+                                        id="notification-count">{{ session('userData')->unreadNotifications->count() }}</span>
+                                </a>
+                                <!-- Dropdown - Alerts -->
+                                <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                    aria-labelledby="alertsOrder">
+                                    <h6 class="dropdown-header">Pedidos</h6>
+                                    <div class="dropdown-orders">
+                                        @foreach (session('userData')->unreadNotifications as $notification)
+                                            <a class="dropdown-item d-flex align-items-center" href="#">
+                                                <div class="mr-3">
+                                                    <div class="icon-circle bg-primary">
+                                                        <i class="fas fa-file-alt text-white"></i>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div>
-                                                <div class="small text-gray-500">{{ $notification->created_at }}</div>
-                                                <span
-                                                    class="font-weight-bold">{{ $notification->data['message'] }}</span>
-                                            </div>
-                                        </a>
-                                    @endforeach
+                                                <div>
+                                                    <div class="small text-gray-500">{{ $notification->created_at }}
+                                                    </div>
+                                                    <span
+                                                        class="font-weight-bold">{{ $notification->data['message'] }}</span>
+                                                </div>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                    <a class="dropdown-item text-center small text-gray-500"
+                                        href="{{ route('admin.notifications.index') }}">Ver todas as notificações</a>
                                 </div>
-                                <a class="dropdown-item text-center small text-gray-500"
-                                    href="{{ route('admin.notifications.index') }}">Ver todas as notificações</a>
-                            </div>
-                        </li>
+                            </li>
+                        @endif
+
+                       
+
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle" href="#" id="alertsMessage" role="button"
@@ -326,119 +336,185 @@
 
     @yield('scripts')
     <script>
-        let notificationSoundPlayed = false;
+        verificarCondicao();
+        navigator.mediaDevices.getUserMedia({
+                audio: true
+            })
+            .then(function(stream) {
+                // O usuário concedeu permissão para o uso do microfone
+                // Agora você pode usar o stream de áudio.
+            })
+            .catch(function(error) {
+                // O usuário negou a permissão ou ocorreu um erro.
+            });
+        var som = new Howl({
+            src: ['/audioTelefone.mp3']
+        });
 
-        function checkNotifications() {
+
+        function verificarCondicao() {
             $.ajax({
-                url: '{{ route('admin.notifications.check') }}',
+                url: '/admin/chat/getAtendimentoPedente',
                 method: 'GET',
                 success: function(response) {
-                    if (response.notifications.length > 0 && !notificationSoundPlayed) {
-                        showNotificationAlert(response.notifications.length);
-                        notificationSoundPlayed = true; // Marque que o som já foi tocado
+
+                    var audio = document.getElementById('myAudio');
+
+                    if (response > '0') {
+
+                          som.play();
+                        document.querySelector('.notification-count').textContent = response;
+
+                    } else {
+                          som.pause();
+                        document.querySelector('.notification-count').textContent = response;
+
+
                     }
                 }
             });
         }
 
-        function showNotificationAlert(count) {
-            const audio = new Howl({
-                src: ['/audioTelefone.mp3'],
-                onend: function() {
-                    audio.stop(); // Parar o áudio depois que ele tocar uma vez
-                }
-            });
-
-            Swal.fire({
-                title: 'Novo Pedido!',
-                text: `Você tem ${count} novo(s) pedido(s).`,
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonText: 'Ver Pedidos',
-                cancelButtonText: 'Fechar',
-                customClass: {
-                    popup: 'animated shake'
-                },
-                didOpen: () => {
-                    audio.play(); // Tocar o som de notificação uma vez
-                    const intervalId = setInterval(() => {
-                        Swal.getPopup().classList.toggle('shake');
-                    }, 2000);
-
-                    Swal.getPopup().addEventListener('mouseleave', () => clearInterval(
-                    intervalId)); // Limpar o intervalo quando o modal for fechado
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '{{ route('admin.order.index2') }}';
-                }
-                notificationSoundPlayed = false; // Reseta a flag ao fechar o modal
-            });
-        }
-
-        // Verificar notificações a cada 5 segundos
-        setInterval(checkNotifications, 5000);
-
-        function showToast(icon, message) {
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 5000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                }
-            });
-
-            Toast.fire({
-                icon: icon,
-                title: message,
-            });
-        }
-        // verificarCondicao();
-        // navigator.mediaDevices.getUserMedia({
-        //         audio: true
-        //     })
-        //     .then(function(stream) {
-        //         // O usuário concedeu permissão para o uso do microfone
-        //         // Agora você pode usar o stream de áudio.
-        //     })
-        //     .catch(function(error) {
-        //         // O usuário negou a permissão ou ocorreu um erro.
-        //     });
-        // var som = new Howl({
-        //     src: ['/audioTelefone.mp3']
-        // });
+        // Executar a função de verificação a cada 5 segundos.
+        setInterval(verificarCondicao, 5000);
 
 
-        // function verificarCondicao() {
+
+
+
+
+
+
+
+        // let notificationSoundPlayed = false;
+
+        // function checkNotifications() {
+          
         //     $.ajax({
-        //         url: '/admin/chat/getAtendimentoPedente',
+        //         url: '{{ route('admin.notifications.check') }}',
         //         method: 'GET',
         //         success: function(response) {
+        //             console.log(response);
+        //             if (response.notifications.length > 0 && !notificationSoundPlayed) {
+        //                 playNotificationSound();
+        //                 showNotificationAlert(response.notifications.length);
+        //                 notificationSoundPlayed = true; // Marque que o som já foi tocado
+        //             }
+        //             updateNotificationCount(response.notifications.length);
+        //             updateNotificationList(response.notifications);
+        //         }
+        //     });
+        // }
 
-        //             var audio = document.getElementById('myAudio');
+        // function playNotificationSound() {
+        //     const audio = new Howl({
+        //         src: ['/audioTelefone.mp3'],
+        //         onend: function() {
+        //             audio.stop(); // Parar o áudio depois que ele tocar uma vez
+        //         }
+        //     });
+        //     audio.play(); // Tocar o som de notificação uma vez
+        // }
 
-        //             if (response > '0') {
+        // function showNotificationAlert(count) {
+        //     Swal.fire({
+        //         title: 'Novo Pedido!',
+        //         text: `Você tem ${count} novo(s) pedido(s).`,
+        //         icon: 'info',
+        //         showCancelButton: true,
+        //         confirmButtonText: 'Ver Pedidos',
+        //         cancelButtonText: 'Fechar',
+        //         customClass: {
+        //             popup: 'animated shake'
+        //         },
+        //         didOpen: () => {
+        //             const intervalId = setInterval(() => {
+        //                 Swal.getPopup().classList.toggle('shake');
+        //             }, 2000);
 
-        //                   som.play();
-        //                 document.querySelector('.notification-count').textContent = response;
+        //             Swal.getPopup().addEventListener('mouseleave', () => clearInterval(
+        //                 intervalId)); // Limpar o intervalo quando o modal for fechado
+        //         }
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             markNotificationsAsRead().then(() => {
+        //                 window.location.href = '{{ route('admin.order.index2') }}';
+        //             });
+        //         }
+        //         notificationSoundPlayed = false; // Reseta a flag ao fechar o modal
+        //     });
+        // }
 
-        //             } else {
-        //                   som.pause();
-        //                 document.querySelector('.notification-count').textContent = response;
+        // function updateNotificationCount(count) {
+        //     $('#notification-count').text(count);
+        //     $('#sidebar-notification-count').text(count);
+        // }
 
+        // function updateNotificationList(notifications) {
+        //     const notificationList = $('#notificacoes');
+        //     notificationList.empty(); // Limpar a lista existente
 
+        //     notifications.forEach(notification => {
+        //         const notificationItem = $('<li class="dropdown-item d-flex align-items-center"></li>');
+        //         notificationItem.html(`
+        //             <div class="mr-3">
+        //                 <div class="icon-circle bg-primary">
+        //                     <i class="fas fa-file-alt text-white"></i>
+        //                 </div>
+        //             </div>
+        //             <div>
+        //                 <div class="small text-gray-500">${notification.created_at}</div>
+        //                 <span class="font-weight-bold">${notification.data.message}</span>
+        //             </div>
+        //         `);
+        //         notificationList.append(notificationItem);
+        //     });
+        // }
+
+        // function markNotificationsAsRead() {
+        //     return $.ajax({
+        //         url: '{{ route('admin.notifications.markAllRead') }}',
+        //         method: 'POST',
+        //         headers: {
+        //             'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        //         },
+        //         success: function(response) {
+        //             if (response.success) {
+        //                 // Atualizar o contador de notificações no frontend
+        //                 $('#notification-count').text('0');
+        //                 $('#sidebar-notification-count').text('0');
+        //                 $('#notificacoes').empty(); // Limpar as notificações após marcar como lidas
         //             }
         //         }
         //     });
         // }
 
-        // // Executar a função de verificação a cada 5 segundos.
-        // setInterval(verificarCondicao, 5000);
+        // // Verificar notificações a cada 5 segundos
+        // setInterval(checkNotifications, 5000);
+
+        // function showToast(icon, message) {
+        //     const Toast = Swal.mixin({
+        //         toast: true,
+        //         position: 'top-end',
+        //         showConfirmButton: false,
+        //         timer: 5000,
+        //         timerProgressBar: true,
+        //         didOpen: (toast) => {
+        //             toast.addEventListener('mouseenter', Swal.stopTimer)
+        //             toast.addEventListener('mouseleave', Swal.resumeTimer)
+        //         }
+        //     });
+        //     Toast.fire({
+        //         icon: icon,
+        //         title: message,
+        //     });
+        // }
+        // // Inicializar a verificação de notificações ao carregar a página
+        // $(document).ready(function() {
+        //     checkNotifications();
+        // });
     </script>
+
     @if (session('success'))
         <script>
             const Toast = Swal.mixin({
@@ -459,8 +535,6 @@
             })
         </script>
     @endif
-
-
     @if (session('error'))
         <script>
             const Toast = Swal.mixin({

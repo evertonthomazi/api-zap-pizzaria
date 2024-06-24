@@ -82,8 +82,10 @@ Route::prefix('/checkout')->controller(ChekoutController::class)->group(function
     Route::get('/cart/remove/{id}', 'removeCartItem');
     Route::get('/cart', 'showCart')->name('cart.show');
     Route::post('/enviaImagen', 'enviaImagen')->name('checkout.enviaImagen');
-    Route::get('/finalizar', 'finish');
+    Route::post('/finalizar', 'finish');
     Route::get('/iniciaratendimento', 'iniciar');
+    Route::post('/pagamento', 'pagamento')->name('cart.payment');
+    Route::get('/pagamento', 'pagamento')->name('cart.payment');
     Route::post('/addToCart', 'addToCart')->name('cart.add');
     Route::post('/addToCart2', 'addToCart2')->name('cart.add2');
     Route::post('/update-taxa-entrega', 'updateTaxaEntrega')->name('update-taxa-entrega');
@@ -162,6 +164,7 @@ Route::middleware(['auth.user'])->group(function () {
             Route::get('/apagaNotifica', 'index2')->name('admin.order.index2');
             Route::get('/getOrders', 'getOrders');
             Route::post('/atualizar-status', 'updateStatus');
+            Route::post('/atualizar-notify', 'updateNotify')->name('admin.notifications.markAllRead');
             Route::get('/getOrder', 'getOrder');
         });
 

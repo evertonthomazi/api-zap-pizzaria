@@ -21,27 +21,21 @@ use Illuminate\Support\Facades\Storage;
 
 class ChekoutController extends Controller
 {
-    public function index($id = null)
+    public function index(Request $request)
     {
-        // $cart = session()->get('cart', []);
-        // unset($cart[0]);
-        // session()->put('cart', array_values($cart));
-        if ($id) {
-            $customer = Customer::where('id', $id)->first();
 
+        // dd($request->all());
+
+        if ($request->phone) {
+            $customer = Customer::where('jid', $request->phone)->first();
 
             session()->put('taxa_entrega', $customer->delivery_fee);
-            $chat = Chat::where(['jid' => $customer->jid, 'active' => '1'])->first();
-            if ($chat) {
-
+           
 
                 session()->put('customer', $customer);
                 $categories = Categories::with('products')->get();
                 $cart = session()->get('cart', []);
                 return view('front.checkout.index', compact('categories', 'cart', 'customer'));
-            } else {
-                return view('front.checkout.va_pro_zap');
-            }
         } else {
             // Recuperar o customer da sessão
             $customer = session()->get('customer');
@@ -54,7 +48,6 @@ class ChekoutController extends Controller
             }
         }
     }
-
     public function addProduto($id)
     {
         $product = Product::findOrFail($id);
@@ -188,9 +181,13 @@ class ChekoutController extends Controller
         return redirect()->route('checkout.home')->with('success', 'Produto(s) adicionado(s) ao carrinho com sucesso.');
     }
 
-
     public function showCart()
     {
+        $customer = session('customer');
+
+        if (!$customer->zip_code) {
+            return view('front.checkout.cadastro', compact('customer'));
+        }
         // Obter o carrinho da sessão
         $cart = session()->get('cart', []);
 
@@ -206,7 +203,6 @@ class ChekoutController extends Controller
 
         return view('front.checkout.cart', compact('cart', 'produtosBebidas'));
     }
-
 
     public function removeCartItem($index)
     {
@@ -266,15 +262,14 @@ class ChekoutController extends Controller
         return back()->with('success', 'Alterado com sucesso.');
     }
 
-
     public function finish(Request $request)
     {
         // Obter o carrinho da sessão
         $cart = session()->get('cart', []);
 
-        if (empty($cart)) {
-            return redirect()->back()->with('error', 'Seu carrinho está vazio.');
-        }
+        // if (empty($cart)) {
+        //     return redirect()->back()->with('error', 'Seu carrinho está vazio.');
+        // }
 
         // Recuperar o customer da sessão
         $customer = session()->get('customer');
@@ -283,11 +278,25 @@ class ChekoutController extends Controller
         $taxaEntrega = session('taxa_entrega', 0);
 
         $totalPrice = array_sum(array_column($cart, 'total')) + $taxaEntrega;
+
+        // Obter a forma de pagamento
+        $paymentMethod = $request->input('payment');
+        $observation = '';
+
+        if ($paymentMethod == 'Dinheiro' && $request->filled('troco_amount')) {
+            $trocoAmount = floatval($request->input('troco_amount'));
+            if ($trocoAmount > 0) {
+                $observation = 'Troco para: R$ ' . number_format($trocoAmount, 2, ',', '.');
+            }
+        }
+
         // Criar o pedido
         $order = Order::create([
             'customer_id' => $customer->id,
             'status_id' => 1,
-            'total_price' =>  $totalPrice
+            'total_price' =>  $totalPrice,
+            'payment_method' => $paymentMethod,
+            'observation' => $observation,
         ]);
 
         // Criar os itens do pedido
@@ -321,19 +330,17 @@ class ChekoutController extends Controller
             $admin->notify(new NewOrderNotification("Novo Pedido"));
         }
 
-        // Limpar a sessão do carrinho e do customer
+        // // Limpar a sessão do carrinho
         session()->forget(['cart']);
 
         return view('front.checkout.resumo', compact('cart', 'taxaEntrega', 'totalPrice'));
     }
 
-
-
-
     public function enviaImagen(Request $request)
     {
         // Recuperar o customer da sessão
         $customer = session()->get('customer');
+        $customer = Customer::find($customer->id);
         $service = Chat::where('jid', $customer->jid)
             ->where('active', 1)
             ->first();
@@ -351,27 +358,27 @@ class ChekoutController extends Controller
         $caminhoArquivo = 'imagens/' . $nomeArquivo;
         Storage::disk('public')->put($caminhoArquivo, $imagem);
         $session = Device::first();
-        $this->sendImage($session->session, $customer->phone, asset('storage/' . $caminhoArquivo), '');
+
+        $this->sendImage($session->session, $customer->jid, asset('storage/' . $caminhoArquivo), '');
 
         date_default_timezone_set('America/Sao_Paulo');
         $horaAtual = Carbon::now();
         $config = Config::firstOrFail();
         $horaMais45Minutos = $horaAtual->addMinutes($config->minuts);
         $text = " Pedido feito com Sucesso .";
-        $this->sendMessagem($session->session, $customer->phone, $text);
+        $this->sendMessagem($session->session, $customer->jid, $text);
 
         $text = "Previsão da entrega " . $horaMais45Minutos->format('H:i');
-        $this->sendMessagem($session->session, $customer->phone, $text);
+        $this->sendMessagem($session->session, $customer->jid, $text);
 
         $text = "Muito Obrigado! ";
-        $this->sendMessagem($session->session, $customer->phone, $text);
-        $service->await_human = 'await_human';
+        $this->sendMessagem($session->session, $customer->jid, $text);
+        $service->await_answer = 'await_human';
         $service->update();
 
         // Limpar a sessão do carrinho e do customer
-        session()->forget(['customer', 'taxa_entrega']);
+        // session()->forget(['customer', 'taxa_entrega']);
     }
-
     public function sendImage($session, $phone, $nomeImagen, $detalhes)
     {
         $curl = curl_init();
@@ -409,7 +416,6 @@ class ChekoutController extends Controller
 
         curl_close($curl);
     }
-
     public function sendMessagem($session, $phone, $texto)
     {
 
@@ -454,5 +460,28 @@ class ChekoutController extends Controller
         session(['taxa_entrega' => $taxaEntrega]);
 
         return response()->json(['success' => true]);
+    }
+    public function pagamento(Request $request)
+    {
+        $customer = session()->get('customer');
+        $customer = Customer::find($customer->id);
+        session()->put('taxa_entrega', $customer->delivery_fee);
+
+        $customer->update($request->all());
+        session()->put('customer', $customer);
+        // Obter o carrinho da sessão
+        $cart = session()->get('cart', []);
+
+        // Verificar se o carrinho está vazio
+        if (empty($cart)) {
+            return view('front.checkout.va_pro_zap');
+        }
+
+        // Obter produtos da categoria 'bebidas'
+        $produtosBebidas = Product::whereHas('category', function ($query) {
+            $query->where('name', 'bebidas');
+        })->get();
+
+        return view('front.checkout.payments', compact('produtosBebidas', 'cart'));
     }
 }

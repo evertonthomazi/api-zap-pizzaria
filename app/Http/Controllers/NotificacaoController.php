@@ -22,6 +22,6 @@ class NotificacaoController extends Controller
             $unreadNotifications = $user->unreadNotifications;
             return response()->json(['notifications' => $unreadNotifications]);
         }
-        return response()->json(['notifications' => []]);
+        return response()->json(['notifications' => Session::get('userData')->unreadNotifications]);
     }
 }

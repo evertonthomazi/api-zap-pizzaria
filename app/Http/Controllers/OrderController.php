@@ -16,6 +16,13 @@ class OrderController extends Controller
     {
         return view('admin.order.index');
     }
+    public function updateNotify(){
+        $user = Session::get('userData');
+        if ($user) {
+            $user->unreadNotifications->markAsRead();
+        }
+        return json_encode(array('success' => true));
+    }
 
     public function index2()
     {
