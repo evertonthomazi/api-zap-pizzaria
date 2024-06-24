@@ -343,7 +343,9 @@
     <script>
         function redirectToCart() {
             // Verifica se o cliente possui zip_code
+         
             const customerZipcode = @json($customer['zipcode']);
+            console.log(customerZipcode);
             if (customerZipcode) {
                 const customerName = @json($customer['name']);
                 const customerAddress = @json($customer['public_place']);
