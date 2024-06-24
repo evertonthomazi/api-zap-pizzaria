@@ -358,9 +358,9 @@
                 // Exibe o modal
                 document.getElementById('addressModal').style.display = 'block';
             } else {
-                console.log('aki');
-                // Redireciona para a rota de adicionar endereço
-                // window.location.href = "{{ route('cart.show') }}";
+              
+                Redireciona para a rota de adicionar endereço
+                window.location.href = "{{ route('cart.show') }}";
             }
         }
 
@@ -396,9 +396,9 @@
             }, 3000);
         });
 
-        // function redirectToCart() {
-        //     window.location.href = "{{ route('cart.show') }}";
-        // }
+        function redirectToCart() {
+            window.location.href = "{{ route('cart.show') }}";
+        }
 
         const categoryHeader = document.getElementById('category-header');
         const categories = document.querySelectorAll('.category-header div');
