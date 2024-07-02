@@ -30,12 +30,12 @@ class ChekoutController extends Controller
             $customer = Customer::where('jid', $request->phone)->first();
 
             session()->put('taxa_entrega', $customer->delivery_fee);
-           
 
-                session()->put('customer', $customer);
-                $categories = Categories::with('products')->get();
-                $cart = session()->get('cart', []);
-                return view('front.checkout.index', compact('categories', 'cart', 'customer'));
+
+            session()->put('customer', $customer);
+            $categories = Categories::with('products')->get();
+            $cart = session()->get('cart', []);
+            return view('front.checkout.index', compact('categories', 'cart', 'customer'));
         } else {
             // Recuperar o customer da sessão
             $customer = session()->get('customer');
@@ -267,10 +267,11 @@ class ChekoutController extends Controller
         // Obter o carrinho da sessão
         $cart = session()->get('cart', []);
 
-    
-
         // Recuperar o customer da sessão
         $customer = session()->get('customer');
+
+        // dd($customer);
+        $customer = Customer::find($customer->id);
 
         // Obter o valor do frete da sessão
         $taxaEntrega = session('taxa_entrega', 0);
@@ -279,6 +280,7 @@ class ChekoutController extends Controller
 
         // Obter a forma de pagamento
         $paymentMethod = $request->input('payment');
+        $trocoAmount = $request->input('troco_amount', 0); // Adicione esta linha
         $observation = '';
 
         if ($paymentMethod == 'Dinheiro' && $request->filled('troco_amount')) {
@@ -328,11 +330,12 @@ class ChekoutController extends Controller
             $admin->notify(new NewOrderNotification("Novo Pedido"));
         }
 
-        // // Limpar a sessão do carrinho
+        // Limpar a sessão do carrinho
         session()->forget(['cart']);
 
-        return view('front.checkout.resumo', compact('cart', 'taxaEntrega', 'totalPrice'));
+        return view('front.checkout.resumo', compact('cart', 'taxaEntrega', 'totalPrice', 'customer', 'paymentMethod', 'trocoAmount'));
     }
+
 
     public function enviaImagen(Request $request)
     {

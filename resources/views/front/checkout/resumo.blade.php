@@ -1,5 +1,3 @@
-<!-- resources/views/carrinho/resumo.blade.php -->
-
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -155,6 +153,15 @@
     </div>
     <h1>Resumo do Carrinho</h1>
 
+    <!-- Dados do Cliente -->
+    <div class="customer-details">
+        <h2>Dados do Cliente</h2>
+        <p><strong>Nome:</strong> {{ $customer->name }}</p>
+        <p><strong>Telefone:</strong> {{ $customer->phone }}</p>
+        <p><strong>Endereço:</strong> {{ $customer->public_place .' N° '.$customer->number }}</p>
+        <p><strong>Bairro:</strong> {{ $customer->neighborhood }}</p>
+    </div>
+
     @foreach ($cart as $item)
         <div class="item">
             <div class="item-details">
@@ -202,7 +209,6 @@
                     </div>
                 </div>
 
-
             </div>
             <div style="clear:both;"></div>
         </div>
@@ -218,6 +224,15 @@
         <div>
             Total: R$ {{ number_format($totalPrice, 2, ',', '.') }}
         </div>
+    </div>
+
+    <!-- Forma de Pagamento -->
+    <div class="payment-method">
+        <h2>Forma de Pagamento</h2>
+        <p>{{ $paymentMethod }}</p>
+        @if ($paymentMethod == 'Dinheiro' && !empty($trocoAmount))
+            <p>Troco para: R$ {{ number_format($trocoAmount, 2, ',', '.') }}</p>
+        @endif
     </div>
 
     <!-- Modal de Agradecimento -->
