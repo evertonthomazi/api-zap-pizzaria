@@ -161,8 +161,8 @@ Route::middleware(['auth.user'])->group(function () {
 
         Route::prefix('/pedidos')->controller(OrderController::class)->group(function () {
             Route::get('/', 'index')->name('admin.order.index');
-            Route::get('/apagaNotifica', 'index2')->name('admin.order.index2');
             Route::get('/getOrders', 'getOrders');
+            Route::get('/getOrdersCount', 'getOrdersCount');
             Route::post('/atualizar-status', 'updateStatus');
             Route::post('/atualizar-notify', 'updateNotify')->name('admin.notifications.markAllRead');
             Route::get('/getOrder', 'getOrder');

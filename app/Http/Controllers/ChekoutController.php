@@ -267,9 +267,7 @@ class ChekoutController extends Controller
         // Obter o carrinho da sessão
         $cart = session()->get('cart', []);
 
-        // if (empty($cart)) {
-        //     return redirect()->back()->with('error', 'Seu carrinho está vazio.');
-        // }
+    
 
         // Recuperar o customer da sessão
         $customer = session()->get('customer');
@@ -373,11 +371,11 @@ class ChekoutController extends Controller
 
         $text = "Muito Obrigado! ";
         $this->sendMessagem($session->session, $customer->jid, $text);
-        $service->await_answer = 'await_human';
+        $service->await_answer = 'finish';
         $service->update();
 
         // Limpar a sessão do carrinho e do customer
-        // session()->forget(['customer', 'taxa_entrega']);
+        session()->forget(['customer', 'taxa_entrega']);
     }
     public function sendImage($session, $phone, $nomeImagen, $detalhes)
     {

@@ -20,6 +20,9 @@ $('#table-order').DataTable({
         "data": "status.name",
     },
     {
+        "data": "payment_method",
+    },
+    {
         "data": "display_data"
     },
     {
@@ -32,8 +35,8 @@ $('#table-order').DataTable({
     }],
     'rowCallback': function (row, data, index) {
         $('td:eq(1)', row).html('<label>' + data['customer'].name + ' / ' + data['customer'].phone + '</label>');
-        $('td:eq(4)', row).html('<label>' + data['display_data'] + '</label>');
-        $('td:eq(5)', row).html('<a href="javascript:;" data-toggle="modal" onClick="configModal(' + data["id"] + ')" data-target="#modalInfo" class="btn btn-sm btn-gray delete"><i class="fa fa-eye"></i></a>');
+        $('td:eq(5)', row).html('<label>' + data['display_data'] + '</label>');
+        $('td:eq(6)', row).html('<a href="javascript:;" data-toggle="modal" onClick="configModal(' + data["id"] + ')" data-target="#modalInfo" class="btn btn-sm btn-gray delete"><i class="fa fa-eye"></i></a>');
         // Adicionando botões para selecionar o status
         $('td:eq(3)', row).html('<div class="div-circulo"><select class="form-control status-select" data-order-id="' + data['id'] + '">' +
             '<option value="1" style="color: red;" ' + (data['status'].id == 1 ? 'selected' : '') + '>Pendente</option>' +

@@ -34,8 +34,6 @@ class Order extends Model
 
     public function getDisplayDataAttribute()
     {
-
-
         $data = Carbon::parse($this->created_at);
         $hoje = Carbon::now();
         $horaFormatada = $data->format('H:i');

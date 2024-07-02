@@ -14,24 +14,17 @@ class OrderController extends Controller
 {
     public function index()
     {
-        return view('admin.order.index');
+        // Buscar todas as ordens com notify igual a 0
+    $orders = Order::where('notify', 0)->get();
+
+    // Atualizar notify para 1
+    foreach ($orders as $order) {
+        $order->notify = 1;
+        $order->save();
     }
-    public function updateNotify(){
-        $user = Session::get('userData');
-        if ($user) {
-            $user->unreadNotifications->markAsRead();
-        }
-        return json_encode(array('success' => true));
+        return view('admin.order.index');
     }
 
-    public function index2()
-    {
-        $user = Session::get('userData');
-        if ($user) {
-            $user->unreadNotifications->markAsRead();
-        }
-        return view('admin.order.index');
-    }
 
     public function getOrders()
     {
@@ -43,6 +36,10 @@ class OrderController extends Controller
         }
 
         return DataTables::of($orders)->make(true);
+    }
+    public function getOrdersCount(){
+        $orders = Order::where('notify',0)->count();
+        return $orders;
     }
 
     public function getOrder(Request $request)

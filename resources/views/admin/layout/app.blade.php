@@ -65,8 +65,8 @@
                     <a href="{{ route('admin.order.index') }}" class="nav-link">
                         <i class="fas fa-users"></i>
                         <span>Pedidos</span>
-                        <span class="badge badge-danger badge-counter"
-                            id="sidebar-notification-count">{{ session('userData')->unreadNotifications->count() }}</span>
+                        <span class="badge badge-danger badge-counter notification-count"
+                            id="sidebar-notification-count">0</span>
                     </a>
                 </li>
             @endif
@@ -175,7 +175,7 @@
                         <ul id="notificacoes">
                             <!-- Aqui é onde as notificações aparecerão -->
                         </ul>
-                        <!-- No header, adicione o contador de notificações -->
+                        {{-- <!-- No header, adicione o contador de notificações -->
                         @if (session('authenticated') && session('userData') && session('userData')->role == 'admin')
                             <li class="nav-item dropdown no-arrow mx-1">
                                 <a class="nav-link dropdown-toggle" href="#" id="alertsOrder" role="button"
@@ -211,9 +211,6 @@
                                 </div>
                             </li>
                         @endif
-
-                       
-
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle" href="#" id="alertsMessage" role="button"
@@ -230,7 +227,7 @@
                                 <a class="dropdown-item text-center small text-gray-500" href="">Ver todas as
                                     mensagens</a>
                             </div>
-                        </li>
+                        </li> --}}
 
                         <div class="topbar-divider d-none d-sm-block"></div>
 
@@ -246,14 +243,14 @@
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
+                                {{-- <a class="dropdown-item" href="#">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Perfil
                                 </a>
                                 <a class="dropdown-item" href="#">
                                     <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Configurações
-                                </a>
+                                </a> --}}
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="/admin/sair">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -293,6 +290,31 @@
 
         </div>
         <!-- End of Content Wrapper -->
+
+        <!-- Modal -->
+        <div class="modal fade" id="newOrderModal" tabindex="-1" role="dialog"
+            aria-labelledby="newOrderModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="newOrderModalLabel">Novo Pedido</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                            id="closeModalButton">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Você tem um novo pedido!
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                            id="dismissModalButton">Fechar</button>
+                        <a href="{{ route('admin.order.index') }}" class="btn btn-primary" id="goToOrdersButton">Ir
+                            para Pedidos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
     <!-- End of Page Wrapper -->
@@ -336,183 +358,64 @@
 
     @yield('scripts')
     <script>
-        verificarCondicao();
-        navigator.mediaDevices.getUserMedia({
-                audio: true
-            })
-            .then(function(stream) {
-                // O usuário concedeu permissão para o uso do microfone
-                // Agora você pode usar o stream de áudio.
-            })
-            .catch(function(error) {
-                // O usuário negou a permissão ou ocorreu um erro.
-            });
-        var som = new Howl({
+        var som2 = new Howl({
             src: ['/audioTelefone.mp3']
         });
+        var newOrderModal = $('#newOrderModal');
 
-
-        function verificarCondicao() {
+        function getOrdersCount() {
             $.ajax({
-                url: '/admin/chat/getAtendimentoPedente',
+                url: 'pedidos/getOrdersCount',
                 method: 'GET',
                 success: function(response) {
+                    console.log(response);
+                    var countElement = document.querySelector('.notification-count');
+                    var currentCount = parseInt(countElement.textContent);
 
-                    var audio = document.getElementById('myAudio');
-
-                    if (response > '0') {
-
-                          som.play();
-                        document.querySelector('.notification-count').textContent = response;
-
-                    } else {
-                          som.pause();
-                        document.querySelector('.notification-count').textContent = response;
-
-
+                    if (response > currentCount) {
+                        som2.play();
+                        newOrderModal.modal('show');
                     }
+
+                    countElement.textContent = response;
+                },
+                error: function(xhr, status, error) {
+                    console.error('Erro ao obter a contagem de pedidos:', error);
                 }
             });
         }
 
-        // Executar a função de verificação a cada 5 segundos.
-        setInterval(verificarCondicao, 5000);
+        // Executar a função de verificação a cada 10 segundos.
+        setInterval(getOrdersCount, 10000);
 
+        // Desativar som e modal ao clicar nos botões
+        $('#closeModalButton, #dismissModalButton, #goToOrdersButton').on('click', function() {
+            som2.stop();
+            newOrderModal.modal('hide');
+        });
 
-
-
-
-
-
-
-
-        // let notificationSoundPlayed = false;
-
-        // function checkNotifications() {
-          
+        // function verificarCondicao() {
         //     $.ajax({
-        //         url: '{{ route('admin.notifications.check') }}',
+        //         url: '/admin/chat/getAtendimentoPedente',
         //         method: 'GET',
         //         success: function(response) {
-        //             console.log(response);
-        //             if (response.notifications.length > 0 && !notificationSoundPlayed) {
-        //                 playNotificationSound();
-        //                 showNotificationAlert(response.notifications.length);
-        //                 notificationSoundPlayed = true; // Marque que o som já foi tocado
-        //             }
-        //             updateNotificationCount(response.notifications.length);
-        //             updateNotificationList(response.notifications);
-        //         }
-        //     });
-        // }
 
-        // function playNotificationSound() {
-        //     const audio = new Howl({
-        //         src: ['/audioTelefone.mp3'],
-        //         onend: function() {
-        //             audio.stop(); // Parar o áudio depois que ele tocar uma vez
-        //         }
-        //     });
-        //     audio.play(); // Tocar o som de notificação uma vez
-        // }
+        //             var audio = document.getElementById('myAudio');
 
-        // function showNotificationAlert(count) {
-        //     Swal.fire({
-        //         title: 'Novo Pedido!',
-        //         text: `Você tem ${count} novo(s) pedido(s).`,
-        //         icon: 'info',
-        //         showCancelButton: true,
-        //         confirmButtonText: 'Ver Pedidos',
-        //         cancelButtonText: 'Fechar',
-        //         customClass: {
-        //             popup: 'animated shake'
-        //         },
-        //         didOpen: () => {
-        //             const intervalId = setInterval(() => {
-        //                 Swal.getPopup().classList.toggle('shake');
-        //             }, 2000);
+        //             if (response > '0') {
+        //                 som.play();
+        //                 document.querySelector('.notification-count').textContent = response;
 
-        //             Swal.getPopup().addEventListener('mouseleave', () => clearInterval(
-        //                 intervalId)); // Limpar o intervalo quando o modal for fechado
-        //         }
-        //     }).then((result) => {
-        //         if (result.isConfirmed) {
-        //             markNotificationsAsRead().then(() => {
-        //                 window.location.href = '{{ route('admin.order.index2') }}';
-        //             });
-        //         }
-        //         notificationSoundPlayed = false; // Reseta a flag ao fechar o modal
-        //     });
-        // }
-
-        // function updateNotificationCount(count) {
-        //     $('#notification-count').text(count);
-        //     $('#sidebar-notification-count').text(count);
-        // }
-
-        // function updateNotificationList(notifications) {
-        //     const notificationList = $('#notificacoes');
-        //     notificationList.empty(); // Limpar a lista existente
-
-        //     notifications.forEach(notification => {
-        //         const notificationItem = $('<li class="dropdown-item d-flex align-items-center"></li>');
-        //         notificationItem.html(`
-        //             <div class="mr-3">
-        //                 <div class="icon-circle bg-primary">
-        //                     <i class="fas fa-file-alt text-white"></i>
-        //                 </div>
-        //             </div>
-        //             <div>
-        //                 <div class="small text-gray-500">${notification.created_at}</div>
-        //                 <span class="font-weight-bold">${notification.data.message}</span>
-        //             </div>
-        //         `);
-        //         notificationList.append(notificationItem);
-        //     });
-        // }
-
-        // function markNotificationsAsRead() {
-        //     return $.ajax({
-        //         url: '{{ route('admin.notifications.markAllRead') }}',
-        //         method: 'POST',
-        //         headers: {
-        //             'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        //         },
-        //         success: function(response) {
-        //             if (response.success) {
-        //                 // Atualizar o contador de notificações no frontend
-        //                 $('#notification-count').text('0');
-        //                 $('#sidebar-notification-count').text('0');
-        //                 $('#notificacoes').empty(); // Limpar as notificações após marcar como lidas
+        //             } else {
+        //                 som.pause();
+        //                 document.querySelector('.notification-count').textContent = response;
         //             }
         //         }
         //     });
         // }
 
-        // // Verificar notificações a cada 5 segundos
-        // setInterval(checkNotifications, 5000);
-
-        // function showToast(icon, message) {
-        //     const Toast = Swal.mixin({
-        //         toast: true,
-        //         position: 'top-end',
-        //         showConfirmButton: false,
-        //         timer: 5000,
-        //         timerProgressBar: true,
-        //         didOpen: (toast) => {
-        //             toast.addEventListener('mouseenter', Swal.stopTimer)
-        //             toast.addEventListener('mouseleave', Swal.resumeTimer)
-        //         }
-        //     });
-        //     Toast.fire({
-        //         icon: icon,
-        //         title: message,
-        //     });
-        // }
-        // // Inicializar a verificação de notificações ao carregar a página
-        // $(document).ready(function() {
-        //     checkNotifications();
-        // });
+        // // Executar a função de verificação a cada 5 segundos.
+        // setInterval(verificarCondicao, 5000);
     </script>
 
     @if (session('success'))

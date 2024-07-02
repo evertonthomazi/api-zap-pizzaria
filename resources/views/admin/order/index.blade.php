@@ -48,6 +48,7 @@
                                         <th scope="col">Cliente</th>
                                         <th scope="col">Valor</th>
                                         <th scope="col">Status</th>
+                                        <th scope="col">Pagamento</th>
                                         <th scope="col">Data</th>
                                         <th scope="col">Ações</th>
 
