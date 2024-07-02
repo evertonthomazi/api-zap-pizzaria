@@ -383,7 +383,7 @@
                 <div id="pix-options" style="display: none;">
                     <p>Use o seguinte código PIX para pagamento:</p>
                     <div style="display: flex; align-items: center;">
-                        <span id="pix-code">11986123660</span>
+                        <span id="pix-code">11933361625</span>
                         <button type="button" id="copy-pix-btn" style="margin-left: 10px;">Copiar</button>
                     </div>
                 </div>
