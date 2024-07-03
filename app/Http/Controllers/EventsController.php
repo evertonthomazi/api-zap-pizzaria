@@ -251,7 +251,7 @@ class EventsController extends Controller
                         $service->update();
                         $text =  "Opção inválida!";
                         $this->sendMessagem($session->session, $customer->jid, $text);
-                        if ($service->erro > 2) {
+                        if ($service->erro > 0) {
                             $text =  "Por favor aguarde ,em instantes você será atendido(a).";
                             $this->sendMessagem($session->session, $customer->jid, $text);
                             $service->await_answer = "await_human";
