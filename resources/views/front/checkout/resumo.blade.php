@@ -187,6 +187,7 @@
                             <p>Tipo: {{ $flavorsCount + 1 }} Sabores</p>
                         @endif
 
+                        <p>Borda: {{ $item['crust'] }} ({{ $item['crust_price'] }})</p>
                         <p>Quantidade: {{ $item['quantity'] }}</p>
                         <p>Preço Unitário: R$ {{ $item['price'] }}</p>
                         <p>Total: R$ {{ number_format($item['total'], 2, ',', '.') }}</p>

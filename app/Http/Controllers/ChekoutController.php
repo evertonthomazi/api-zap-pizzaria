@@ -267,6 +267,8 @@ class ChekoutController extends Controller
         // Obter o carrinho da sessão
         $cart = session()->get('cart', []);
 
+
+        // dd($cart);
         // Recuperar o customer da sessão
         $customer = session()->get('customer');
 
