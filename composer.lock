@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "31cc5dc1d3c4c1cb0ce77efd37f956cc",
+    "content-hash": "4462d34435f0794fd1598a230201b057",
     "packages": [
         {
             "name": "brick/math",
@@ -2672,6 +2672,54 @@
                 }
             ],
             "time": "2023-02-08T01:06:31+00:00"
+        },
+        {
+            "name": "pagarme/pagarme-php",
+            "version": "v4.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pagarme/pagarme-php.git",
+                "reference": "5751f86f6e7cf15c0a5f3c74fe4ef94845dbf695"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pagarme/pagarme-php/zipball/5751f86f6e7cf15c0a5f3c74fe4ef94845dbf695",
+                "reference": "5751f86f6e7cf15c0a5f3c74fe4ef94845dbf695",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": ">=6.3",
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.7",
+                "squizlabs/php_codesniffer": "^3.3"
+            },
+            "type": "lib",
+            "autoload": {
+                "psr-4": {
+                    "PagarMe\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Pagar.Me PHP Library",
+            "homepage": "http://pagar.me",
+            "keywords": [
+                "api",
+                "pagamento brasil",
+                "pagamentos",
+                "pagar.me",
+                "pagarme",
+                "payments brazil"
+            ],
+            "support": {
+                "issues": "https://github.com/pagarme/pagarme-php/issues",
+                "source": "https://github.com/pagarme/pagarme-php/tree/v4.4.0"
+            },
+            "time": "2024-08-02T23:27:07+00:00"
         },
         {
             "name": "paragonie/random_compat",

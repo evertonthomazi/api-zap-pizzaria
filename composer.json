@@ -13,6 +13,7 @@
         "league/csv": "^9.16",
         "mike42/escpos-php": "^2.2",
         "nesbot/carbon": "^2.68",
+        "pagarme/pagarme-php": "^4.4",
         "pusher/pusher-php-server": "^7.2",
         "yajra/laravel-datatables": "9.0"
     },

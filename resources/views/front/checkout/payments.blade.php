@@ -383,9 +383,10 @@
                 <div id="pix-options" style="display: none;">
                     <p>Use o seguinte código PIX para pagamento:</p>
                     <div style="display: flex; align-items: center;">
-                        <span id="pix-code">11933361625</span>
+                        <textarea id="pix-code" rows="4" cols="50" readonly></textarea>
                         <button type="button" id="copy-pix-btn" style="margin-left: 10px;">Copiar</button>
                     </div>
+                    <small style="color: #ed291e;">Após efetuar o pagamento , retorne para finalizar o pedido</small>
                 </div>
             </div>
         </form>
@@ -425,17 +426,46 @@
                 $(this).addClass('selected');
                 $(this).find('input[type="radio"]').prop('checked', true);
                 const paymentMethod = $(this).find('input[type="radio"]').val();
-                if (paymentMethod === 'Dinheiro') {
-                    $('#dinheiro-options').show();
-                    $('#pix-options').hide();
-                } else if (paymentMethod === 'Pix') {
+                if (paymentMethod === 'Pix') {
                     $('#pix-options').show();
                     $('#dinheiro-options').hide();
+                    generatePixCode(); // Chama a função para gerar o código PIX
+                } else if (paymentMethod === 'Dinheiro') {
+                    $('#dinheiro-options').show();
+                    $('#pix-options').hide();
                 } else {
                     $('#dinheiro-options').hide();
                     $('#pix-options').hide();
                 }
             });
+
+            function generatePixCode() {
+                const amount = {{ array_sum(array_column($cart, 'total')) + session('taxa_entrega') }};
+
+                $.ajax({
+                    url: '{{ route('generate-pix') }}',
+                    method: 'POST',
+                    data: {
+                        amount: amount * 100, // Converte para centavos
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        $('#pix-code').text(response.pix_code);
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro',
+                            text: 'Houve um erro ao gerar o código PIX. Por favor, tente novamente.',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+                    }
+                });
+            }
 
             // Função para exibir ou ocultar campo de troco
             $('#troco-checkbox').on('change', function() {
@@ -446,7 +476,6 @@
                 }
             });
 
-            // Função para copiar código PIX
             $('#copy-pix-btn').on('click', function() {
                 const pixCode = $('#pix-code').text();
                 navigator.clipboard.writeText(pixCode).then(() => {
