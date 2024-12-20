@@ -32,6 +32,9 @@ use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
 use App\Notifications\NewOrderNotification;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use GuzzleHttp\Client;
 
 /*
 |--------------------------------------------------------------------------
@@ -97,6 +100,7 @@ Route::prefix('/checkout')->controller(ChekoutController::class)->group(function
 Route::prefix('/events')->controller(EventsController::class)->group(function () {
     Route::post('/', 'index')->name('admin.events.index');
     Route::get('/teste', 'teste');
+    Route::post('/carrinhoAbandonado', 'carrinhoAbandonado');
     Route::get('/mensagemEmMassa', 'mensagemEmMassa');
     Route::get('/avaliacao', 'avaliacao');
     Route::post('/avaliar', 'storeAvaliacao')->name('admin.events.avaliacao.store');
@@ -230,52 +234,76 @@ Route::get('/teste', function () {
         }
     }
 });
-Route::get('/testePrint', function () {
-    // Obter o carrinho da sessão
-    $cart = session()->get('cart', []);
+Route::get('/wh', function () {
 
-    if (empty($cart)) {
-        return redirect()->back()->with('error', 'Seu carrinho está vazio.');
-    }
-    // Recuperar o customer da sessão
-    $customer = session()->get('customer');
-
-
-    // Criar o pedido
-    $order = Order::create([
-        'customer_id' => $customer->id,
-        'status_id' => 1,
-        'total_price' => array_sum(array_column($cart, 'total')) + session('taxa_entrega')
+    $client = new Client();
+    $response = $client->get('https://api.dooki.com.br/v2/sunfit3/webhooks', [
+        'headers' => [
+            'Authorization' => 'Bearer nWldIVtRLmLY5mYAcIU2sZwQMOJpnFYY87vJu6kJ',
+        ],
+        'json' => [
+            'url'    => 'http://suaurl.com/api/webhooks',
+            'events' => ['order.created', 'cart.reminder'],
+            'name'   => 'Nome do webhook',
+        ],
     ]);
 
-    // Criar os itens do pedido
-    foreach ($cart as $item) {
-        // Dividir os product_ids em primário e secundário e terciário
-        $productIds = explode(',', $item['product_id']);
-        $primaryProductId = $productIds[0];
-        $secondaryProductId = isset($productIds[1]) ? $productIds[1] : null;
-        $tertiaryProductId = isset($productIds[2]) ? $productIds[2] : null;
-
-        OrderItem::create([
-            'order_id' => $order->id,
-            'product_id_primary' => $primaryProductId,
-            'product_id_secondary' => $secondaryProductId,
-            'product_id_tertiary' => $tertiaryProductId,
-            'name' => $item['name'],
-            'description' => $item['description'],
-            'price' => $item['price'],
-            'quantity' => $item['quantity'],
-            'crust' => $item['crust'],
-            'crust_price' => $item['crust_price'],
-            'observation_primary' => isset($item['observation']) && $item['observation'] !== '' ? $item['observation'] : null,
-            'observation_secondary' => isset($item['observation_secondary']) && $item['observation_secondary'] !== '' ? $item['observation_secondary'] : null,
-            'observation_tertiary' => isset($item['observation_tertiary']) && $item['observation_tertiary'] !== '' ? $item['observation_tertiary'] : null,
-
-        ]);
-    }
-   return view('teste', compact('cart'));
+    $data = json_decode($response->getBody(), true);
+    Log::info('Dados retornados:', $data);
 });
 
+function handle(Request $request)
+{
+    // Obtenha o corpo da requisição
+    $payload = $request->getContent();
+    $headers = $request->headers;
+
+    // A chave secreta do Webhook (configure no .env para segurança)
+    $webhookSecret = env('YAMPI_WEBHOOK_SECRET');
+
+    // Obtenha a assinatura enviada no header
+    $signature = $headers->get('X-Yampi-Hmac-SHA256');
+
+    // Valide a assinatura
+    if (!isValidSignature($payload, $signature, $webhookSecret)) {
+        return response()->json(['error' => 'Invalid signature'], 403);
+    }
+
+    // Processa o evento recebido
+    $data = json_decode($payload, true);
+
+    if (!$data || !isset($data['event'])) {
+        return response()->json(['error' => 'Invalid payload'], 400);
+    }
+
+    // Identifique o evento e processe conforme necessário
+    $event = $data['event'];
+
+    switch ($event) {
+        case 'order.created':
+            Log::info('Pedido criado', $data['resource']);
+            break;
+        case 'order.paid':
+            Log::info('Pedido aprovado', $data['resource']);
+            break;
+        case 'cart.reminder':
+            Log::info('Notificação de carrinho abandonado', $data['resource']);
+            break;
+        default:
+            Log::info('Evento não tratado: ' . $event, $data);
+            break;
+    }
+
+    return response()->json(['message' => 'Webhook handled successfully'], 200);
+}
+function isValidSignature($payload, $signature, $secret)
+{
+    // Gera a assinatura HMAC
+    $calculatedSignature = base64_encode(hash_hmac('sha256', $payload, $secret, true));
+
+    // Compare a assinatura recebida com a calculada
+    return hash_equals($calculatedSignature, $signature);
+}
 
 
 Route::get('/testeendereco', function () {
@@ -294,7 +322,6 @@ Route::get('/testeendereco', function () {
     } else {
         return response()->json(['error' => 'Failed to retrieve coordinates for one or both addresses.'], 400);
     }
-   
 });
 function getCoordinates($address)
 {

@@ -23,6 +23,44 @@ use Illuminate\Support\Facades\DB;
 class EventsController extends Controller
 {
 
+
+
+    public function carrinhoAbandonado()
+    {
+        $responseJson = file_get_contents('php://input');
+        $responseArray = json_decode($responseJson, true);
+        // dd($responseArray);
+        $responseArray = $responseArray['abandoned_cart'];
+
+        // Pegando os dados do cliente e carrinho
+        $customerName = $responseArray['email']; // Você pode ajustar caso tenha o campo 'name'
+        $checkoutUrl = $responseArray['checkout_url'];
+        $total = $responseArray['total'];
+        $currency = $responseArray['currency'];
+        $items = $responseArray['items'];
+        $phone = $responseArray['phone'];
+
+        // dd($phone);
+        // Gerar lista formatada de itens
+        $itemsList = '';
+        foreach ($items as $item) {
+            $itemsList .= '- ' . $item['name'] . ' (Quantidade: ' . $item['quantity'] . ', Preço: ' . number_format($item['price'], 2, ',', '.') . ' ' . $currency . ')\n';
+        }
+        
+
+        // Mensagem personalizada
+        $text = 'Olá! 👋 É sempre um prazer ter você com a gente! 😊\n\n'
+        . 'Notamos que você deixou alguns produtos no carrinho e não queremos que você perca essas ofertas incríveis! 🛒\n\n'
+        . '📋 *Resumo do seu carrinho:*\n'
+        . $itemsList . '\n'
+        . '💰 *Total:* ' . number_format($total, 2, ',', '.') . ' ' . $currency . '\n'
+        . '🛍️ Para finalizar sua compra, é só clicar no link abaixo:\n'
+        . '🔗 ' . $checkoutUrl . '\n'
+        . 'Fácil, rápido e prático! 🚀 Não perca essa chance de garantir seus produtos favoritos! 😊';
+
+        $session = Device::first();
+        $this->sendMessagem($session->session, $phone, $text);
+    }
     public function index()
     {
         $reponseJson = file_get_contents('php://input');
@@ -134,7 +172,6 @@ class EventsController extends Controller
                 $service->service_id = Utils::createCode();
                 $service->await_answer = "init_chat";
                 $service->save();
-                
             }
 
             // if ($customer && $service->await_answer == null) {
@@ -153,12 +190,12 @@ class EventsController extends Controller
 
             if ($service->await_answer == "init_chat") {
 
-                if($customer){
+                if ($customer) {
                     $text = 'Olá ' . $customer->name . '! É bom ter você aqui novamente! 😊\n\n'
-                    . 'Para Fazer seu pedido clique no link Abaixo \n'
-                    . '🔗 ' . 'https://benjamin.enviazap.shop/checkout/?phone=' . $numero_sem_arroba
-                    . '\nFácil, rápido e prático! 🚀';
-                }else{
+                        . 'Para Fazer seu pedido clique no link Abaixo \n'
+                        . '🔗 ' . 'https://benjamin.enviazap.shop/checkout/?phone=' . $numero_sem_arroba
+                        . '\nFácil, rápido e prático! 🚀';
+                } else {
                     $customer = new Customer();
                     $customer->jid = $jid;
                     $customer->save();
@@ -168,11 +205,11 @@ class EventsController extends Controller
                         exit;
                     }
                     $text = 'Olá!! Para Fazer seu pedido \nclique no link Abaixo\n'
-                    . '🔗 ' . 'https://benjamin.enviazap.shop/checkout/?phone=' . $numero_sem_arroba
-                    . '\nFácil, rápido e prático! 🚀';
+                        . '🔗 ' . 'https://benjamin.enviazap.shop/checkout/?phone=' . $numero_sem_arroba
+                        . '\nFácil, rápido e prático! 🚀';
                 }
 
-                
+
                 $this->sendMessagem($session->session, $customer->jid, $text);
                 $text =  "Posso te ajudar em mais alguma coisa?";
                 $options = [
