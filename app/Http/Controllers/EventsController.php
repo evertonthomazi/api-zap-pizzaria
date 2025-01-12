@@ -46,21 +46,22 @@ class EventsController extends Controller
         foreach ($items as $item) {
             $itemsList .= '- ' . $item['name'] . ' (Quantidade: ' . $item['quantity'] . ', Preço: ' . number_format($item['price'], 2, ',', '.') . ' ' . $currency . ')\n';
         }
-        
+
 
         // Mensagem personalizada
         $text = 'Olá! 👋 É sempre um prazer ter você com a gente! 😊\n\n'
-        . 'Notamos que você deixou alguns produtos no carrinho e não queremos que você perca essas ofertas incríveis! 🛒\n\n'
-        . '📋 *Resumo do seu carrinho:*\n'
-        . $itemsList . '\n'
-        . '💰 *Total:* ' . number_format($total, 2, ',', '.') . ' ' . $currency . '\n'
-        . '🛍️ Para finalizar sua compra, é só clicar no link abaixo:\n'
-        . '🔗 ' . $checkoutUrl . '\n'
-        . 'Fácil, rápido e prático! 🚀 Não perca essa chance de garantir seus produtos favoritos! 😊';
+            . 'Notamos que você deixou alguns produtos no carrinho e não queremos que você perca essas ofertas incríveis! 🛒\n\n'
+            . '📋 *Resumo do seu carrinho:*\n'
+            . $itemsList . '\n'
+            . '💰 *Total:* ' . number_format($total, 2, ',', '.') . ' ' . $currency . '\n'
+            . '🛍️ Para finalizar sua compra, é só clicar no link abaixo:\n'
+            . '🔗 ' . $checkoutUrl . '\n'
+            . 'Fácil, rápido e prático! 🚀 Não perca essa chance de garantir seus produtos favoritos! 😊';
 
         $session = Device::first();
         $this->sendMessagem($session->session, $phone, $text);
     }
+
     public function index()
     {
         $reponseJson = file_get_contents('php://input');
@@ -494,6 +495,7 @@ class EventsController extends Controller
         // verifica se o serviço está em andamento
         $this->verifyService($reponseArray, $session);
     }
+    
     public function mensagemEmMassa()
     {
         $devices = Device::get(); // IDs dos dispositivos
